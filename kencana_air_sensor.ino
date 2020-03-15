@@ -36,7 +36,7 @@ String LastSentTrans;                 //Record last transmission sent from this 
 float AllValues[8];                   //Array to store data for transmission
 byte fullpayload[8];                      //Byte array to store data for transmission https://www.thethingsnetwork.org/docs/devices/bytes.html
 int sizeofFullPayload;
-
+bool transmitRequested = 0;
 
 bool debug = true;                    //To enable debugging
 bool debugPrinted = false;            //track if we've printed debug data (don't spam serial console)
@@ -124,55 +124,73 @@ void getData() {
   ValueC2H5OH = gas.measure_C2H5OH();
   //AllValues[7] = ValueC2H5OH;
   fullpayload[7] = round(ValueC2H5OH * 100);
+
+  int sizeofFullPayload = sizeof(fullpayload);
+  Serial.println("Initial size of payload: " + String(sizeofFullPayload));
+
+  if (transmitRequested == 1 )
+  {
+    broadcastData(fullpayload, sizeofFullPayload);
+    transmitRequested = 0;
+  }
+
 }
 
 void printData() {
   Serial.print(F("The concentration of Amonia (NH3) is "));
   if(ValueNH3>=0) Serial.print(ValueNH3);
   else Serial.print("invalid");
-  Serial.println(" ppm");
+  Serial.print(" ppm ");
+  Serial.println( String(fullpayload[0]) );
   //Amonia < 300ppm
 
   Serial.print(F("The concentration of carbon monoxide (CO) is "));
   if(ValueCO>=0) Serial.print(ValueCO);
   else Serial.print("invalid");
-  Serial.println(" ppm");
+  Serial.print(" ppm ");
+  Serial.println( String(fullpayload[1]) );
   // want < 70ppm
 
   Serial.print(F("The concentration of Nitrous dioxide (NO2) is "));
   if(ValueNO2>=0) Serial.print(ValueNO2);
   else Serial.print("invalid");
-  Serial.println(" ppm");
+  Serial.print(" ppm ");
+  Serial.println( String(fullpayload[2]) );
   //want < 5ppm
 
   Serial.print(F("The concentration of propane (C3H8) is "));
   if(ValueC3H8>=0) Serial.print(ValueC3H8);
   else Serial.print("invalid");
-  Serial.println(" ppm");
+  Serial.print(" ppm ");
+  Serial.println( String(fullpayload[3]) );
   //Propane < 2100PPM https://www.cdc.gov/niosh/idlh/74986.html (IDHL = Immediately Dangerous to Life or Health Concentrations)
   //More info on gases: https://safety.honeywell.com/content/dam/his-sandbox/products/gas-and-flame-detection/documents/Application-Note-202_The-ABC27s-Of-Gases-In-The-Industry_04-99.pdf
 
   Serial.print(F("The concentration of butane (C4H10) is "));
   if(ValueC4H10>=0) Serial.print(ValueC4H10);
   else Serial.print("invalid");
-  Serial.println(" ppm");
+  Serial.print(" ppm ");
+  Serial.println( String(fullpayload[4]) );
   //Butane < 1ppm STEL (short term exposure limit of < 15 minutes)
 
   Serial.print(F("The concentration of methane (CH4) is "));
   if(ValueCH4>=0) Serial.print(ValueCH4);
   else Serial.print("invalid");
-  Serial.println(" ppm");
+  Serial.print(" ppm ");
+  Serial.println( String(fullpayload[5]) );
   //methane no recommendations
 
   Serial.print(F("The concentration of hydrogen gas (H2) is "));
   if(ValueH2>=0) Serial.print(ValueH2);
   else Serial.print("invalid");
-  Serial.println(" ppm");
+  Serial.print(" ppm ");
+  Serial.println( String(fullpayload[6]) );
   //hydrogen no recommendations
 
   Serial.print(F("The concentration of ethyl alcohol (C2H5OH) is "));
   if(ValueC2H5OH>=0) Serial.print(ValueC2H5OH);
   else Serial.print("invalid");
-  Serial.println(" ppm");
+  Serial.print(" ppm ");
+  Serial.println( String(fullpayload[7]) );
   //ethyl alcohol < 3300 ppm
 }

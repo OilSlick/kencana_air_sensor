@@ -81,8 +81,8 @@ void handleSerial() {
   }
   if ( consoleMessage == "t" )
   {
+    transmitRequested = 1;
     getData();
-    broadcastData(fullpayload);
   }
  }
 } //END handleSerial()
