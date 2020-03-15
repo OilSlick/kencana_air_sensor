@@ -33,7 +33,6 @@ bool messageReceived = false;         //Indicates a properly-formatted–but not
 String outgoingMsg;                   //contents of outgoing radio transmission
 String LastReceivedTrans;             //Record last message received by this station
 String LastSentTrans;                 //Record last transmission sent from this station
-float AllValues[8];                   //Array to store data for transmission
 byte fullpayload[8];                      //Byte array to store data for transmission https://www.thethingsnetwork.org/docs/devices/bytes.html
 int sizeofFullPayload;
 bool transmitRequested = 0;
@@ -94,39 +93,28 @@ void loop() {
 
 void getData() {
   ValueNH3 = gas.measure_NH3();
-  //AllValues[0] = ValueNH3;
   fullpayload[0] = round(ValueNH3 * 100);
     
   ValueCO = gas.measure_CO();
-  //AllValues[1] = ValueCO;
   fullpayload[1] = round(ValueCO * 100);
 
   ValueNO2 = gas.measure_NO2();
-  //AllValues[2] = ValueNO2;
   fullpayload[2] = round(ValueNO2 * 100);
 
   ValueC3H8 = gas.measure_C3H8();
-  //AllValues[3] = ValueC3H8;
   fullpayload[3] = round(ValueC3H8 * 100);
   
   ValueC4H10 = gas.measure_C4H10();
-  //AllValues[4] = ValueC4H10;
   fullpayload[4] = round(ValueC4H10 * 100);
 
   ValueCH4 = gas.measure_CH4();
-  //AllValues[5] = ValueCH4;
   fullpayload[5] = round(ValueCH4 * 100);
 
   ValueH2 = gas.measure_H2();
-  //AllValues[6] = ValueH2;
   fullpayload[6] = round(ValueH2 * 100);
   
   ValueC2H5OH = gas.measure_C2H5OH();
-  //AllValues[7] = ValueC2H5OH;
   fullpayload[7] = round(ValueC2H5OH * 100);
-
-  int sizeofFullPayload = sizeof(fullpayload);
-  Serial.println("Initial size of payload: " + String(sizeofFullPayload));
 
   if (transmitRequested == 1 )
   {
