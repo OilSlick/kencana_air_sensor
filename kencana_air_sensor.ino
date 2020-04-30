@@ -22,13 +22,21 @@ bool messageReceived = false;         //Indicates a properly-formatted–but not
 String outgoingMsg;                   //contents of outgoing radio transmission
 String LastReceivedTrans;             //Record last message received by this station
 String LastSentTrans;                 //Record last transmission sent from this station
-byte fullpayload[8];                  //Byte array to store data for transmission https://www.thethingsnetwork.org/docs/devices/bytes.html
+byte fullpayload[16];                  //Byte array to store data for transmission https://www.thethingsnetwork.org/docs/devices/bytes.html
 int sizeofFullPayload;
 bool transmitRequested = 0;
+uint32_t convertedValue;               // store data after reducing decimal places (by * 100) before high/low encoding into two bytes
+
+//For timer
+long previousMillis = 0;                  // stores the last time data collected
+unsigned long currentMillis;              // Used for crude timmer
+long fiveMinutes = 300000;                // Polling interval in minutes * 60 * 1000
+long fifteenMinutes = 900000;             // Polling interval in minutes * 60 * 1000
 
 #define buzzerPin 10
 
 //For gas sensor
+float decodedValue;
 float ValueNH3;
 float ValueCO;
 float ValueNO2;
@@ -86,7 +94,6 @@ void setup() {
 
   displayDebug("setup complete");
 
-  //txStatusActive();
   txStatusOnline();
 
   tone(buzzerPin, 2000); // Send tone
@@ -101,12 +108,17 @@ void setup() {
   delay(50);        
   noTone(buzzerPin);     // Stop sound...
   delay(1000);
-
-  //printMenu();
 }
 
 void loop() 
 {  
+  currentMillis = millis();
+  if ( currentMillis - previousMillis > fiveMinutes )
+  {
+    previousMillis = currentMillis;
+    transmitRequested = 1;
+    getData();
+  }
   if (Serial) 
   {
     handleSerial();  //permit sending codes through serial
@@ -119,32 +131,49 @@ void loop()
 
 void getData() {
   ValueNH3 = gas.measure_NH3();
-  fullpayload[0] = round(ValueNH3 * 100);
+  convertedValue = ValueNH3 * 100;
+  fullpayload[0] = highByte(convertedValue);
+  fullpayload[1] = lowByte(convertedValue);
     
   ValueCO = gas.measure_CO();
-  fullpayload[1] = round(ValueCO * 100);
+  convertedValue = ValueCO * 100;
+  fullpayload[2] = highByte(convertedValue);
+  fullpayload[3] = lowByte(convertedValue);
 
   ValueNO2 = gas.measure_NO2();
-  fullpayload[2] = round(ValueNO2 * 100);
+  convertedValue = ValueNO2 * 100;
+  fullpayload[4] = highByte(convertedValue);
+  fullpayload[5] = lowByte(convertedValue);
 
   ValueC3H8 = gas.measure_C3H8();
-  fullpayload[3] = round(ValueC3H8 * 100);
+  convertedValue = ValueC3H8 * 100;
+  fullpayload[6] = highByte(convertedValue);
+  fullpayload[7] = lowByte(convertedValue);
   
   ValueC4H10 = gas.measure_C4H10();
-  fullpayload[4] = round(ValueC4H10 * 100);
+  convertedValue = ValueC4H10 * 100;
+  fullpayload[8] = highByte(convertedValue);
+  fullpayload[9] = lowByte(convertedValue);
 
   ValueCH4 = gas.measure_CH4();
-  fullpayload[5] = round(ValueCH4 * 100);
+  convertedValue = ValueCH4 * 100;
+  fullpayload[10] = highByte(convertedValue);
+  fullpayload[11] = lowByte(convertedValue);
 
   ValueH2 = gas.measure_H2();
-  fullpayload[6] = round(ValueH2 * 100);
+  convertedValue = ValueH2 * 100;
+  fullpayload[12] = highByte(convertedValue);
+  fullpayload[13] = lowByte(convertedValue);
   
   ValueC2H5OH = gas.measure_C2H5OH();
-  fullpayload[7] = round(ValueC2H5OH * 100);
+  convertedValue = ValueC2H5OH * 100;
+  fullpayload[14] = highByte(convertedValue);
+  fullpayload[15] = lowByte(convertedValue);
 
   if (transmitRequested == 1 )
   {
-    //broadcastData(fullpayload, sizeofFullPayload);
+    destination = webGatewayAddress;
+    broadcastData(destination, fullpayload, sizeof(fullpayload));
     transmitRequested = 0;
   }
 
@@ -152,6 +181,8 @@ void getData() {
 
 void printData() {
   Serial.print(F("Amonia (NH3): "));
+  decodedValue = (fullpayload[0] << 8) + fullpayload[1];
+  ValueNH3 = decodedValue /100;
   if(ValueNH3>=0) Serial.print(ValueNH3);
   else Serial.print("invalid");
   Serial.print(" ppm ");
@@ -160,6 +191,8 @@ void printData() {
   Serial.println();
   //Amonia < 300ppm
 
+  decodedValue = (fullpayload[2] << 8) + fullpayload[3];
+  ValueCO = decodedValue /100;
   Serial.print(F("carbon monoxide (CO): "));
   if(ValueCO>=0) Serial.print(ValueCO);
   else Serial.print("invalid");
@@ -173,6 +206,8 @@ void printData() {
   Serial.println();
   // want < 70ppm https://www.cacgas.com.au/blog/carbon-monoxide-co-toxic-gas-workplace-safety
 
+  decodedValue = (fullpayload[4] << 8) + fullpayload[5];
+  ValueNO2 = decodedValue /100;
   Serial.print(F("Nitrous dioxide (NO2): "));
   if(ValueNO2>=0) Serial.print(ValueNO2);
   else Serial.print("invalid");
@@ -182,6 +217,8 @@ void printData() {
   Serial.println();
   //want < 5ppm
 
+  decodedValue = (fullpayload[6] << 8) + fullpayload[7];
+  ValueC3H8 = decodedValue /100;
   Serial.print(F("Propane (C3H8): "));
   if(ValueC3H8>=0) Serial.print(ValueC3H8);
   else Serial.print("invalid");
@@ -192,6 +229,8 @@ void printData() {
   //Propane < 2100PPM https://www.cdc.gov/niosh/idlh/74986.html (IDHL = Immediately Dangerous to Life or Health Concentrations)
   //More info on gases: https://safety.honeywell.com/content/dam/his-sandbox/products/gas-and-flame-detection/documents/Application-Note-202_The-ABC27s-Of-Gases-In-The-Industry_04-99.pdf
 
+  decodedValue = (fullpayload[8] << 8) + fullpayload[9];
+  ValueC4H10 = decodedValue /100;
   Serial.print(F("Butane (C4H10): "));
   if(ValueC4H10>=0) Serial.print(ValueC4H10);
   else Serial.print("invalid");
@@ -201,6 +240,8 @@ void printData() {
   Serial.println();
   //Butane < 1000ppm STEL (short term exposure limit of < 15 minutes) https://pubchem.ncbi.nlm.nih.gov/compound/Butane#section=Immediately-Dangerous-to-Life-or-Health-(IDLH)
 
+  decodedValue = (fullpayload[10] << 8) + fullpayload[11];
+  ValueCH4 = decodedValue /100;
   Serial.print(F("Methane (CH4): "));
   if(ValueCH4>=0) Serial.print(ValueCH4);
   else Serial.print("invalid");
@@ -209,6 +250,8 @@ void printData() {
   Serial.println();
   //methane no recommendations
 
+  decodedValue = (fullpayload[12] << 8) + fullpayload[13];
+  ValueH2 = decodedValue /100;
   Serial.print(F("Hydrogen gas (H2): "));
   if(ValueH2>=0) Serial.print(ValueH2);
   else Serial.print("invalid");
@@ -217,6 +260,8 @@ void printData() {
   Serial.println();
   //hydrogen no recommendations
 
+  decodedValue = (fullpayload[14] << 8) + fullpayload[15];
+  ValueC2H5OH = decodedValue /100;
   Serial.print(F("Ethyl alcohol (C2H5OH): "));
   if(ValueC2H5OH>=0) Serial.print(ValueC2H5OH);
   else Serial.print("invalid");

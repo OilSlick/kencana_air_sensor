@@ -37,5 +37,11 @@ void handleSerial() {
     Serial.println("g -> get gas data");
     Serial.println("h -> This Menu");
   }
+  if ( incomingCharacter == 't' ) 
+  {
+    transmitRequested = 1;
+    getData();
+    printData();
+  }
  }
 }
