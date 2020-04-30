@@ -22,6 +22,7 @@ void handleSerial() {
   if ( incomingCharacter == '5' ) txNightMode();
   if ( incomingCharacter == '8' ) txSupressAlarm();
   if ( incomingCharacter == 'd' ) displayDebug("requested via console");
+  if ( incomingCharacter == 'f' ) flashRed();
   if ( incomingCharacter == 'g' ) 
   {
     getData();
@@ -34,9 +35,12 @@ void handleSerial() {
     Serial.println("5 -> transmit nightMode");
     Serial.println("6 -> transmit auto NightMode");
     Serial.println("8 -> transmit suppress alarm");
+    Serial.println("f -> flash red");
     Serial.println("g -> get gas data");
     Serial.println("h -> This Menu");
+    Serial.println("r -> Reset");
   }
+  if ( incomingCharacter == 'r' ) setup();
   if ( incomingCharacter == 't' ) 
   {
     transmitRequested = 1;

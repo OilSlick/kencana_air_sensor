@@ -6,6 +6,13 @@
 
 #include <Wire.h>                     //Needed for I2C 
 #include "MutichannelGasSensor.h"     //Needed for gas sensor
+#include <Adafruit_NeoPixel.h>
+
+//For Neopixel
+int NeoPin = 13;
+int numPixels = 8;
+int pixelFormat = NEO_GRB + NEO_KHZ800;
+Adafruit_NeoPixel *pixels;
 
 //For LoRa 
 #include <LoRa.h>                     //Needed for LoRa
@@ -30,6 +37,7 @@ uint32_t convertedValue;               // store data after reducing decimal plac
 //For timer
 long previousMillis = 0;                  // stores the last time data collected
 unsigned long currentMillis;              // Used for crude timmer
+long twoMinutes = 120000;                 // Polling interval in minutes * 60 * 1000
 long fiveMinutes = 300000;                // Polling interval in minutes * 60 * 1000
 long fifteenMinutes = 900000;             // Polling interval in minutes * 60 * 1000
 
@@ -60,6 +68,11 @@ bool nightMode = false;                //Nightmode = different alarm (persistent
 bool awayMode = false;                 //awayMode = activated by NFC card @ door
 
 void setup() {
+  // Create a new NeoPixel object dynamically with these values:
+  pixels = new Adafruit_NeoPixel(numPixels, NeoPin, pixelFormat);
+  pixels->begin(); // INITIALIZE NeoPixel strip object (REQUIRED)
+  pixels->clear(); // Set all pixel colors to 'off'
+  
   // configure buzzer pin as output
   pinMode(buzzerPin, OUTPUT); 
   
@@ -107,11 +120,14 @@ void setup() {
   tone(buzzerPin, 4000); // Send tone
   delay(50);        
   noTone(buzzerPin);     // Stop sound...
-  delay(1000);
+  delay(1000); 
+
+  flashGreen();
 }
 
 void loop() 
 {  
+  if (Serial) handleSerial();  //permit sending codes through serial
   currentMillis = millis();
   if ( currentMillis - previousMillis > fiveMinutes )
   {
@@ -120,12 +136,28 @@ void loop()
     getData();
     if (Serial) printData();
   }
-  if (Serial) 
+  else if ( currentMillis - previousMillis > twoMinutes ) //quickcheck
   {
-    handleSerial();  //permit sending codes through serial
-    //while(!Serial.available());
+    ValueCO = gas.measure_CO();
+    ValueC3H8 = gas.measure_C3H8();
   }
 
+  // warning flash
+  if ( ValueCO >= 50 || ValueC3H8 >= 1500 || ValueC4H10 >= 850 )
+  {
+    pixels->setPixelColor(0, pixels->Color(70, 70, 0));
+    pixels->show();   // Send the updated pixel colors to the hardware.
+    delay(100);
+    pixels->setPixelColor(0, pixels->Color(0, 0, 0));
+    pixels->show();
+    delay(100);
+    pixels->setPixelColor(0, pixels->Color(70, 70, 0));
+    pixels->show();   // Send the updated pixel colors to the hardware.
+    delay(100);
+    pixels->setPixelColor(0, pixels->Color(0, 0, 0));
+    pixels->show();
+    delay(600);
+  }
 }
 
 void getData() {
@@ -177,7 +209,6 @@ void getData() {
   }
 
 }
-
 void printData() {
   Serial.print(F("Amonia (NH3): "));
   decodedValue = (fullpayload[0] << 8) + fullpayload[1];
@@ -286,12 +317,86 @@ void soundAlarm()
 }
 void chirp()
 {
-  tone(buzzerPin, 4000); // Send 1KHz sound signal...
-  delay(100);        
+  tone(buzzerPin, 2000); // Send sound signal...
+  delay(300);        
   noTone(buzzerPin);     // Stop sound...
   delay(100);
-  tone(buzzerPin, 4000); // Send 1KHz sound signal...
+  tone(buzzerPin, 4000); // Send sound signal...
   delay(100);        
   noTone(buzzerPin);     // Stop sound...
   delay(100); 
+}
+void alarm()
+{
+  chirp();
+  flashRed();
+  pixels->clear();
+  chirp();
+  flashRed();
+  pixels->clear();
+  chirp();
+  flashRed();
+  pixels->clear();
+  delay(1000);
+  chirp();
+  chirp();
+  chirp();
+}
+void flashRed()
+{
+  for(int i=0; i<numPixels; i++) { // For each pixel...
+    // pixels->Color() takes RGB values, from 0,0,0 up to 255,255,255
+    // Here we're using a moderately bright green color:
+    pixels->setPixelColor(i, pixels->Color(50, 0, 0));
+    pixels->show();   // Send the updated pixel colors to the hardware.
+    delay(30);
+    if ( i == numPixels ) break;
+    pixels->setPixelColor(i, pixels->Color(0, 0, 0));
+    pixels->show();
+    delay(30);
+  }
+  for(int i=numPixels; i<=numPixels; i--) { // For each pixel...
+    // pixels->Color() takes RGB values, from 0,0,0 up to 255,255,255
+    // Here we're using a moderately bright green color:
+    if ( i < numPixels )
+    {
+      pixels->setPixelColor(i, pixels->Color(50, 0, 0));
+      pixels->show();   // Send the updated pixel colors to the hardware.
+      delay(30);
+    }
+    pixels->setPixelColor(i, pixels->Color(0, 0, 0));
+    pixels->show();
+    delay(30);
+    if ( i == 0 ) break;
+  }
+  pixels->clear();
+}
+void flashGreen()
+{
+  for(int i=0; i<numPixels; i++) { // For each pixel...
+    // pixels->Color() takes RGB values, from 0,0,0 up to 255,255,255
+    // Here we're using a moderately bright green color:
+    pixels->setPixelColor(i, pixels->Color(0, 50, 0));
+    pixels->show();   // Send the updated pixel colors to the hardware.
+    delay(30);
+    if ( i == numPixels ) break;
+    pixels->setPixelColor(i, pixels->Color(0, 0, 0));
+    pixels->show();
+    delay(30);
+  }
+  for(int i=numPixels; i<=numPixels; i--) { // For each pixel...
+    // pixels->Color() takes RGB values, from 0,0,0 up to 255,255,255
+    // Here we're using a moderately bright green color:
+    if ( i < numPixels )
+    {
+      pixels->setPixelColor(i, pixels->Color(0, 50, 0));
+      pixels->show();   // Send the updated pixel colors to the hardware.
+      delay(30);
+    }
+    pixels->setPixelColor(i, pixels->Color(0, 0, 0));
+    pixels->show();
+    delay(30);
+    if ( i == 0 ) break;
+  }
+  pixels->clear();
 }
