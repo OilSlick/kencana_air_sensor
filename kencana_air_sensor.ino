@@ -118,15 +118,14 @@ void loop()
     previousMillis = currentMillis;
     transmitRequested = 1;
     getData();
+    if (Serial) printData();
   }
   if (Serial) 
   {
     handleSerial();  //permit sending codes through serial
-    while(!Serial.available());
-        //delay(1000);
+    //while(!Serial.available());
   }
 
-    //broadcastData(AllValues);
 }
 
 void getData() {
