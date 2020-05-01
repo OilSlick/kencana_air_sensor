@@ -140,7 +140,15 @@ void setup() {
 }
 
 void loop() 
-{  
+{
+  if ( nightMode == true && alarmReceived == true )  //if another sensor has sounded an alarm, lets make noise too!
+  {
+    soundAlarm();
+  }
+  else if ( alarmReceived == false && alarmState == false && suppressAlarm == true )
+  {
+    suppressAlarm = false; //reset suppressAlarm
+  }
   if (Serial) handleSerial();  //permit sending codes through serial
   currentMillis = millis();
   if ( currentMillis - previousMillis > fiveMinutes )
@@ -318,8 +326,6 @@ void soundAlarm()
   while ( suppressAlarm == false )
   {
     chirp();
-    //checkUnackedAlarm();
-    //checkMessages();
     onLoRaReceive(LoRa.parsePacket());  //if LoRa packet received, parse it
   }
   alarmState = false;
