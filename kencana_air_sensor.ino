@@ -1,7 +1,21 @@
 /*
  *Board: Adafruit Feather M0 RFM9x LoRa 433MHz
+ *Sensor: https://wiki.seeedstudio.com/Grove-Multichannel_Gas_Sensor/
+ *   based on: https://files.seeedstudio.com/wiki/Grove-Multichannel_Gas_Sensor/res/MiCS-6814_Datasheet.pdf
  *Might be a good read: https://learn.adafruit.com/adafruit-feather-m0-bluefruit-le/adapting-sketches-to-m0
  *Libraries MutichannelGasSensor.h and MutichannelGasSensor.cpp both adapted for Adafruit SAMD M0 boards (serial vs serialusb)
+ *
+ *Sensor detectable ranges:
+ *
+    Carbon monoxide CO 1 – 1000ppm
+    Nitrogen dioxide NO2 0.05 – 10ppm
+    Ethanol C2H6OH 10 – 500ppm
+    Hydrogen H2 1 – 1000ppm
+    Ammonia NH3 1 – 500ppm
+    Methane CH4 >1000ppm
+    Propane C3H8 >1000ppm
+    Iso-butane C4H10 >1000ppm
+
 */
 
 #include <Wire.h>                     //Needed for I2C 
@@ -29,8 +43,9 @@ bool messageReceived = false;         //Indicates a properly-formatted–but not
 String outgoingMsg;                   //contents of outgoing radio transmission
 String LastReceivedTrans;             //Record last message received by this station
 String LastSentTrans;                 //Record last transmission sent from this station
-byte fullpayload[16];                  //Byte array to store data for transmission https://www.thethingsnetwork.org/docs/devices/bytes.html
-int sizeofFullPayload;
+byte GasPayLoad[16];                  //Byte array to store gas data for transmission https://www.thethingsnetwork.org/docs/devices/bytes.html
+byte MessagePayload[2];               //Byte array for network messages
+int sizeofGasPayLoad;
 bool transmitRequested = 0;
 uint32_t convertedValue;               // store data after reducing decimal places (by * 100) before high/low encoding into two bytes
 
@@ -44,6 +59,7 @@ long fifteenMinutes = 900000;             // Polling interval in minutes * 60 * 
 #define buzzerPin 10
 
 //For gas sensor
+unsigned char gasFirmwareversion;
 float decodedValue;
 float ValueNH3;
 float ValueCO;
@@ -77,9 +93,6 @@ void setup() {
   pinMode(buzzerPin, OUTPUT); 
   
   Serial.begin(115200);
-  while (!Serial) {
-    delay(1);
-  }
   delay(1000);
   if ( Serial ) Serial.println("Serial enabled");
   
@@ -102,6 +115,7 @@ void setup() {
   // For gas sensor
   if ( Serial ) Serial.println("Initializing gas sensor");
   gas.begin(0x04);        //the default I2C address of the slave is 0x04
+  gasFirmwareversion = gas.getVersion();
   gas.powerOn();
   if ( Serial ) Serial.println("Gas sensor Initialized");
 
@@ -122,7 +136,7 @@ void setup() {
   noTone(buzzerPin);     // Stop sound...
   delay(1000); 
 
-  flashGreen();
+  cycleGreen();
 }
 
 void loop() 
@@ -135,11 +149,6 @@ void loop()
     transmitRequested = 1;
     getData();
     if (Serial) printData();
-  }
-  else if ( currentMillis - previousMillis > twoMinutes ) //quickcheck
-  {
-    ValueCO = gas.measure_CO();
-    ValueC3H8 = gas.measure_C3H8();
   }
 
   // warning flash
@@ -163,65 +172,65 @@ void loop()
 void getData() {
   ValueNH3 = gas.measure_NH3();
   convertedValue = ValueNH3 * 100;
-  fullpayload[0] = highByte(convertedValue);
-  fullpayload[1] = lowByte(convertedValue);
+  GasPayLoad[0] = highByte(convertedValue);
+  GasPayLoad[1] = lowByte(convertedValue);
     
   ValueCO = gas.measure_CO();
   convertedValue = ValueCO * 100;
-  fullpayload[2] = highByte(convertedValue);
-  fullpayload[3] = lowByte(convertedValue);
+  GasPayLoad[2] = highByte(convertedValue);
+  GasPayLoad[3] = lowByte(convertedValue);
 
   ValueNO2 = gas.measure_NO2();
   convertedValue = ValueNO2 * 100;
-  fullpayload[4] = highByte(convertedValue);
-  fullpayload[5] = lowByte(convertedValue);
+  GasPayLoad[4] = highByte(convertedValue);
+  GasPayLoad[5] = lowByte(convertedValue);
 
   ValueC3H8 = gas.measure_C3H8();
   convertedValue = ValueC3H8 * 100;
-  fullpayload[6] = highByte(convertedValue);
-  fullpayload[7] = lowByte(convertedValue);
+  GasPayLoad[6] = highByte(convertedValue);
+  GasPayLoad[7] = lowByte(convertedValue);
   
   ValueC4H10 = gas.measure_C4H10();
   convertedValue = ValueC4H10 * 100;
-  fullpayload[8] = highByte(convertedValue);
-  fullpayload[9] = lowByte(convertedValue);
+  GasPayLoad[8] = highByte(convertedValue);
+  GasPayLoad[9] = lowByte(convertedValue);
 
   ValueCH4 = gas.measure_CH4();
   convertedValue = ValueCH4 * 100;
-  fullpayload[10] = highByte(convertedValue);
-  fullpayload[11] = lowByte(convertedValue);
+  GasPayLoad[10] = highByte(convertedValue);
+  GasPayLoad[11] = lowByte(convertedValue);
 
   ValueH2 = gas.measure_H2();
   convertedValue = ValueH2 * 100;
-  fullpayload[12] = highByte(convertedValue);
-  fullpayload[13] = lowByte(convertedValue);
+  GasPayLoad[12] = highByte(convertedValue);
+  GasPayLoad[13] = lowByte(convertedValue);
   
   ValueC2H5OH = gas.measure_C2H5OH();
   convertedValue = ValueC2H5OH * 100;
-  fullpayload[14] = highByte(convertedValue);
-  fullpayload[15] = lowByte(convertedValue);
+  GasPayLoad[14] = highByte(convertedValue);
+  GasPayLoad[15] = lowByte(convertedValue);
 
   if (transmitRequested == 1 )
   {
     destination = webGatewayAddress;
-    broadcastData(destination, fullpayload, sizeof(fullpayload));
+    broadcastData(destination, GasPayLoad, sizeof(GasPayLoad));
     transmitRequested = 0;
   }
 
 }
 void printData() {
   Serial.print(F("Amonia (NH3): "));
-  decodedValue = (fullpayload[0] << 8) + fullpayload[1];
+  decodedValue = (GasPayLoad[0] << 8) + GasPayLoad[1];
   ValueNH3 = decodedValue /100;
   if(ValueNH3>=0) Serial.print(ValueNH3);
   else Serial.print("invalid");
   Serial.print(" ppm ");
   if(ValueNH3>=200) Serial.print(" (value high)");
-  //Serial.println( String(fullpayload[0]) ); //#DEBUG
+  //Serial.println( String(GasPayLoad[0]) ); //#DEBUG
   Serial.println();
   //Amonia < 300ppm
 
-  decodedValue = (fullpayload[2] << 8) + fullpayload[3];
+  decodedValue = (GasPayLoad[2] << 8) + GasPayLoad[3];
   ValueCO = decodedValue /100;
   Serial.print(F("carbon monoxide (CO): "));
   if(ValueCO>=0) Serial.print(ValueCO);
@@ -232,72 +241,72 @@ void printData() {
     chirp();
     Serial.print(" (value high)");
   }
-  //Serial.println( String(fullpayload[1]) ); //#DEBUG
+  //Serial.println( String(GasPayLoad[1]) ); //#DEBUG
   Serial.println();
   // want < 70ppm https://www.cacgas.com.au/blog/carbon-monoxide-co-toxic-gas-workplace-safety
 
-  decodedValue = (fullpayload[4] << 8) + fullpayload[5];
+  decodedValue = (GasPayLoad[4] << 8) + GasPayLoad[5];
   ValueNO2 = decodedValue /100;
   Serial.print(F("Nitrous dioxide (NO2): "));
   if(ValueNO2>=0) Serial.print(ValueNO2);
   else Serial.print("invalid");
   Serial.print(" ppm ");
   if(ValueNO2>=4) Serial.print(" (value high)");
-  //Serial.println( String(fullpayload[2]) ); //#DEBUG
+  //Serial.println( String(GasPayLoad[2]) ); //#DEBUG
   Serial.println();
   //want < 5ppm
 
-  decodedValue = (fullpayload[6] << 8) + fullpayload[7];
+  decodedValue = (GasPayLoad[6] << 8) + GasPayLoad[7];
   ValueC3H8 = decodedValue /100;
   Serial.print(F("Propane (C3H8): "));
   if(ValueC3H8>=0) Serial.print(ValueC3H8);
   else Serial.print("invalid");
   Serial.print(" ppm ");
   if(ValueC3H8>=1500) Serial.print(" (value high)");
-  //Serial.println( String(fullpayload[3]) ); //#DEBUG
+  //Serial.println( String(GasPayLoad[3]) ); //#DEBUG
   Serial.println();
   //Propane < 2100PPM https://www.cdc.gov/niosh/idlh/74986.html (IDHL = Immediately Dangerous to Life or Health Concentrations)
   //More info on gases: https://safety.honeywell.com/content/dam/his-sandbox/products/gas-and-flame-detection/documents/Application-Note-202_The-ABC27s-Of-Gases-In-The-Industry_04-99.pdf
 
-  decodedValue = (fullpayload[8] << 8) + fullpayload[9];
+  decodedValue = (GasPayLoad[8] << 8) + GasPayLoad[9];
   ValueC4H10 = decodedValue /100;
   Serial.print(F("Butane (C4H10): "));
   if(ValueC4H10>=0) Serial.print(ValueC4H10);
   else Serial.print("invalid");
   Serial.print(" ppm ");
   if(ValueC4H10>=900) Serial.print(" (value high)");
-  //Serial.println( String(fullpayload[4]) ); //#DEBUG
+  //Serial.println( String(GasPayLoad[4]) ); //#DEBUG
   Serial.println();
   //Butane < 1000ppm STEL (short term exposure limit of < 15 minutes) https://pubchem.ncbi.nlm.nih.gov/compound/Butane#section=Immediately-Dangerous-to-Life-or-Health-(IDLH)
 
-  decodedValue = (fullpayload[10] << 8) + fullpayload[11];
+  decodedValue = (GasPayLoad[10] << 8) + GasPayLoad[11];
   ValueCH4 = decodedValue /100;
   Serial.print(F("Methane (CH4): "));
   if(ValueCH4>=0) Serial.print(ValueCH4);
   else Serial.print("invalid");
   Serial.print(" ppm ");
-  //Serial.println( String(fullpayload[5]) ); //#DEBUG
+  //Serial.println( String(GasPayLoad[5]) ); //#DEBUG
   Serial.println();
   //methane no recommendations
 
-  decodedValue = (fullpayload[12] << 8) + fullpayload[13];
+  decodedValue = (GasPayLoad[12] << 8) + GasPayLoad[13];
   ValueH2 = decodedValue /100;
   Serial.print(F("Hydrogen gas (H2): "));
   if(ValueH2>=0) Serial.print(ValueH2);
   else Serial.print("invalid");
   Serial.print(" ppm ");
-  //Serial.println( String(fullpayload[6]) ); //#DEBUG
+  //Serial.println( String(GasPayLoad[6]) ); //#DEBUG
   Serial.println();
   //hydrogen no recommendations
 
-  decodedValue = (fullpayload[14] << 8) + fullpayload[15];
+  decodedValue = (GasPayLoad[14] << 8) + GasPayLoad[15];
   ValueC2H5OH = decodedValue /100;
   Serial.print(F("Ethyl alcohol (C2H5OH): "));
   if(ValueC2H5OH>=0) Serial.print(ValueC2H5OH);
   else Serial.print("invalid");
   Serial.print(" ppm ");
   if(ValueC2H5OH>=2500) Serial.print(" (value high)");
-  //Serial.println( String(fullpayload[7]) ); //#DEBUG
+  //Serial.println( String(GasPayLoad[7]) ); //#DEBUG
   Serial.println();
   //ethyl alcohol < 3300 ppm
   Serial.println();
@@ -329,20 +338,20 @@ void chirp()
 void alarm()
 {
   chirp();
-  flashRed();
+  cycleRed();
   pixels->clear();
   chirp();
-  flashRed();
+  cycleRed();
   pixels->clear();
   chirp();
-  flashRed();
+  cycleRed();
   pixels->clear();
   delay(1000);
   chirp();
   chirp();
   chirp();
 }
-void flashRed()
+void cycleRed()
 {
   for(int i=0; i<numPixels; i++) { // For each pixel...
     // pixels->Color() takes RGB values, from 0,0,0 up to 255,255,255
@@ -371,7 +380,7 @@ void flashRed()
   }
   pixels->clear();
 }
-void flashGreen()
+void cycleGreen()
 {
   for(int i=0; i<numPixels; i++) { // For each pixel...
     // pixels->Color() takes RGB values, from 0,0,0 up to 255,255,255
@@ -397,6 +406,40 @@ void flashGreen()
     pixels->show();
     delay(30);
     if ( i == 0 ) break;
+  }
+  pixels->clear();
+}
+void cycleBlue()
+{
+  //for loop with two variables found here: https://thispointer.com/for-loop-with-2-variables-in-c-and-java/
+  for(int a = 4, b = 3; a < numPixels; a++, b--) { // For each pixel...
+    // pixels->Color() takes RGB values, from 0,0,0 up to 255,255,255
+    // Here we're using a moderately bright green color:
+    pixels->setPixelColor(a, pixels->Color(0, 0, 50));
+    pixels->setPixelColor(b, pixels->Color(0, 0, 50));
+    pixels->show();   // Send the updated pixel colors to the hardware.
+    delay(30);
+    if ( a == numPixels ) break;
+    pixels->setPixelColor(a, pixels->Color(0, 0, 0));
+    pixels->setPixelColor(b, pixels->Color(0, 0, 0));
+    pixels->show();
+    delay(30);
+  } 
+  for(int a = numPixels, b = 0; a >= 4; a--, b++) { // For each pixel...
+    // pixels->Color() takes RGB values, from 0,0,0 up to 255,255,255
+    // Here we're using a moderately bright green color:
+    if ( a < numPixels )
+    {
+      pixels->setPixelColor(a, pixels->Color(0, 0, 50));
+      pixels->setPixelColor(b, pixels->Color(0, 0, 50));
+      pixels->show();   // Send the updated pixel colors to the hardware.
+      delay(30);
+    }
+    pixels->setPixelColor(a, pixels->Color(0, 0, 0));
+    pixels->setPixelColor(b, pixels->Color(0, 0, 0));
+    pixels->show();
+    delay(30);
+    if ( a == 0 ) break;
   }
   pixels->clear();
 }
