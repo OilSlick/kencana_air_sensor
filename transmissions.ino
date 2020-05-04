@@ -1,6 +1,6 @@
 void txStatusOnline()
 {
-  destination = broadcastAddress;
+  destination = webGatewayAddress;
   MessagePayload[0] = byte(0);      //no alarm
   MessagePayload[1] = byte(255);    //status online
   broadcastMessage(destination, MessagePayload, sizeof(MessagePayload));

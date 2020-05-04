@@ -27,6 +27,7 @@ void handleSerial() {
   if ( incomingCharacter == '3' ) cycleGreen();
   if ( incomingCharacter == '4' ) cycleBlue();
   if ( incomingCharacter == '5' ) txNightMode();
+  if ( incomingCharacter == '6' ) txDayMode();
   if ( incomingCharacter == '8' ) txSupressAlarm();
   if ( incomingCharacter == 'd' ) displayDebug("requested via console");
   if ( incomingCharacter == 'g' ) 
@@ -42,7 +43,7 @@ void handleSerial() {
     Serial.println("3 -> cycle green");
     Serial.println("4 -> cycle blue");
     Serial.println("5 -> transmit nightMode");
-    Serial.println("6 -> transmit auto NightMode");
+    Serial.println("6 -> transmit dayMode");
     Serial.println("8 -> transmit suppress alarm");
     Serial.println("g -> get gas data");
     Serial.println("h -> This Menu");
@@ -57,3 +58,16 @@ void handleSerial() {
   }
  }
 }
+void logReceipt(byte sender, byte recipient, byte incomingMsgId, byte incomingLength) {
+  if ( Serial )
+  {
+    Serial.println("======Message Metadata======");
+    Serial.println("Sender: 0x" + String(sender));
+    Serial.println("Recipient: 0x" + String(recipient));
+    Serial.println("Message ID: " + String(incomingMsgId));
+    Serial.println("Message length: " + String(incomingLength));
+    Serial.println("RSSI: " + String(LoRa.packetRssi()));
+    Serial.println("Snr: " + String(LoRa.packetSnr()));
+    Serial.println("============================");
+   }
+} //END logReceipt()

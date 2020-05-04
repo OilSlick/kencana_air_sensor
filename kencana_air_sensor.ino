@@ -159,9 +159,13 @@ void loop()
     if (Serial) printData();
   }
 
-  // warning flash
+  // warning flash and frequent checks
   if ( ValueCO >= 50 || ValueC3H8 >= 1500 || ValueC4H10 >= 850 )
   {
+    ValueCO = gas.measure_CO();
+    ValueC3H8 = gas.measure_C3H8();
+    ValueC4H10 = gas.measure_C4H10();
+    chirp();
     pixels->setPixelColor(0, pixels->Color(70, 70, 0));
     pixels->show();   // Send the updated pixel colors to the hardware.
     delay(100);
@@ -173,8 +177,9 @@ void loop()
     delay(100);
     pixels->setPixelColor(0, pixels->Color(0, 0, 0));
     pixels->show();
-    delay(600);
+    delay(300);
   }
+  onLoRaReceive(LoRa.parsePacket());  //if LoRa packet received, parse it
 }
 
 void getData() {

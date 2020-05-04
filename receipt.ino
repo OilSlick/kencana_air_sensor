@@ -18,12 +18,17 @@ void onLoRaReceive(int packetSize) {
   byte sender = LoRa.read();            // sender address
   byte incomingMsgId = LoRa.read();     // incoming msg ID
   byte incomingLength = LoRa.read();    // incoming msg length
-
+  if ( debug != 0 )
+    {
+      logReceipt(sender, recipient, incomingMsgId, incomingLength);
+    }
   // if the recipient isn't this device or broadcast,
   if (recipient != localAddress && recipient != 0xFF) {
     if ( debug == true )
     {
-      if ( Serial ) Serial.println("This message is not for me.");
+      if ( Serial ) {
+        Serial.println("This message is not for me.");
+      }
     }
     return;                             // skip rest of function
   }
@@ -87,6 +92,10 @@ void onLoRaReceive(int packetSize) {
       {
         messageReceived = false;
       }
+    if ( debug != 0 )
+    {
+      logReceipt(sender, recipient, incomingMsgId, incomingLength);
+    } 
     return;
   }
 } //END onLoRaReceive(int packetSize)
