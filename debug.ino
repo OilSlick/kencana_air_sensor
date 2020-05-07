@@ -26,8 +26,9 @@ void handleSerial() {
   if ( incomingCharacter == '2' ) cycleRed();
   if ( incomingCharacter == '3' ) cycleGreen();
   if ( incomingCharacter == '4' ) cycleBlue();
-  if ( incomingCharacter == '5' ) txNightMode();
-  if ( incomingCharacter == '6' ) txDayMode();
+  if ( incomingCharacter == '5' ) alarmRed();
+  if ( incomingCharacter == '6' ) txNightMode();
+  if ( incomingCharacter == '7' ) txDayMode();
   if ( incomingCharacter == '8' ) txSupressAlarm();
   if ( incomingCharacter == 'd' ) displayDebug("requested via console");
   if ( incomingCharacter == 'g' ) 
@@ -42,8 +43,9 @@ void handleSerial() {
     Serial.println("2 -> cycle red");
     Serial.println("3 -> cycle green");
     Serial.println("4 -> cycle blue");
-    Serial.println("5 -> transmit nightMode");
-    Serial.println("6 -> transmit dayMode");
+    Serial.println("5 -> alarm red");
+    Serial.println("6 -> transmit nightMode");
+    Serial.println("7 -> transmit dayMode");
     Serial.println("8 -> transmit suppress alarm");
     Serial.println("g -> get gas data");
     Serial.println("h -> This Menu");
