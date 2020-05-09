@@ -162,11 +162,11 @@ void loop()
     if (Serial) printData();
   }
   // warning flash and frequent checks
-  if ( ValueCO >= 50 || ValueC3H8 >= 100 || ValueC4H10 >= 850 )
+  if ( ValueCO >= 50 || ValueC3H8 >= 1500 || ValueC4H10 >= 850 )
   {
     ValueCO = gas.measure_CO();
     ValueC3H8 = gas.measure_C3H8();
-    propaneMapped = map(ValueC3H8,0,1100,0,100);    //convert propane value to percent of STEL level. i.e. 1890 = 90% to 2100
+    propaneMapped = map(ValueC3H8,0,2100,0,100);    //convert propane value to percent of STEL level. i.e. 1890 = 90% to 2100
     neoPercent(propaneMapped);
     ValueC4H10 = gas.measure_C4H10();
     chirp();

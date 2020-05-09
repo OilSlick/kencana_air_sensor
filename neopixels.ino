@@ -158,7 +158,7 @@ void neoPercent(int gasValueMapped)
     delay(30);
     if ( i == 0 ) break;
   }
-  
+  /* #DEBUG
   Serial.print("gasValueMapped: ");
   Serial.println(gasValueMapped);
   Serial.print("percentLED: ");
@@ -166,5 +166,5 @@ void neoPercent(int gasValueMapped)
   Serial.print("pixelPercent: ");
   Serial.println(pixelPercent);
   handleSerial();
-  while(!Serial.available());
+  while(!Serial.available()); */
 }
