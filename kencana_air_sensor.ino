@@ -60,6 +60,8 @@ long fifteenMinutes = 900000;             // Polling interval in minutes * 60 * 
 
 //For gas sensor
 //to pullup or not to pullup: https://forum.seeedstudio.com/t/problems-with-grove-multichannel-gas-sensor/6004/4
+byte gasI2Caddress = 4;
+byte gasI2Cerror;                      //Track any I2C errors from gas sensor on startup
 unsigned char gasFirmwareversion;
 int gasValueMapped;
 float decodedValue;
@@ -116,11 +118,25 @@ void setup() {
   //--------- End Lora Settings
 
   // For gas sensor
-  if ( Serial ) Serial.println("Initializing gas sensor");
-  gas.begin(0x04);        //the default I2C address of the slave is 0x04
-  gasFirmwareversion = gas.getVersion();
-  gas.powerOn();
+  Wire.begin();
+  Wire.beginTransmission(gasI2Caddress);
+  gasI2Cerror = Wire.endTransmission();
+  
+  //Serial.print("I2C device found at address 0x0");
+  //Serial.println(gasI2Caddress,HEX);
+  //return;
+  if (gasI2Cerror == 0)
+  {
+    if ( Serial ) Serial.println("Initializing gas sensor");
+    gas.begin(gasI2Caddress);        //the default I2C address of the slave is 0x04
+    gasFirmwareversion = gas.getVersion();
+    gas.powerOn();
   if ( Serial ) Serial.println("Gas sensor Initialized");
+  }
+  else 
+  {
+    if ( Serial ) Serial.println("Gas sensor I2C address unresponsive.");
+  }
 
   displayDebug("setup complete");
 
@@ -144,21 +160,13 @@ void setup() {
 
 void loop() 
 {
-  /*if ( nightMode == true && alarmReceived == true )  //if another sensor has sounded an alarm, lets make noise too!
-  {
-    soundAlarm();
-  }
-  else if ( alarmReceived == false && alarmState == false && suppressAlarm == true )
-  {
-    suppressAlarm = false; //reset suppressAlarm
-  } */
   if (Serial) handleSerial();  //permit sending codes through serial
   currentMillis = millis();
   if ( currentMillis - previousMillis > fiveMinutes )
   {
     previousMillis = currentMillis;
     transmitRequested = 1;
-    getData();
+    if ( gasI2Cerror == 0 ) getData();
     if (Serial) printData();
   }
   // warning flash and frequent checks

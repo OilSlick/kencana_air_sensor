@@ -33,7 +33,7 @@ void handleSerial() {
   if ( incomingCharacter == 'd' ) displayDebug("requested via console");
   if ( incomingCharacter == 'g' ) 
   {
-    getData();
+    if ( gasI2Cerror == 0 ) getData();
     printData();
   }
   if ( incomingCharacter == 'h' )
@@ -55,7 +55,7 @@ void handleSerial() {
   if ( incomingCharacter == 't' ) 
   {
     transmitRequested = 1;
-    getData();
+    if ( gasI2Cerror == 0 ) getData();
     printData();
   }
  }
