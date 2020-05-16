@@ -25,7 +25,7 @@ void handleSerial() {
   if ( incomingCharacter == '1' ) txStatusOnline();
   if ( incomingCharacter == '2' ) cycleRed();
   if ( incomingCharacter == '3' ) cycleGreen();
-  if ( incomingCharacter == '4' ) cycleBlue();
+  if ( incomingCharacter == '4' ) splitBlue();
   if ( incomingCharacter == '5' ) alarmRed();
   if ( incomingCharacter == '6' ) txNightMode();
   if ( incomingCharacter == '7' ) txDayMode();

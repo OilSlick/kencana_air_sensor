@@ -49,93 +49,84 @@ void getData() {
 }
 void printData() {
   Serial.print(F("Amonia (NH3): "));
-  decodedValue = (GasPayLoad[0] << 8) + GasPayLoad[1];
-  ValueNH3 = decodedValue /100;
-  if(ValueNH3>=0) Serial.print(ValueNH3);
+  //decodedValue = (GasPayLoad[0] << 8) + GasPayLoad[1];
+  //ValueNH3 = decodedValue /100;
+  if( ValueNH3 >= 0 ) Serial.print(ValueNH3);
   else Serial.print("invalid");
   Serial.print(" ppm ");
-  if(ValueNH3>=200) Serial.print(" (value high)");
-  //Serial.println( String(GasPayLoad[0]) ); //#DEBUG
+  if( ValueNH3 >= 200 ) Serial.print(" (value high)");
   Serial.println();
   //Amonia < 300ppm
 
-  decodedValue = (GasPayLoad[2] << 8) + GasPayLoad[3];
-  ValueCO = decodedValue /100;
   Serial.print(F("carbon monoxide (CO): "));
-  if(ValueCO>=0) Serial.print(ValueCO);
+  //decodedValue = (GasPayLoad[2] << 8) + GasPayLoad[3];
+  //ValueCO = decodedValue /100;
+  if( ValueCO >= 0 ) Serial.print(ValueCO);
   else Serial.print("invalid");
   Serial.print(" ppm ");
-  if(ValueCO>=50) 
+  if( ValueCO >= COwarn ) 
   {
-    chirp();
     Serial.print(" (value high)");
   }
-  //Serial.println( String(GasPayLoad[1]) ); //#DEBUG
   Serial.println();
   // want < 70ppm https://www.cacgas.com.au/blog/carbon-monoxide-co-toxic-gas-workplace-safety
 
-  decodedValue = (GasPayLoad[4] << 8) + GasPayLoad[5];
-  ValueNO2 = decodedValue /100;
   Serial.print(F("Nitrous dioxide (NO2): "));
-  if(ValueNO2>=0) Serial.print(ValueNO2);
+  //decodedValue = (GasPayLoad[4] << 8) + GasPayLoad[5];
+  //ValueNO2 = decodedValue /100;
+  if( ValueNO2 >= 0 ) Serial.print( ValueNO2 );
   else Serial.print("invalid");
   Serial.print(" ppm ");
-  if(ValueNO2>=4) Serial.print(" (value high)");
-  //Serial.println( String(GasPayLoad[2]) ); //#DEBUG
+  if( ValueNO2 >= 4 ) Serial.print(" (value high)");
   Serial.println();
   //want < 5ppm
 
-  decodedValue = (GasPayLoad[6] << 8) + GasPayLoad[7];
-  ValueC3H8 = decodedValue /100;
   Serial.print(F("Propane (C3H8): "));
-  if(ValueC3H8>=0) Serial.print(ValueC3H8);
+  //decodedValue = (GasPayLoad[6] << 8) + GasPayLoad[7];
+  //ValueC3H8 = decodedValue /100;
+  if( ValueC3H8 >= 0 ) Serial.print(ValueC3H8);
   else Serial.print("invalid");
   Serial.print(" ppm ");
-  if(ValueC3H8>=1500) Serial.print(" (value high)");
-  //Serial.println( String(GasPayLoad[3]) ); //#DEBUG
+  if( ValueC3H8 >= propaneWarn ) Serial.print(" (value high)");
   Serial.println();
   //Propane < 2100PPM https://www.cdc.gov/niosh/idlh/74986.html (IDHL = Immediately Dangerous to Life or Health Concentrations)
   //More info on gases: https://safety.honeywell.com/content/dam/his-sandbox/products/gas-and-flame-detection/documents/Application-Note-202_The-ABC27s-Of-Gases-In-The-Industry_04-99.pdf
 
-  decodedValue = (GasPayLoad[8] << 8) + GasPayLoad[9];
-  ValueC4H10 = decodedValue /100;
   Serial.print(F("Butane (C4H10): "));
-  if(ValueC4H10>=0) Serial.print(ValueC4H10);
+  //decodedValue = (GasPayLoad[8] << 8) + GasPayLoad[9];
+  //ValueC4H10 = decodedValue /100;
+  if( ValueC4H10 >= 0 ) Serial.print(ValueC4H10);
   else Serial.print("invalid");
   Serial.print(" ppm ");
-  if(ValueC4H10>=900) Serial.print(" (value high)");
-  //Serial.println( String(GasPayLoad[4]) ); //#DEBUG
+  if( ValueC4H10 >= 900 ) Serial.print(" (value high)");
   Serial.println();
   //Butane < 1000ppm STEL (short term exposure limit of < 15 minutes) https://pubchem.ncbi.nlm.nih.gov/compound/Butane#section=Immediately-Dangerous-to-Life-or-Health-(IDLH)
 
-  decodedValue = (GasPayLoad[10] << 8) + GasPayLoad[11];
-  ValueCH4 = decodedValue /100;
   Serial.print(F("Methane (CH4): "));
-  if(ValueCH4>=0) Serial.print(ValueCH4);
+  //decodedValue = (GasPayLoad[10] << 8) + GasPayLoad[11];
+  //ValueCH4 = decodedValue /100;
+  if( ValueCH4 >= 0 ) Serial.print(ValueCH4);
   else Serial.print("invalid");
   Serial.print(" ppm ");
-  //Serial.println( String(GasPayLoad[5]) ); //#DEBUG
   Serial.println();
   //methane no recommendations
 
-  decodedValue = (GasPayLoad[12] << 8) + GasPayLoad[13];
-  ValueH2 = decodedValue /100;
   Serial.print(F("Hydrogen gas (H2): "));
-  if(ValueH2>=0) Serial.print(ValueH2);
+  //decodedValue = (GasPayLoad[12] << 8) + GasPayLoad[13];
+  //ValueH2 = decodedValue /100;
+  if( ValueH2 >= 0) Serial.print(ValueH2);
   else Serial.print("invalid");
   Serial.print(" ppm ");
-  //Serial.println( String(GasPayLoad[6]) ); //#DEBUG
   Serial.println();
   //hydrogen no recommendations
 
-  decodedValue = (GasPayLoad[14] << 8) + GasPayLoad[15];
-  ValueC2H5OH = decodedValue /100;
   Serial.print(F("Ethyl alcohol (C2H5OH): "));
-  if(ValueC2H5OH>=0) Serial.print(ValueC2H5OH);
+  //decodedValue = (GasPayLoad[14] << 8) + GasPayLoad[15];
+  //ValueC2H5OH = decodedValue /100;
+  if( ValueC2H5OH >= 0 ) Serial.print(ValueC2H5OH);
   else Serial.print("invalid");
   Serial.print(" ppm ");
-  if(ValueC2H5OH>=2500) Serial.print(" (value high)");
-  //Serial.println( String(GasPayLoad[7]) ); //#DEBUG
+  if( ValueC2H5OH >= 2500 ) Serial.print(" (value high)");
   Serial.println();
   //ethyl alcohol < 3300 ppm
   Serial.println();

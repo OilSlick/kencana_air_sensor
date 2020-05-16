@@ -58,7 +58,7 @@ void cycleGreen()
   }
   pixels->clear();
 }
-void cycleBlue()
+void splitBlue()
 {
   //for loop with two variables found here: https://thispointer.com/for-loop-with-2-variables-in-c-and-java/
   for(int a = 4, b = 3; a < numPixels; a++, b--) { // For each pixel...
@@ -81,6 +81,40 @@ void cycleBlue()
     {
       pixels->setPixelColor(a, pixels->Color(0, 0, 50));
       pixels->setPixelColor(b, pixels->Color(0, 0, 50));
+      pixels->show();   // Send the updated pixel colors to the hardware.
+      delay(30);
+    }
+    pixels->setPixelColor(a, pixels->Color(0, 0, 0));
+    pixels->setPixelColor(b, pixels->Color(0, 0, 0));
+    pixels->show();
+    delay(30);
+    if ( a == 0 ) break;
+  }
+  pixels->clear();
+}
+void splitYellow()
+{
+  //for loop with two variables found here: https://thispointer.com/for-loop-with-2-variables-in-c-and-java/
+  for(int a = 4, b = 3; a < numPixels; a++, b--) { // For each pixel...
+    // pixels->Color() takes RGB values, from 0,0,0 up to 255,255,255
+    // Here we're using a moderately bright green color:
+    pixels->setPixelColor(a, pixels->Color(50, 50, 0));
+    pixels->setPixelColor(b, pixels->Color(50, 50, 0));
+    pixels->show();   // Send the updated pixel colors to the hardware.
+    delay(30);
+    if ( a == numPixels ) break;
+    pixels->setPixelColor(a, pixels->Color(0, 0, 0));
+    pixels->setPixelColor(b, pixels->Color(0, 0, 0));
+    pixels->show();
+    delay(30);
+  } 
+  for(int a = numPixels, b = 0; a >= 4; a--, b++) { // For each pixel...
+    // pixels->Color() takes RGB values, from 0,0,0 up to 255,255,255
+    // Here we're using a moderately bright green color:
+    if ( a < numPixels )
+    {
+      pixels->setPixelColor(a, pixels->Color(50, 50, 0));
+      pixels->setPixelColor(b, pixels->Color(50, 50, 0));
       pixels->show();   // Send the updated pixel colors to the hardware.
       delay(30);
     }

@@ -67,7 +67,7 @@ void onLoRaReceive(int packetSize) {
     }
     else if (ReceivedPayload == byte(247))    //status request
     {
-      cycleBlue();
+      splitBlue();
       delay(3000);
       destination = byte(sender);             //reply addressed to sender
       txStatusOnline();

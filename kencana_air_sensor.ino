@@ -57,19 +57,24 @@ long fiveMinutes = 300000;                // Polling interval in minutes * 60 * 
 long fifteenMinutes = 900000;             // Polling interval in minutes * 60 * 1000
 
 #define buzzerPin 10
+int beepCount;                                //number of times to beep()
 
 //For gas sensor
 //to pullup or not to pullup: https://forum.seeedstudio.com/t/problems-with-grove-multichannel-gas-sensor/6004/4
 byte gasI2Caddress = 4;
-byte gasI2Cerror;                      //Track any I2C errors from gas sensor on startup
+byte gasI2Cerror = 9;                      //Track any I2C errors from gas sensor on startup
 unsigned char gasFirmwareversion;
 int gasValueMapped;
 float decodedValue;
 float ValueNH3;
 float ValueCO;
+int   COwarn = 50;                     //Warning threshold for CO
+int   coSTEL = 70;                     //STEL value for Carbon Monoxide
 float ValueNO2;
 float ValueC3H8;
 int propaneMapped;                     //convert propane value to percent of STEL level. i.e. 1890 = 90% to 2100
+int propaneWarn = 50;
+int propaneSTEL = 9000;
 float ValueC4H10;
 float ValueCH4;
 float ValueH2;
@@ -122,9 +127,6 @@ void setup() {
   Wire.beginTransmission(gasI2Caddress);
   gasI2Cerror = Wire.endTransmission();
   
-  //Serial.print("I2C device found at address 0x0");
-  //Serial.println(gasI2Caddress,HEX);
-  //return;
   if (gasI2Cerror == 0)
   {
     if ( Serial ) Serial.println("Initializing gas sensor");
@@ -155,7 +157,7 @@ void setup() {
   noTone(buzzerPin);     // Stop sound...
   delay(1000); 
 
-  cycleGreen();
+  splitBlue();
 }
 
 void loop() 
@@ -169,36 +171,32 @@ void loop()
     if ( gasI2Cerror == 0 ) getData();
     if (Serial) printData();
   }
-  // warning flash and frequent checks
-  if ( ValueCO >= 50 || ValueC3H8 >= 1500 || ValueC4H10 >= 850 )
+
+  //Carbon Monoxide warn
+  if ( gasI2Cerror == 0 && (ValueCO >= COwarn && ValueCO < coSTEL) )
   {
-    ValueCO = gas.measure_CO();
-    ValueC3H8 = gas.measure_C3H8();
-    propaneMapped = map(ValueC3H8,0,2100,0,100);    //convert propane value to percent of STEL level. i.e. 1890 = 90% to 2100
-    neoPercent(propaneMapped);
-    ValueC4H10 = gas.measure_C4H10();
-    chirp();
-    pixels->setPixelColor(0, pixels->Color(70, 70, 0));
-    pixels->show();   // Send the updated pixel colors to the hardware.
-    delay(100);
-    pixels->setPixelColor(0, pixels->Color(0, 0, 0));
-    pixels->show();
-    delay(100);
-    pixels->setPixelColor(0, pixels->Color(70, 70, 0));
-    pixels->show();   // Send the updated pixel colors to the hardware.
-    delay(100);
-    pixels->setPixelColor(0, pixels->Color(0, 0, 0));
-    pixels->show();
-    delay(300);
+    getData(); //ValueCO = gas.measure_CO();
+    //beep(5);
+    splitYellow();
   }
-  // alarm and frequent checks
-  if ( ValueCO >= 70 || ValueC3H8 >= 2100 || ValueC4H10 >= 1000 )
+  /*//Propane warn
+  if ( gasI2Cerror == 0 && (ValueC3H8 >= propaneWarn && ValueC3H8 < propaneSTEL) )
+  {
+    getData(); //ValueC3H8 = gas.measure_C3H8();
+    propaneMapped = map(ValueC3H8,0,2100,0,100);        //convert propane value to percent of STEL level. i.e. 1890 = 90% to 2100
+    propaneMapped = constrain(propaneMapped, 0, 100);  //constrain possible values to range of 0 - 100
+    neoPercent(propaneMapped);  //#DEBUG should contain "propaneMapped"
+  }*/
+  
+  /*// alarm and frequent checks
+  if ( gasI2Cerror == 0 && (ValueCO >= 70 || ValueC3H8 >= 2100 || ValueC4H10 >= 1000) )
   {
     ValueCO = gas.measure_CO();
     ValueC3H8 = gas.measure_C3H8();
     ValueC4H10 = gas.measure_C4H10();
     alarmRed();
-  }
+  }*/
+  
   onLoRaReceive(LoRa.parsePacket());  //if LoRa packet received, parse it
 }
 void soundAlarm()
@@ -236,4 +234,16 @@ void alarm()
   chirp();
   chirp();
   chirp();
+}
+
+void beep(int beepCount)
+{
+  for(int i=0; i<beepCount; i++)
+  {
+    tone(buzzerPin, 4000);
+    delay(100);
+    noTone(buzzerPin);
+    delay(100);
+    if ( i == beepCount ) break;
+  }
 }
