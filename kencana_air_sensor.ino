@@ -7,15 +7,14 @@
  *
  *Sensor detectable ranges:
  *
-    Carbon monoxide CO 1 – 1000ppm
-    Nitrogen dioxide NO2 0.05 – 10ppm
-    Ethanol C2H6OH 10 – 500ppm
-    Hydrogen H2 1 – 1000ppm
-    Ammonia NH3 1 – 500ppm
-    Methane CH4 >1000ppm
-    Propane C3H8 >1000ppm
-    Iso-butane C4H10 >1000ppm
-
+    Ammonia NH3           1 – 500ppm
+    Carbon monoxide CO    1 – 1000ppm
+    Nitrogen dioxide NO2  0.05 – 10ppm
+    Propane C3H8          >1000ppm
+    Iso-butane C4H10      >1000ppm
+    Methane CH4           >1000ppm
+    Hydrogen H2           1 – 1000ppm
+    Ethanol C2H6OH        10 – 500ppm
 */
 
 #include <Wire.h>                     //Needed for I2C 
@@ -23,19 +22,19 @@
 #include <Adafruit_NeoPixel.h>
 
 //For Neopixel
-int NeoPin = 13;
-int numPixels = 8;
-int pixelFormat = NEO_GRB + NEO_KHZ800;
+const int NeoPin = 13;
+const int numPixels = 8;
+const int pixelFormat = NEO_GRB + NEO_KHZ800;
 Adafruit_NeoPixel *pixels;
 
 //For LoRa 
 #include <LoRa.h>                     //Needed for LoRa
-#define RFM95_SS 8                    //The CS pin (#8) does not have a pullup built in so be sure to set this pin HIGH when not using the radio!
-#define RFM95_RST 4
-#define RFM95_INT 3
-byte localAddress = 0x5;              // address of this device (0x5 is HEX "5")
-byte webGatewayAddress = 0x1;         // address of web gateway
-byte broadcastAddress = 0xFF;         // broadcast address
+const int RFM95_SS = 8;                    //The CS pin (#8) does not have a pullup built in so be sure to set this pin HIGH when not using the radio!
+const int RFM95_RST = 4;
+const int RFM95_INT = 3;
+const byte localAddress = 0x5;              // address of this device (0x5 is HEX "5")
+const byte webGatewayAddress = 0x1;         // address of web gateway
+const byte broadcastAddress = 0xFF;         // broadcast address
 byte destination = 0xFF;              // destination to send to
 byte msgCount = 0;                    // count of outgoing messages
 bool expectingMessage = false;        //Indicates alarm sent, ack needed
@@ -52,33 +51,38 @@ uint32_t convertedValue;               // store data after reducing decimal plac
 //For timer
 long previousMillis = 0;                  // stores the last time data collected
 unsigned long currentMillis;              // Used for crude timmer
-long twoMinutes = 120000;                 // Polling interval in minutes * 60 * 1000
-long fiveMinutes = 300000;                // Polling interval in minutes * 60 * 1000
-long fifteenMinutes = 900000;             // Polling interval in minutes * 60 * 1000
+const long twoMinutes = 120000;                 // Polling interval in minutes * 60 * 1000
+const long fiveMinutes = 300000;                // Polling interval in minutes * 60 * 1000
+const long fifteenMinutes = 900000;             // Polling interval in minutes * 60 * 1000
 
-#define buzzerPin 10
+const int buzzerPin = 10;
 int beepCount;                                //number of times to beep()
 
 //For gas sensor
 //to pullup or not to pullup: https://forum.seeedstudio.com/t/problems-with-grove-multichannel-gas-sensor/6004/4
-byte gasI2Caddress = 4;
+const byte gasI2Caddress = 4;
 byte gasI2Cerror = 9;                      //Track any I2C errors from gas sensor on startup
 unsigned char gasFirmwareversion;
 int gasValueMapped;
 float decodedValue;
 float ValueNH3;
 float ValueCO;
-int   COwarn = 50;                     //Warning threshold for CO
-int   coSTEL = 70;                     //STEL value for Carbon Monoxide
+const int COwarn = 50;                     //Warning threshold for CO
+const int coSTEL = 70;                     //STEL value for Carbon Monoxide
 float ValueNO2;
 float ValueC3H8;
 int propaneMapped;                     //convert propane value to percent of STEL level. i.e. 1890 = 90% to 2100
-int propaneWarn = 50;
-int propaneSTEL = 9000;
+const int propaneWarn = 1500;
+const int propaneSTEL = 2100;
 float ValueC4H10;
 float ValueCH4;
 float ValueH2;
 float ValueC2H5OH;
+union gasUnion  //adapted from: http://www.cplusplus.com/forum/beginner/18566/
+{
+        float gasVal;
+        unsigned char gasBytes[0];
+};
 
 bool debug = true;                     //To enable debugging
 bool debugPrinted = false;             //track if we've printed debug data (don't spam serial console)
@@ -179,14 +183,14 @@ void loop()
     //beep(5);
     splitYellow();
   }
-  /*//Propane warn
+  //Propane warn
   if ( gasI2Cerror == 0 && (ValueC3H8 >= propaneWarn && ValueC3H8 < propaneSTEL) )
   {
     getData(); //ValueC3H8 = gas.measure_C3H8();
     propaneMapped = map(ValueC3H8,0,2100,0,100);        //convert propane value to percent of STEL level. i.e. 1890 = 90% to 2100
     propaneMapped = constrain(propaneMapped, 0, 100);  //constrain possible values to range of 0 - 100
-    neoPercent(propaneMapped);  //#DEBUG should contain "propaneMapped"
-  }*/
+    neoPercent(propaneMapped);  
+  }
   
   /*// alarm and frequent checks
   if ( gasI2Cerror == 0 && (ValueCO >= 70 || ValueC3H8 >= 2100 || ValueC4H10 >= 1000) )

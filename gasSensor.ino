@@ -1,44 +1,114 @@
 void getData() {
+  gasUnion a;
   ValueNH3 = gas.measure_NH3();
-  convertedValue = ValueNH3 * 100;
-  GasPayLoad[0] = highByte(convertedValue);
-  GasPayLoad[1] = lowByte(convertedValue);
-    
+  if ( ValueNH3 < 0 || ValueNH3 > 500 )
+  {
+
+  }
+  else 
+  {
+    convertedValue = ValueNH3 * 100;
+    GasPayLoad[0] = highByte(convertedValue);
+    GasPayLoad[1] = lowByte(convertedValue);
+  }
+     
   ValueCO = gas.measure_CO();
-  convertedValue = ValueCO * 100;
-  GasPayLoad[2] = highByte(convertedValue);
-  GasPayLoad[3] = lowByte(convertedValue);
+  if ( ValueCO < 0 || ValueCO > 1000 )
+  {
+    
+  }
+  else
+  {
+    convertedValue = ValueCO * 100;
+    GasPayLoad[2] = highByte(convertedValue);
+    GasPayLoad[3] = lowByte(convertedValue);
+  }
 
   ValueNO2 = gas.measure_NO2();
-  convertedValue = ValueNO2 * 100;
-  GasPayLoad[4] = highByte(convertedValue);
-  GasPayLoad[5] = lowByte(convertedValue);
+  if ( ValueNO2 < 0.5 || ValueNO2 > 10 )
+  {
+
+  }
+  else 
+  {
+    convertedValue = ValueNO2 * 100;
+    GasPayLoad[4] = highByte(convertedValue);
+    GasPayLoad[5] = lowByte(convertedValue);
+  }
 
   ValueC3H8 = gas.measure_C3H8();
-  convertedValue = ValueC3H8 * 100;
-  GasPayLoad[6] = highByte(convertedValue);
-  GasPayLoad[7] = lowByte(convertedValue);
+  if ( ValueC3H8 < 0 )
+  {
+    
+  }
+  else 
+  {
+    a.gasVal = ValueC3H8;
+  /*
+   * decode gasUnion
+  for (size_t i = 0; i < sizeof(gasUnion); ++i)
+        {
+          Serial.print("Byte " + String(i) + ": ");
+          Serial.println( (unsigned int)(a.gasBytes[i]) );
+          //b.gasBytes[i] = a.gasBytes[i];
+        }
+  Serial.println(" ");
+  Serial.print("a.gasVal: ");
+  Serial.println( a.gasVal );
+  */
+    convertedValue = ValueC3H8 * 100;
+    GasPayLoad[6] = highByte(convertedValue);
+    GasPayLoad[7] = lowByte(convertedValue);
+  }
   
   ValueC4H10 = gas.measure_C4H10();
-  convertedValue = ValueC4H10 * 100;
-  GasPayLoad[8] = highByte(convertedValue);
-  GasPayLoad[9] = lowByte(convertedValue);
+  if ( ValueC4H10 < 0 )
+  {
+    
+  }
+  else 
+  {
+    convertedValue = ValueC4H10 * 100;
+    GasPayLoad[8] = highByte(convertedValue);
+    GasPayLoad[9] = lowByte(convertedValue);
+  }
 
   ValueCH4 = gas.measure_CH4();
-  convertedValue = ValueCH4 * 100;
-  GasPayLoad[10] = highByte(convertedValue);
-  GasPayLoad[11] = lowByte(convertedValue);
-
+  if ( ValueCH4 < 0 )
+  {
+    
+  }
+  else 
+  {
+    convertedValue = ValueCH4 * 100;
+    GasPayLoad[10] = highByte(convertedValue);
+    GasPayLoad[11] = lowByte(convertedValue);
+  }
+  
   ValueH2 = gas.measure_H2();
-  convertedValue = ValueH2 * 100;
-  GasPayLoad[12] = highByte(convertedValue);
-  GasPayLoad[13] = lowByte(convertedValue);
+  if ( ValueH2 < 1 || ValueH2 > 1000 )
+  {
+    
+  }
+  else 
+  {
+    convertedValue = ValueH2 * 100;
+    GasPayLoad[12] = highByte(convertedValue);
+    GasPayLoad[13] = lowByte(convertedValue);
+  }
   
   ValueC2H5OH = gas.measure_C2H5OH();
-  convertedValue = ValueC2H5OH * 100;
-  GasPayLoad[14] = highByte(convertedValue);
-  GasPayLoad[15] = lowByte(convertedValue);
-
+  if ( ValueC2H5OH < 10 || ValueC2H5OH > 500 )
+  {
+    
+  }
+  else 
+  {
+    convertedValue = ValueC2H5OH * 100;
+    GasPayLoad[14] = highByte(convertedValue);
+    GasPayLoad[15] = lowByte(convertedValue);
+  }
+  
   if (transmitRequested == 1 )
   {
     destination = webGatewayAddress;
