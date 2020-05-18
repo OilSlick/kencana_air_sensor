@@ -119,8 +119,6 @@ void getData() {
 }
 void printData() {
   Serial.print(F("Amonia (NH3): "));
-  //decodedValue = (GasPayLoad[0] << 8) + GasPayLoad[1];
-  //ValueNH3 = decodedValue /100;
   if( ValueNH3 >= 0 ) Serial.print(ValueNH3);
   else Serial.print("invalid");
   Serial.print(" ppm ");
@@ -129,8 +127,6 @@ void printData() {
   //Amonia < 300ppm
 
   Serial.print(F("carbon monoxide (CO): "));
-  //decodedValue = (GasPayLoad[2] << 8) + GasPayLoad[3];
-  //ValueCO = decodedValue /100;
   if( ValueCO >= 0 ) Serial.print(ValueCO);
   else Serial.print("invalid");
   Serial.print(" ppm ");
@@ -142,8 +138,6 @@ void printData() {
   // want < 70ppm https://www.cacgas.com.au/blog/carbon-monoxide-co-toxic-gas-workplace-safety
 
   Serial.print(F("Nitrous dioxide (NO2): "));
-  //decodedValue = (GasPayLoad[4] << 8) + GasPayLoad[5];
-  //ValueNO2 = decodedValue /100;
   if( ValueNO2 >= 0 ) Serial.print( ValueNO2 );
   else Serial.print("invalid");
   Serial.print(" ppm ");
@@ -152,8 +146,6 @@ void printData() {
   //want < 5ppm
 
   Serial.print(F("Propane (C3H8): "));
-  //decodedValue = (GasPayLoad[6] << 8) + GasPayLoad[7];
-  //ValueC3H8 = decodedValue /100;
   if( ValueC3H8 >= 0 ) Serial.print(ValueC3H8);
   else Serial.print("invalid");
   Serial.print(" ppm ");
@@ -163,8 +155,6 @@ void printData() {
   //More info on gases: https://safety.honeywell.com/content/dam/his-sandbox/products/gas-and-flame-detection/documents/Application-Note-202_The-ABC27s-Of-Gases-In-The-Industry_04-99.pdf
 
   Serial.print(F("Butane (C4H10): "));
-  //decodedValue = (GasPayLoad[8] << 8) + GasPayLoad[9];
-  //ValueC4H10 = decodedValue /100;
   if( ValueC4H10 >= 0 ) Serial.print(ValueC4H10);
   else Serial.print("invalid");
   Serial.print(" ppm ");
@@ -173,8 +163,6 @@ void printData() {
   //Butane < 1000ppm STEL (short term exposure limit of < 15 minutes) https://pubchem.ncbi.nlm.nih.gov/compound/Butane#section=Immediately-Dangerous-to-Life-or-Health-(IDLH)
 
   Serial.print(F("Methane (CH4): "));
-  //decodedValue = (GasPayLoad[10] << 8) + GasPayLoad[11];
-  //ValueCH4 = decodedValue /100;
   if( ValueCH4 >= 0 ) Serial.print(ValueCH4);
   else Serial.print("invalid");
   Serial.print(" ppm ");
@@ -182,8 +170,6 @@ void printData() {
   //methane no recommendations
 
   Serial.print(F("Hydrogen gas (H2): "));
-  //decodedValue = (GasPayLoad[12] << 8) + GasPayLoad[13];
-  //ValueH2 = decodedValue /100;
   if( ValueH2 >= 0) Serial.print(ValueH2);
   else Serial.print("invalid");
   Serial.print(" ppm ");
@@ -191,8 +177,6 @@ void printData() {
   //hydrogen no recommendations
 
   Serial.print(F("Ethyl alcohol (C2H5OH): "));
-  //decodedValue = (GasPayLoad[14] << 8) + GasPayLoad[15];
-  //ValueC2H5OH = decodedValue /100;
   if( ValueC2H5OH >= 0 ) Serial.print(ValueC2H5OH);
   else Serial.print("invalid");
   Serial.print(" ppm ");
