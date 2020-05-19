@@ -5,7 +5,7 @@
  *Might be a good read: https://learn.adafruit.com/adafruit-feather-m0-bluefruit-le/adapting-sketches-to-m0
  *Libraries MutichannelGasSensor.h and MutichannelGasSensor.cpp both adapted for Adafruit SAMD M0 boards (serial vs serialusb)
  *
- *Sensor detectable ranges:
+ *Sensors detectable ranges:
  *
     Ammonia NH3           1 – 500ppm
     Carbon monoxide CO    1 – 1000ppm
@@ -26,6 +26,8 @@ const int NeoPin = 13;
 const int numPixels = 8;
 const int pixelFormat = NEO_GRB + NEO_KHZ800;
 Adafruit_NeoPixel *pixels;
+bool blinked = false;
+long previousBlinked = 0;
 
 //For LoRa 
 #include <LoRa.h>                     //Needed for LoRa
@@ -50,10 +52,11 @@ bool transmitRequested = 0;
 
 //For timer
 long previousMillis = 0;                  // stores the last time data collected
-unsigned long currentMillis;              // Used for crude timmer
-const long twoMinutes = 120000;                 // Polling interval in minutes * 60 * 1000
-const long fiveMinutes = 300000;                // Polling interval in minutes * 60 * 1000
-const long fifteenMinutes = 900000;             // Polling interval in minutes * 60 * 1000
+unsigned long currentMillis;             
+const long twentySeconds = 20000;               
+const long twoMinutes = 120000;                 
+const long fiveMinutes = 300000;                
+const long fifteenMinutes = 900000; 
 
 const int buzzerPin = 10;
 int beepCount;                                //number of times to beep()
@@ -168,6 +171,13 @@ void loop()
 {
   if (Serial) handleSerial();  //permit sending codes through serial
   currentMillis = millis();
+  if ( currentMillis - previousBlinked > twentySeconds ) 
+  {
+    previousBlinked = currentMillis;
+    blinkGreen();
+    blinked = true;
+  }
+  else blinked = false;
   if ( currentMillis - previousMillis > fiveMinutes )
   {
     previousMillis = currentMillis;

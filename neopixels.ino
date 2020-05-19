@@ -202,3 +202,12 @@ void neoPercent(int gasValueMapped)
   handleSerial();
   while(!Serial.available()); */
 }
+void blinkGreen() {
+  pixels->setPixelColor(0, pixels->Color(0, 25, 0));
+  pixels->setPixelColor(7, pixels->Color(0, 25, 0));
+  pixels->show();
+  delay(15);
+  pixels->setPixelColor(0, pixels->Color(0, 0, 0));
+  pixels->setPixelColor(7, pixels->Color(0, 0, 0));
+  pixels->show();
+}
