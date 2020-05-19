@@ -42,11 +42,11 @@ bool messageReceived = false;         //Indicates a properly-formatted–but not
 String outgoingMsg;                   //contents of outgoing radio transmission
 String LastReceivedTrans;             //Record last message received by this station
 String LastSentTrans;                 //Record last transmission sent from this station
-byte GasPayLoad[16];                  //Byte array to store gas data for transmission https://www.thethingsnetwork.org/docs/devices/bytes.html
+byte GasPayLoad[32];                  //Byte array to store gas data for transmission https://www.thethingsnetwork.org/docs/devices/bytes.html
 byte MessagePayload[2];               //Byte array for network messages
 int sizeofGasPayLoad;
 bool transmitRequested = 0;
-uint32_t convertedValue;               // store data after reducing decimal places (by * 100) before high/low encoding into two bytes
+//uint32_t convertedValue;               // store data after reducing decimal places (by * 100) before high/low encoding into two bytes
 
 //For timer
 long previousMillis = 0;                  // stores the last time data collected
@@ -61,7 +61,7 @@ int beepCount;                                //number of times to beep()
 //For gas sensor
 //to pullup or not to pullup: https://forum.seeedstudio.com/t/problems-with-grove-multichannel-gas-sensor/6004/4
 const byte gasI2Caddress = 4;
-byte gasI2Cerror = 9;                      //Track any I2C errors from gas sensor on startup
+byte gasI2Cerror = 9;                      //Track any I2C errors from gas sensor on startup, 9 = (hopefully) unrealistic number, just for init
 unsigned char gasFirmwareversion;
 int gasValueMapped;
 float decodedValue;
@@ -78,10 +78,10 @@ float ValueC4H10;
 float ValueCH4;
 float ValueH2;
 float ValueC2H5OH;
-union gasUnion  //adapted from: http://www.cplusplus.com/forum/beginner/18566/
+union gasUnion  //Used to convert float to bytes[4] adapted from: http://www.cplusplus.com/forum/beginner/18566/
 {
         float gasVal;
-        unsigned char gasBytes[0];
+        unsigned char gasBytes[4];
 };
 
 bool debug = true;                     //To enable debugging

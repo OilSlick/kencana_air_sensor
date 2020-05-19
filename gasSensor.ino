@@ -3,37 +3,43 @@ void getData() {
   ValueNH3 = gas.measure_NH3();
   if ( ValueNH3 < 0 || ValueNH3 > 500 )
   {
-
+    a.gasVal = 0.0;
   }
   else 
   {
-    convertedValue = ValueNH3 * 100;
-    GasPayLoad[0] = highByte(convertedValue);
-    GasPayLoad[1] = lowByte(convertedValue);
+    a.gasVal = ValueNH3;
+    GasPayLoad[0] = a.gasBytes[0];
+    GasPayLoad[1] = a.gasBytes[1];
+    GasPayLoad[2] = a.gasBytes[2];
+    GasPayLoad[3] = a.gasBytes[3];
   }
      
   ValueCO = gas.measure_CO();
   if ( ValueCO < 0 || ValueCO > 1000 )
   {
-    
+    a.gasVal = 0.0;
   }
   else
   {
-    convertedValue = ValueCO * 100;
-    GasPayLoad[2] = highByte(convertedValue);
-    GasPayLoad[3] = lowByte(convertedValue);
+    a.gasVal = ValueCO;
+    GasPayLoad[4] = a.gasBytes[0];
+    GasPayLoad[5] = a.gasBytes[1];
+    GasPayLoad[6] = a.gasBytes[2];
+    GasPayLoad[7] = a.gasBytes[3];
   }
 
   ValueNO2 = gas.measure_NO2();
   if ( ValueNO2 < 0.5 || ValueNO2 > 10 )
   {
-
+    a.gasVal = 0.0;
   }
   else 
   {
-    convertedValue = ValueNO2 * 100;
-    GasPayLoad[4] = highByte(convertedValue);
-    GasPayLoad[5] = lowByte(convertedValue);
+    a.gasVal = ValueNO2;
+    GasPayLoad[8] = a.gasBytes[0];
+    GasPayLoad[9] = a.gasBytes[1];
+    GasPayLoad[10] = a.gasBytes[2];
+    GasPayLoad[11] = a.gasBytes[3];
   }
 
   ValueC3H8 = gas.measure_C3H8();
@@ -44,21 +50,10 @@ void getData() {
   else 
   {
     a.gasVal = ValueC3H8;
-  /*
-   * decode gasUnion
-  for (size_t i = 0; i < sizeof(gasUnion); ++i)
-        {
-          Serial.print("Byte " + String(i) + ": ");
-          Serial.println( (unsigned int)(a.gasBytes[i]) );
-          //b.gasBytes[i] = a.gasBytes[i];
-        }
-  Serial.println(" ");
-  Serial.print("a.gasVal: ");
-  Serial.println( a.gasVal );
-  */
-    convertedValue = ValueC3H8 * 100;
-    GasPayLoad[6] = highByte(convertedValue);
-    GasPayLoad[7] = lowByte(convertedValue);
+    GasPayLoad[12] = a.gasBytes[0];
+    GasPayLoad[13] = a.gasBytes[1];
+    GasPayLoad[14] = a.gasBytes[2];
+    GasPayLoad[15] = a.gasBytes[3];
   }
   
   ValueC4H10 = gas.measure_C4H10();
@@ -68,9 +63,11 @@ void getData() {
   }
   else 
   {
-    convertedValue = ValueC4H10 * 100;
-    GasPayLoad[8] = highByte(convertedValue);
-    GasPayLoad[9] = lowByte(convertedValue);
+    a.gasVal = ValueC4H10;
+    GasPayLoad[16] = a.gasBytes[0];
+    GasPayLoad[17] = a.gasBytes[1];
+    GasPayLoad[18] = a.gasBytes[2];
+    GasPayLoad[19] = a.gasBytes[3];
   }
 
   ValueCH4 = gas.measure_CH4();
@@ -80,9 +77,11 @@ void getData() {
   }
   else 
   {
-    convertedValue = ValueCH4 * 100;
-    GasPayLoad[10] = highByte(convertedValue);
-    GasPayLoad[11] = lowByte(convertedValue);
+    a.gasVal = ValueCH4;
+    GasPayLoad[20] = a.gasBytes[0];
+    GasPayLoad[21] = a.gasBytes[1];
+    GasPayLoad[22] = a.gasBytes[2];
+    GasPayLoad[23] = a.gasBytes[3];
   }
   
   ValueH2 = gas.measure_H2();
@@ -92,9 +91,11 @@ void getData() {
   }
   else 
   {
-    convertedValue = ValueH2 * 100;
-    GasPayLoad[12] = highByte(convertedValue);
-    GasPayLoad[13] = lowByte(convertedValue);
+    a.gasVal = ValueH2;
+    GasPayLoad[24] = a.gasBytes[0];
+    GasPayLoad[25] = a.gasBytes[1];
+    GasPayLoad[26] = a.gasBytes[2];
+    GasPayLoad[27] = a.gasBytes[3];
   }
   
   ValueC2H5OH = gas.measure_C2H5OH();
@@ -104,9 +105,11 @@ void getData() {
   }
   else 
   {
-    convertedValue = ValueC2H5OH * 100;
-    GasPayLoad[14] = highByte(convertedValue);
-    GasPayLoad[15] = lowByte(convertedValue);
+    a.gasVal = ValueC2H5OH;
+    GasPayLoad[28] = a.gasBytes[0];
+    GasPayLoad[29] = a.gasBytes[1];
+    GasPayLoad[30] = a.gasBytes[2];
+    GasPayLoad[31] = a.gasBytes[3];
   }
   
   if (transmitRequested == 1 )
