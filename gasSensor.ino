@@ -3,7 +3,7 @@ void getData() {
   ValueNH3 = gas.measure_NH3();
   if ( ValueNH3 < 0 || ValueNH3 > 500 )
   {
-    a.gasVal = 0.0;
+    a.gasVal = 99999;
   }
   else 
   {
@@ -17,7 +17,7 @@ void getData() {
   ValueCO = gas.measure_CO();
   if ( ValueCO < 0 || ValueCO > 1000 )
   {
-    a.gasVal = 0.0;
+    a.gasVal = 99999;
   }
   else
   {
@@ -31,7 +31,7 @@ void getData() {
   ValueNO2 = gas.measure_NO2();
   if ( ValueNO2 < 0.5 || ValueNO2 > 10 )
   {
-    a.gasVal = 0.0;
+    a.gasVal = 99999;
   }
   else 
   {
@@ -45,7 +45,7 @@ void getData() {
   ValueC3H8 = gas.measure_C3H8();
   if ( ValueC3H8 < 0 )
   {
-    
+    a.gasVal = 99999;
   }
   else 
   {
@@ -59,7 +59,7 @@ void getData() {
   ValueC4H10 = gas.measure_C4H10();
   if ( ValueC4H10 < 0 )
   {
-    
+    a.gasVal = 99999;
   }
   else 
   {
@@ -73,7 +73,7 @@ void getData() {
   ValueCH4 = gas.measure_CH4();
   if ( ValueCH4 < 0 )
   {
-    
+    a.gasVal = 99999;
   }
   else 
   {
@@ -87,7 +87,7 @@ void getData() {
   ValueH2 = gas.measure_H2();
   if ( ValueH2 < 1 || ValueH2 > 1000 )
   {
-    
+    a.gasVal = 99999;
   }
   else 
   {
@@ -101,7 +101,7 @@ void getData() {
   ValueC2H5OH = gas.measure_C2H5OH();
   if ( ValueC2H5OH < 10 || ValueC2H5OH > 500 )
   {
-    
+    a.gasVal = 99999;
   }
   else 
   {

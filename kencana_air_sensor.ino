@@ -179,16 +179,16 @@ void loop()
   //Carbon Monoxide warn
   if ( gasI2Cerror == 0 && (ValueCO >= COwarn && ValueCO < coSTEL) )
   {
-    getData(); //ValueCO = gas.measure_CO();
+    getData();
     //beep(5);
     splitYellow();
   }
   //Propane warn
   if ( gasI2Cerror == 0 && (ValueC3H8 >= propaneWarn && ValueC3H8 < propaneSTEL) )
   {
-    getData(); //ValueC3H8 = gas.measure_C3H8();
+    getData(); 
     propaneMapped = map(ValueC3H8,0,2100,0,100);        //convert propane value to percent of STEL level. i.e. 1890 = 90% to 2100
-    propaneMapped = constrain(propaneMapped, 0, 100);  //constrain possible values to range of 0 - 100
+    propaneMapped = constrain(propaneMapped, 0, 100);   //constrain possible values to range of 0 - 100
     neoPercent(propaneMapped);  
   }
   
