@@ -33,36 +33,35 @@ long previousBlinked {0};
 //For LoRa 
 #include <LoRa.h>                     // Needed for LoRa
 const int RFM95_SS {8};               // The CS pin (#8) does not have a pullup built in so be sure to set this pin HIGH when not using the radio!
-const int RFM95_RST = 4;
-const int RFM95_INT = 3;
-const byte localAddress = 0x5;        // address of this device (0x5 is HEX "5")
-const byte webGatewayAddress = 0x1;   // address of web gateway
-const byte broadcastAddress = 0xFF;   // broadcast address
-byte destination = 0xFF;              // destination to send to
-byte msgCount = 0;                    // count of outgoing messages
-bool expectingMessage = false;        // Indicates alarm sent, ack needed
-bool messageReceived = false;         // Indicates a properly-formatted–but not necessarily appropriate–message received
-String outgoingMsg;                   // contents of outgoing radio transmission
+const int RFM95_RST {4};
+const int RFM95_INT {3};
+const byte localAddress {0x5};        // address of this device (0x5 is HEX "5")
+const byte webGatewayAddress {0x1};   // address of web gateway
+const byte broadcastAddress {0xFF};   // broadcast address
+byte destination {0xFF};              // destination to send to
+byte msgCount {0};                    // count of outgoing messages
+bool expectingMessage {false};        // Indicates alarm sent, ack needed
+bool messageReceived {false};         // Indicates a properly-formatted–but not necessarily appropriate–message received
 String LastReceivedTrans;             // Record last message received by this station
 String LastSentTrans;                 // Record last transmission sent from this station
 byte GasPayLoad[32];                  // Byte array to store gas data for transmission https://www.thethingsnetwork.org/docs/devices/bytes.html
 byte MessagePayload[2];               // Byte array for network messages
 int sizeofGasPayLoad;
-bool transmitRequested = 0;
+bool transmitRequested {0};
 //uint32_t convertedValue;               // store data after reducing decimal places (by * 100) before high/low encoding into two bytes
 
 //For timer
-long previousMillis = 0;                  // stores the last time data collected
+long previousMillis {0};                  // stores the last time data collected
 unsigned long currentMillis; 
 unsigned long setPointMillis;
-const long fourSeconds = 4000;            
-const long twentySeconds = 20000;               
-const long twoMinutes = 120000;                 
-const long fiveMinutes = 300000;                
-const long fifteenMinutes = 900000; 
+const long fourSeconds {4000};            
+const long twentySeconds {20000};               
+const long twoMinutes {120000};                 
+const long fiveMinutes {300000};                
+const long fifteenMinutes {900000}; 
 
-const int buzzerPin = 10;
-int beepCount;                                //number of times to beep()
+const int buzzerPin {10};
+int beepCount {0};                                //number of times to beep()
 
 //For gas sensor
 //to pullup or not to pullup: https://forum.seeedstudio.com/t/problems-with-grove-multichannel-gas-sensor/6004/4
@@ -97,18 +96,18 @@ gas_t gasCH4 = { 6, 0, 1, 0, 50000, 50000, 50000 };
 gas_t gasH2 = { 7, 0, 1, 1, 1000, 1000, 1000 };
 gas_t gasC2H5OH = { 8, 0, 1, 10, 500, 2000, 3300 };
 
-bool debug = true;                     //To enable debugging
-bool debugPrinted = false;             //track if we've printed debug data (don't spam serial console)
+bool debug {true};                     //To enable debugging
+bool debugPrinted {false};             //track if we've printed debug data (don't spam serial console)
 String debugMessage;                   //optional message to add to displayDebug()
 
 //For home alarm network
-bool suppressAlarm = false;            //When 'true' an active alarm is silenced
-bool alarmState = false;               //Determines if audible alarm has been activated
-bool ReceivedAlarmStatus = 0;          //Track local unit alarm status (always byte[0])
+bool suppressAlarm {false};            //When 'true' an active alarm is silenced
+bool alarmState {false};               //Determines if audible alarm has been activated
+bool ReceivedAlarmStatus {0};          //Track local unit alarm status (always byte[0])
 byte ReceivedPayload;                  //Track byte[1]
-bool alarmReceived = false;            //If another sensor sends alarm, this sensor is aware
-bool nightMode = false;                //Nightmode = different alarm (persistent and annoying)
-bool awayMode = false;                 //awayMode = activated by NFC card @ door
+bool alarmReceived {false};            //If another sensor sends alarm, this sensor is aware
+bool nightMode {false};                //Nightmode = different alarm (persistent and annoying)
+bool awayMode {false};                 //awayMode = activated by NFC card @ door
 
 void setup() {
   // Create a new NeoPixel object dynamically with these values:
