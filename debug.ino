@@ -54,8 +54,9 @@ void handleSerial() {
   if ( incomingCharacter == 'r' ) setup();
   if ( incomingCharacter == 't' ) 
   {
-    transmitRequested = 1;
-    if ( gasI2Cerror == 0 ) getData();
+    getData();
+    encodeData();
+    transmitData();
     printData();
   }
  }

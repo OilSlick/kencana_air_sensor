@@ -4,6 +4,7 @@
  *   based on: https://files.seeedstudio.com/wiki/Grove-Multichannel_Gas_Sensor/res/MiCS-6814_Datasheet.pdf
  *Might be a good read: https://learn.adafruit.com/adafruit-feather-m0-bluefruit-le/adapting-sketches-to-m0
  *Libraries MutichannelGasSensor.h and MutichannelGasSensor.cpp both adapted for Adafruit SAMD M0 boards (serial vs serialusb)
+ *Info on gas sensors, set points, etc: http://media.clemson.edu/research/safety/GAS%20MONITORING%20PROGRAM.pdf
  *
  *Sensors detectable ranges:
  *
@@ -22,37 +23,39 @@
 #include <Adafruit_NeoPixel.h>
 
 //For Neopixel
-const int NeoPin = 13;
-const int numPixels = 8;
+const int NeoPin {13};
+const int numPixels {8};
 const int pixelFormat = NEO_GRB + NEO_KHZ800;
 Adafruit_NeoPixel *pixels;
-bool blinked = false;
-long previousBlinked = 0;
+bool blinked {false};
+long previousBlinked {0};
 
 //For LoRa 
-#include <LoRa.h>                     //Needed for LoRa
-const int RFM95_SS = 8;                    //The CS pin (#8) does not have a pullup built in so be sure to set this pin HIGH when not using the radio!
+#include <LoRa.h>                     // Needed for LoRa
+const int RFM95_SS {8};               // The CS pin (#8) does not have a pullup built in so be sure to set this pin HIGH when not using the radio!
 const int RFM95_RST = 4;
 const int RFM95_INT = 3;
-const byte localAddress = 0x5;              // address of this device (0x5 is HEX "5")
-const byte webGatewayAddress = 0x1;         // address of web gateway
-const byte broadcastAddress = 0xFF;         // broadcast address
+const byte localAddress = 0x5;        // address of this device (0x5 is HEX "5")
+const byte webGatewayAddress = 0x1;   // address of web gateway
+const byte broadcastAddress = 0xFF;   // broadcast address
 byte destination = 0xFF;              // destination to send to
 byte msgCount = 0;                    // count of outgoing messages
-bool expectingMessage = false;        //Indicates alarm sent, ack needed
-bool messageReceived = false;         //Indicates a properly-formatted–but not necessarily appropriate–message received
-String outgoingMsg;                   //contents of outgoing radio transmission
-String LastReceivedTrans;             //Record last message received by this station
-String LastSentTrans;                 //Record last transmission sent from this station
-byte GasPayLoad[32];                  //Byte array to store gas data for transmission https://www.thethingsnetwork.org/docs/devices/bytes.html
-byte MessagePayload[2];               //Byte array for network messages
+bool expectingMessage = false;        // Indicates alarm sent, ack needed
+bool messageReceived = false;         // Indicates a properly-formatted–but not necessarily appropriate–message received
+String outgoingMsg;                   // contents of outgoing radio transmission
+String LastReceivedTrans;             // Record last message received by this station
+String LastSentTrans;                 // Record last transmission sent from this station
+byte GasPayLoad[32];                  // Byte array to store gas data for transmission https://www.thethingsnetwork.org/docs/devices/bytes.html
+byte MessagePayload[2];               // Byte array for network messages
 int sizeofGasPayLoad;
 bool transmitRequested = 0;
 //uint32_t convertedValue;               // store data after reducing decimal places (by * 100) before high/low encoding into two bytes
 
 //For timer
 long previousMillis = 0;                  // stores the last time data collected
-unsigned long currentMillis;             
+unsigned long currentMillis; 
+unsigned long setPointMillis;
+const long fourSeconds = 4000;            
 const long twentySeconds = 20000;               
 const long twoMinutes = 120000;                 
 const long fiveMinutes = 300000;                
@@ -68,24 +71,31 @@ byte gasI2Cerror = 9;                      //Track any I2C errors from gas senso
 unsigned char gasFirmwareversion;
 int gasValueMapped;
 float decodedValue;
-float ValueNH3;
-float ValueCO;
-const int COwarn = 50;                     //Warning threshold for CO
-const int coSTEL = 70;                     //STEL value for Carbon Monoxide
-float ValueNO2;
-float ValueC3H8;
-int propaneMapped;                     //convert propane value to percent of STEL level. i.e. 1890 = 90% to 2100
-const int propaneWarn = 1500;
-const int propaneSTEL = 2100;
-float ValueC4H10;
-float ValueCH4;
-float ValueH2;
-float ValueC2H5OH;
+int propaneMapped;                    //convert propane value to percent of STEL level. i.e. 1890 = 90% to 2100
 union gasUnion  //Used to convert float to bytes[4] adapted from: http://www.cplusplus.com/forum/beginner/18566/
 {
         float gasVal;
         unsigned char gasBytes[4];
 };
+struct gas_t {
+  const int gas_id;
+  float value;
+  bool value_is_valid;
+  const int minDetectable;
+  const int maxDetectable;
+  const int warn;
+  const int alarm;
+};
+
+//https://stackoverflow.com/questions/47883151/arduino-ide-does-not-allow-struct-variables-outside-a-function
+gas_t gasNH3 = { 1, 0, 1, 1, 500, 200, 300 };
+gas_t gasCO = { 2, 0, 1, 1, 1000, 50, 100 }; 
+gas_t gasNO2 = { 3, 0, 1, 0.05, 10, 4, 5 };
+gas_t gasC3H8 = { 4, 0, 1, 0, 4000, 1500, 2100 };
+gas_t gasC4H10 = { 5, 0, 1, 0, 1500, 900, 1000 };
+gas_t gasCH4 = { 6, 0, 1, 0, 50000, 50000, 50000 };
+gas_t gasH2 = { 7, 0, 1, 1, 1000, 1000, 1000 };
+gas_t gasC2H5OH = { 8, 0, 1, 10, 500, 2000, 3300 };
 
 bool debug = true;                     //To enable debugging
 bool debugPrinted = false;             //track if we've printed debug data (don't spam serial console)
@@ -173,6 +183,7 @@ void loop()
   currentMillis = millis();
   if ( currentMillis - previousBlinked > twentySeconds ) 
   {
+    getData();
     previousBlinked = currentMillis;
     blinkGreen();
     blinked = true;
@@ -181,33 +192,36 @@ void loop()
   if ( currentMillis - previousMillis > fiveMinutes )
   {
     previousMillis = currentMillis;
-    transmitRequested = 1;
-    if ( gasI2Cerror == 0 ) getData();
+    if ( gasI2Cerror == 0 ) 
+    {
+      getData(); 
+      transmitData();
+    }
     if (Serial) printData();
   }
 
   //Carbon Monoxide warn
-  if ( gasI2Cerror == 0 && (ValueCO >= COwarn && ValueCO < coSTEL) )
+  if ( gasI2Cerror == 0 && (gasCO.value >= gasCO.warn && gasCO.value < gasCO.alarm) )
   {
     getData();
     //beep(5);
     splitYellow();
   }
   //Propane warn
-  if ( gasI2Cerror == 0 && (ValueC3H8 >= propaneWarn && ValueC3H8 < propaneSTEL) )
+  if ( gasI2Cerror == 0 && (gasC3H8.value >= gasC3H8.warn && gasC3H8.value < gasC3H8.alarm) )
   {
     getData(); 
-    propaneMapped = map(ValueC3H8,0,2100,0,100);        //convert propane value to percent of STEL level. i.e. 1890 = 90% to 2100
+    propaneMapped = map(gasC3H8.value,0,2100,0,100);        //convert propane value to percent of STEL level. i.e. 1890 = 90% to 2100
     propaneMapped = constrain(propaneMapped, 0, 100);   //constrain possible values to range of 0 - 100
     neoPercent(propaneMapped);  
   }
   
   /*// alarm and frequent checks
-  if ( gasI2Cerror == 0 && (ValueCO >= 70 || ValueC3H8 >= 2100 || ValueC4H10 >= 1000) )
+  if ( gasI2Cerror == 0 && (gasCO.value >= 70 || gasC3H8.value >= 2100 || gasC4H10.value >= 1000) )
   {
-    ValueCO = gas.measure_CO();
-    ValueC3H8 = gas.measure_C3H8();
-    ValueC4H10 = gas.measure_C4H10();
+    gasCO.value = gas.measure_CO();
+    gasC3H8.value = gas.measure_C3H8();
+    gasC4H10.value = gas.measure_C4H10();
     alarmRed();
   }*/
   
