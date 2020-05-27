@@ -5,41 +5,6 @@ void txStatusOnline()
   MessagePayload[1] = byte(255);    //status online
   broadcastMessage(destination, MessagePayload, sizeof(MessagePayload));
 }
-void txDayMode()
-{
-  destination = broadcastAddress;
-  MessagePayload[0] = byte(0);        //no alarm
-  MessagePayload[1] = byte(254);      //DayMode
-  broadcastMessage(destination, MessagePayload, sizeof(MessagePayload));
-}
-void txNightMode()
-{
-  destination = broadcastAddress;
-  MessagePayload[0] = byte(0);        //no alarm
-  MessagePayload[1] = byte(251);      //NightMode
-  broadcastMessage(destination, MessagePayload, sizeof(MessagePayload));
-}
-void txAwayMode()
-{
-  destination = broadcastAddress;
-  MessagePayload[0] = byte(0);        //no alarm
-  MessagePayload[1] = byte(250);      //AwayMode
-  broadcastMessage(destination, MessagePayload, sizeof(MessagePayload));
-}
-void txSupressAlarm()
-{
-  destination = broadcastAddress;
-  MessagePayload[0] = byte(0);        //no alarm
-  MessagePayload[1] = byte(246);      //Suppress alarm
-  broadcastMessage(destination, MessagePayload, sizeof(MessagePayload));
-}
-void txStatusRequest()
-{
-  destination = webGatewayAddress;
-  MessagePayload[0] = byte(0);     //no-alarm
-  MessagePayload[1] = byte(247);   //status-request
-  broadcastMessage(destination, MessagePayload, sizeof(MessagePayload));
-}
 void broadcastData(byte destination, byte GasPayLoad[], int sizeofGasPayLoad) {
   delay(200);                           // may be needed?
   LoRa.beginPacket();                   // start packet
