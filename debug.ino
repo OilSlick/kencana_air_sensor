@@ -8,8 +8,6 @@ void displayDebug(String debugMessage)
     Serial.println("LastSentTrans: " + String(LastSentTrans));
     Serial.print("Gas Sensor Firmware Version: ");
     Serial.println(gasFirmwareversion);
-    Serial.println("nightMode: " + String(nightMode));
-    Serial.println("awayMode: " + String(awayMode));  
     Serial.println(" ");
     Serial.println("Debug Message: " + String(debugMessage));
     Serial.println(" "); 

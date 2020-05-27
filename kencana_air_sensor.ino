@@ -100,15 +100,6 @@ bool debug {true};                     //To enable debugging
 bool debugPrinted {false};             //track if we've printed debug data (don't spam serial console)
 String debugMessage;                   //optional message to add to displayDebug()
 
-//For home alarm network
-bool suppressAlarm {false};            //When 'true' an active alarm is silenced
-bool alarmState {false};               //Determines if audible alarm has been activated
-bool ReceivedAlarmStatus {0};          //Track local unit alarm status (always byte[0])
-byte ReceivedPayload;                  //Track byte[1]
-bool alarmReceived {false};            //If another sensor sends alarm, this sensor is aware
-bool nightMode {false};                //Nightmode = different alarm (persistent and annoying)
-bool awayMode {false};                 //awayMode = activated by NFC card @ door
-
 void setup() {
   // Create a new NeoPixel object dynamically with these values:
   pixels = new Adafruit_NeoPixel(numPixels, NeoPin, pixelFormat);
@@ -194,6 +185,7 @@ void loop()
     if ( gasI2Cerror == 0 ) 
     {
       getData(); 
+      encodeData();
       transmitData();
     }
     if (Serial) printData();
@@ -203,7 +195,7 @@ void loop()
   if ( gasI2Cerror == 0 && (gasCO.value >= gasCO.warn && gasCO.value < gasCO.alarm) )
   {
     getData();
-    //beep(5);
+    beep(5);
     splitYellow();
   }
   //Propane warn
@@ -223,17 +215,6 @@ void loop()
     gasC4H10.value = gas.measure_C4H10();
     alarmRed();
   }*/
-  
-  onLoRaReceive(LoRa.parsePacket());  //if LoRa packet received, parse it
-}
-void soundAlarm()
-{
-  while ( suppressAlarm == false )
-  {
-    chirp();
-    onLoRaReceive(LoRa.parsePacket());  //if LoRa packet received, parse it
-  }
-  alarmState = false;
 }
 void chirp()
 {
