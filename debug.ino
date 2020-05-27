@@ -42,8 +42,10 @@ void handleSerial() {
     Serial.println("g -> get gas data");
     Serial.println("h -> This Menu");
     Serial.println("r -> Reset");
+    Serial.println("s -> Silence");
   }
   if ( incomingCharacter == 'r' ) setup();
+  if ( incomingCharacter == 's' ) silence = true;
   if ( incomingCharacter == 't' ) 
   {
     getData();

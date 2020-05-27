@@ -48,10 +48,11 @@ byte GasPayLoad[32];                  // Byte array to store gas data for transm
 byte MessagePayload[2];               // Byte array for network messages
 int sizeofGasPayLoad;
 bool transmitRequested {0};
-//uint32_t convertedValue;               // store data after reducing decimal places (by * 100) before high/low encoding into two bytes
+//uint32_t convertedValue;             // store data after reducing decimal places (by * 100) before high/low encoding into two bytes
 
 //For timer
-long previousMillis {0};                  // stores the last time data collected
+bool alarming {false};                 // track if we're currently sounding warning or alarm 
+long previousMillis {0};               // stores the last time data collected
 unsigned long currentMillis; 
 unsigned long setPointMillis;
 const long fourSeconds {4000};            
@@ -62,9 +63,12 @@ const long fifteenMinutes {900000};
 
 const int buzzerPin {10};
 int beepCount {0};                                //number of times to beep()
+bool silence {false};
 
 //For gas sensor
 //to pullup or not to pullup: https://forum.seeedstudio.com/t/problems-with-grove-multichannel-gas-sensor/6004/4
+bool coAlarming {false};
+bool propaneAlarming {false};
 const byte gasI2Caddress = 4;
 byte gasI2Cerror = 9;                      //Track any I2C errors from gas sensor on startup, 9 = (hopefully) unrealistic number, just for init
 unsigned char gasFirmwareversion;
@@ -175,7 +179,7 @@ void loop()
   {
     getData();
     previousBlinked = currentMillis;
-    blinkGreen();
+    if ( alarming == false ) blinkGreen();
     blinked = true;
   }
   else blinked = false;
@@ -194,18 +198,66 @@ void loop()
   //Carbon Monoxide warn
   if ( gasI2Cerror == 0 && (gasCO.value >= gasCO.warn && gasCO.value < gasCO.alarm) )
   {
+    coAlarming = true;
+    alarming = true;
+    currentMillis = millis();
+    if ( currentMillis - setPointMillis >= fourSeconds )
+    setPointMillis = currentMillis;
+    {
+      beep(5);
+    }
     getData();
-    beep(5);
     splitYellow();
   }
-  //Propane warn
-  if ( gasI2Cerror == 0 && (gasC3H8.value >= gasC3H8.warn && gasC3H8.value < gasC3H8.alarm) )
+  else 
   {
+    if ( coAlarming == true ) coAlarming = false;
+  }
+  //Propane warn
+  if ( coAlarming == false && gasI2Cerror == 0 && (gasC3H8.value >= gasC3H8.warn && gasC3H8.value < gasC3H8.alarm) )
+  {
+    propaneAlarming = true;
+    alarming = true;
+    if ( setPointMillis == 0 ) setPointMillis = currentMillis;
+    else 
+    {
+      currentMillis = millis();
+      if ( currentMillis - setPointMillis >= fourSeconds ) 
+      {
+        setPointMillis = 0;
+        beep(2);
+      }
+    }
     getData(); 
     propaneMapped = map(gasC3H8.value,0,2100,0,100);        //convert propane value to percent of STEL level. i.e. 1890 = 90% to 2100
     propaneMapped = constrain(propaneMapped, 0, 100);   //constrain possible values to range of 0 - 100
     neoPercent(propaneMapped);  
   }
+  //Propane alarm
+  else if ( gasI2Cerror == 0 && (gasC3H8.value >= gasC3H8.alarm ) )
+  {
+    propaneAlarming = true;
+    alarming = true;
+    currentMillis = millis();
+    if ( setPointMillis == 0 ) setPointMillis = currentMillis;
+    else 
+    {
+      currentMillis = millis();
+      if ( currentMillis - setPointMillis >= fourSeconds ) 
+      {
+        beep(2);
+      }
+    }
+    getData(); 
+    propaneMapped = map(gasC3H8.value,0,2100,0,100);        //convert propane value to percent of STEL level. i.e. 1890 = 90% to 2100
+    propaneMapped = constrain(propaneMapped, 0, 100);   //constrain possible values to range of 0 - 100
+    neoPercent(propaneMapped);  
+  }
+  else 
+  {
+    if ( propaneAlarming == true) propaneAlarming = false;
+  }
+  if ( coAlarming == false && propaneAlarming == false && alarming == true ) alarming = false;
   
   /*// alarm and frequent checks
   if ( gasI2Cerror == 0 && (gasCO.value >= 70 || gasC3H8.value >= 2100 || gasC4H10.value >= 1000) )
@@ -218,6 +270,7 @@ void loop()
 }
 void chirp()
 {
+  if ( silence == true ) return;
   tone(buzzerPin, 2000); // Send sound signal...
   delay(300);        
   noTone(buzzerPin);     // Stop sound...
@@ -229,6 +282,7 @@ void chirp()
 }
 void alarm()
 {
+  if ( silence == true ) return;
   chirp();
   cycleRed();
   pixels->clear();
@@ -246,6 +300,7 @@ void alarm()
 
 void beep(int beepCount)
 {
+  if ( silence == true ) return;
   for(int i=0; i<beepCount; i++)
   {
     tone(buzzerPin, 4000);
