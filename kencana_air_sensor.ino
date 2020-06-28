@@ -144,7 +144,14 @@ void setup() {
     gas.begin(gasI2Caddress);        //the default I2C address of the slave is 0x04
     gasFirmwareversion = gas.getVersion();
     gas.powerOn();
-  if ( Serial ) Serial.println("Gas sensor Initialized");
+  if ( Serial ) Serial.print("Gas sensor Initialized. Preheating...");
+  currentMillis = millis();
+  while ( currentMillis < fifteenMinutes ) 
+  {
+    if ( Serial ) Serial.print(".");
+    delay(1000);
+    currentMillis = millis();
+  }
   }
   else 
   {
