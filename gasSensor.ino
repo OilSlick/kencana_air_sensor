@@ -22,10 +22,9 @@ void logFiveMinuteObs(float latestValue, float (&twentySecondgas)[15], float (&r
     }
     runningAvg = obsSum / TwentySecondCyclesCnt;
     #ifdef DEBUG
-      Serial.print("Value ") & Serial.print(TwentySecondCyclesCnt) & Serial.print(": ") & Serial.println(twentySecondgas[TwentySecondCyclesCnt]); //#DEBUG
-      Serial.print("obsSum: ") & Serial.println(obsSum); //#DEBUG
-      Serial.print("runningAvg: ") & Serial.println(runningAvg); //#DEBUG
-      Serial.println("");
+      Serial.print(twentySecondgas[TwentySecondCyclesCnt]) & Serial.print("       |");
+      Serial.print(obsSum) & Serial.print("       |");
+      Serial.print(runningAvg) & Serial.println("       |");
     #endif
   }
 }

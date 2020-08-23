@@ -21,7 +21,7 @@
 #include <Wire.h>                     //Needed for I2C 
 #include "MutichannelGasSensor.h"     //Needed for gas sensor
 #include <Adafruit_NeoPixel.h>
-//#define DEBUG 1
+#define DEBUG 1
 
 //For Neopixel
 const int NeoPin {13};
@@ -105,7 +105,7 @@ gas_t gasCH4 = { 6, 0, 1, 0, 50000, 50000, 50000, 0, 0 };
 gas_t gasH2 = { 7, 0, 1, 1, 1000, 1000, 1000, 0, 0 };
 gas_t gasC2H5OH = { 8, 0, 1, 10, 500, 2000, 3300, 0, 0 };
 
-int outputLVL {0};                     //To enable debugging
+int outputLVL{0};                     //To enable debugging
 bool debugPrinted {false};             //track if we've printed debug data (don't spam serial console)
 
 void setup() {
@@ -119,7 +119,7 @@ void setup() {
 
   #ifdef DEBUG 
     Serial.begin(115200);
-    delay(1000);
+    delay(2500);
     if ( Serial ) Serial.println("Serial enabled");
   #endif
   
@@ -131,7 +131,9 @@ void setup() {
   //433E6 for Asia (433E6 for MCW home)
   //866E6 for Europe
   //915E6 for North America
-  if ( Serial ) Serial.println("Initializing LoRa");
+  #ifdef DEBUG
+    if ( Serial ) Serial.println("Initializing LoRa");
+  #endif
   while (!LoRa.begin(433E6)) {
     
    #ifdef DEBUG 
@@ -157,16 +159,18 @@ void setup() {
     gas.begin(gasI2Caddress);        //the default I2C address of the slave is 0x04
     gasFirmwareversion = gas.getVersion();
     gas.powerOn();
+  }
   
   #ifndef DEBUG
     currentMillis = millis();  //preheat sensor before we take readings
     while ( currentMillis < fifteenMinutes ) 
     {
       delay(1000);
+      splitYellow();
       currentMillis = millis();
     }
   #endif
-  }
+  
   #ifdef DEBUG 
     else 
     {
@@ -202,14 +206,44 @@ void loop()
   if ( currentMillis - previousBlinked > twentySeconds) 
   {
     getData();
+    #ifdef DEBUG 
+      Serial.println("+----------+----------------+-----------+-------------+");
+      Serial.println("|   Gas    |  Latest Value  |  obsSum   |  runningAvg |");
+      Serial.println("+----------+----------------+-----------+-------------+");
+      Serial.print("| NH3      |  ");
+    #endif
     logFiveMinuteObs(gasNH3.value, gasNH3.twentySecondObs, gasNH3.runningAvg );
+    #ifdef DEBUG 
+      Serial.print("| CO       |  ");
+    #endif
     logFiveMinuteObs(gasCO.value, gasCO.twentySecondObs, gasCO.runningAvg );
+    #ifdef DEBUG 
+      Serial.print("| NO2      |  ");
+    #endif
     logFiveMinuteObs(gasNO2.value, gasNO2.twentySecondObs, gasNO2.runningAvg );
+    #ifdef DEBUG 
+      Serial.print("| C3H8     |  ");
+    #endif
     logFiveMinuteObs(gasC3H8.value, gasC3H8.twentySecondObs, gasC3H8.runningAvg );
+    #ifdef DEBUG 
+      Serial.print("| C4H10    |  ");
+    #endif
     logFiveMinuteObs(gasC4H10.value, gasC4H10.twentySecondObs, gasC4H10.runningAvg );
+    #ifdef DEBUG 
+      Serial.print("| CH4      |  ");
+    #endif
     logFiveMinuteObs(gasCH4.value, gasCH4.twentySecondObs, gasCH4.runningAvg );
+    #ifdef DEBUG 
+      Serial.print("| H2       |  ");
+    #endif
     logFiveMinuteObs(gasH2.value, gasH2.twentySecondObs, gasH2.runningAvg );
+    #ifdef DEBUG 
+      Serial.print("| C2H5OH   |  ");
+    #endif
     logFiveMinuteObs(gasC2H5OH.value, gasC2H5OH.twentySecondObs, gasC2H5OH.runningAvg );
+    #ifdef DEBUG
+    Serial.println("+----------+----------------+-----------+-------------+");
+    #endif
     if ( TwentySecondCyclesCnt == 15 ) TwentySecondCyclesCnt = 0;
     else TwentySecondCyclesCnt++;
     #ifdef DEBUG
