@@ -159,8 +159,6 @@ void encodeData() {
     GasPayLoad[29] = a.gasBytes[1];
     GasPayLoad[30] = a.gasBytes[2];
     GasPayLoad[31] = a.gasBytes[3];
-    Serial.print("Valid: ");
-    Serial.println(gasCO.value_is_valid);
   }
   else 
   {
@@ -170,8 +168,6 @@ void encodeData() {
     GasPayLoad[29] = a.gasBytes[1];
     GasPayLoad[30] = a.gasBytes[2];
     GasPayLoad[31] = a.gasBytes[3];
-    Serial.print("Valid: ");
-    Serial.println(gasCO.value_is_valid);
   }
 }
 
@@ -180,7 +176,7 @@ void transmitData() {
     broadcastData(destination, GasPayLoad, sizeof(GasPayLoad));
     transmitRequested = 0;
 }
-  
+#ifdef DEBUG
 void printData() {
   Serial.println("+-------------------------+-------------------+--------+---------+");
   Serial.println("|          Gas            |    Value (PPM)    |  High  | Invalid |");
@@ -211,7 +207,7 @@ void printData() {
   Serial.print(" ppm ");
   if( gasNO2.value >= 4 ) Serial.print("          X");
   Serial.println();
-  //want < 5ppm
+  //want < 5ppm https://www.cdc.gov/niosh/idlh/10102440.html
 
   Serial.print(F("| Propane (C3H8)          |  "));
   if( gasC3H8.value >= 0 ) Serial.print(gasC3H8.value);
@@ -255,6 +251,8 @@ void printData() {
   Serial.println();
   Serial.println();
 }
+#endif
+
 bool isValid(int gas_id, float gas_value) {
   if ( gas_id == 1 ) 
   {

@@ -1,15 +1,14 @@
-void displayDebug(String debugMessage)
+#ifdef DEBUG
+void displayDebug()
 {
   if ( Serial )
   {
     Serial.println("This sensor: kencana air sensor");
-    Serial.println("LoRa address: 0x" + String(localAddress, HEX));
-    Serial.println("debug status: " + String(debug));
-    Serial.println("LastSentTrans: " + String(LastSentTrans));
+    Serial.println("LoRa address: 0x") & Serial.println(localAddress, HEX);
+    Serial.print("outputLVL: ") & Serial.println(outputLVL);
     Serial.print("Gas Sensor Firmware Version: ");
+    Serial.print("LastReceivedTrans: ") & Serial.print(LastReceivedTrans);
     Serial.println(gasFirmwareversion);
-    Serial.println(" ");
-    Serial.println("Debug Message: " + String(debugMessage));
     Serial.println(" "); 
     Serial.println("-----");
   }
@@ -25,11 +24,13 @@ void handleSerial() {
   if ( incomingCharacter == '3' ) cycleGreen();
   if ( incomingCharacter == '4' ) splitBlue();
   if ( incomingCharacter == '5' ) alarmRed();
-  if ( incomingCharacter == 'd' ) displayDebug("requested via console");
+  if ( incomingCharacter == 'd' ) displayDebug();
   if ( incomingCharacter == 'g' ) 
   {
     if ( gasI2Cerror == 0 ) getData();
-    printData();
+    #ifdef DEBUG 
+      if (Serial) printData();
+    #endif
   }
   if ( incomingCharacter == 'h' )
   {
@@ -51,7 +52,9 @@ void handleSerial() {
     getData();
     encodeData();
     transmitData();
-    printData();
+    #ifdef DEBUG 
+      printData();
+    #endif
   }
  }
 }
@@ -68,3 +71,4 @@ void logReceipt(byte sender, byte recipient, byte incomingMsgId, byte incomingLe
     Serial.println("============================");
    }
 } //END logReceipt()
+#endif

@@ -21,6 +21,7 @@
 #include <Wire.h>                     //Needed for I2C 
 #include "MutichannelGasSensor.h"     //Needed for gas sensor
 #include <Adafruit_NeoPixel.h>
+#define DEBUG 1
 
 //For Neopixel
 const int NeoPin {13};
@@ -100,9 +101,8 @@ gas_t gasCH4 = { 6, 0, 1, 0, 50000, 50000, 50000 };
 gas_t gasH2 = { 7, 0, 1, 1, 1000, 1000, 1000 };
 gas_t gasC2H5OH = { 8, 0, 1, 10, 500, 2000, 3300 };
 
-bool debug {true};                     //To enable debugging
+int outputLVL {0};                     //To enable debugging
 bool debugPrinted {false};             //track if we've printed debug data (don't spam serial console)
-String debugMessage;                   //optional message to add to displayDebug()
 
 void setup() {
   // Create a new NeoPixel object dynamically with these values:
@@ -112,10 +112,12 @@ void setup() {
   
   // configure buzzer pin as output
   pinMode(buzzerPin, OUTPUT); 
-  
-  Serial.begin(115200);
-  delay(1000);
-  if ( Serial ) Serial.println("Serial enabled");
+
+  #ifdef DEBUG 
+    Serial.begin(115200);
+    delay(1000);
+    if ( Serial ) Serial.println("Serial enabled");
+  #endif
   
   //--------- Lora Settings
   //setup LoRa transceiver module
@@ -127,10 +129,15 @@ void setup() {
   //915E6 for North America
   if ( Serial ) Serial.println("Initializing LoRa");
   while (!LoRa.begin(433E6)) {
-    if ( Serial ) Serial.print(".");
+    
+   #ifdef DEBUG 
+     if ( Serial ) Serial.print(".");
+   #endif
     delay(500);
   }
-  if ( Serial ) Serial.println("LoRa Initialized");
+  #ifdef DEBUG 
+    if ( Serial ) Serial.println("LoRa Initialized");
+  #endif
   //--------- End Lora Settings
 
   // For gas sensor
@@ -140,25 +147,32 @@ void setup() {
   
   if (gasI2Cerror == 0)
   {
-    if ( Serial ) Serial.println("Initializing gas sensor");
+    #ifdef DEBUG 
+      if ( Serial ) Serial.println("Initializing gas sensor");
+    #endif
     gas.begin(gasI2Caddress);        //the default I2C address of the slave is 0x04
     gasFirmwareversion = gas.getVersion();
     gas.powerOn();
-  if ( Serial ) Serial.print("Gas sensor Initialized. Preheating...");
+  #ifdef DEBUG 
+    if ( Serial ) Serial.print("Gas sensor Initialized. Preheating...");
+  #endif
   currentMillis = millis();
-  while ( currentMillis < fifteenMinutes ) 
-  {
-    if ( Serial ) Serial.print(".");
-    delay(1000);
-    currentMillis = millis();
+  #ifndef DEBUG
+    while ( currentMillis < fifteenMinutes ) 
+    {
+      if ( Serial ) Serial.print(".");
+      delay(1000);
+      currentMillis = millis();
+    }
+  #endif
   }
-  }
-  else 
-  {
-    if ( Serial ) Serial.println("Gas sensor I2C address unresponsive.");
-  }
-
-  displayDebug("setup complete");
+  #ifdef DEBUG 
+    else 
+    {
+      if ( Serial ) Serial.println("Gas sensor I2C address unresponsive.");
+    }
+    displayDebug();
+  #endif
 
   txStatusOnline();
 
@@ -180,7 +194,9 @@ void setup() {
 
 void loop() 
 {
-  if (Serial) handleSerial();  //permit sending codes through serial
+  #ifdef DEBUG 
+    if (Serial) handleSerial();  //permit sending codes through serial
+  #endif
   currentMillis = millis();
   if ( currentMillis - previousBlinked > twentySeconds ) 
   {
@@ -199,7 +215,9 @@ void loop()
       encodeData();
       transmitData();
     }
-    if (Serial) printData();
+    #ifdef DEBUG
+      if (Serial) printData();
+    #endif
   }
 
   //Carbon Monoxide warn

@@ -16,7 +16,9 @@ void broadcastData(byte destination, byte GasPayLoad[], int sizeofGasPayLoad) {
   LoRa.endPacket();                     // finish packet and send it
   msgCount++;                           // increment message ID
   LastSentTrans = byte(GasPayLoad[1]);
-  if ( debug == true && Serial ) displayDebug("broadcastData()");
+  #ifdef DEBUG
+    if (Serial) displayDebug();
+  #endif
   digitalWrite(RFM95_SS, HIGH);
 }
 void broadcastMessage(byte destination, byte MessagePayload[], int sizeofMessagePayload) {
@@ -30,6 +32,8 @@ void broadcastMessage(byte destination, byte MessagePayload[], int sizeofMessage
   LoRa.endPacket();                     // finish packet and send it
   msgCount++;                           // increment message ID
   LastSentTrans = byte(MessagePayload[1]);
-  if ( debug == true && Serial ) displayDebug("broadcastMessage()");
+  #ifdef DEBUG
+    if ( Serial ) displayDebug();
+  #endif
   digitalWrite(RFM95_SS, HIGH);
 }

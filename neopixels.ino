@@ -192,15 +192,6 @@ void neoPercent(int gasValueMapped)
     delay(30);
     if ( i == 0 ) break;
   }
-  /* #DEBUG
-  Serial.print("gasValueMapped: ");
-  Serial.println(gasValueMapped);
-  Serial.print("percentLED: ");
-  Serial.println(percentLED);
-  Serial.print("pixelPercent: ");
-  Serial.println(pixelPercent);
-  handleSerial();
-  while(!Serial.available()); */
 }
 void blinkGreen() {
   pixels->setPixelColor(0, pixels->Color(0, 25, 0));
