@@ -11,6 +11,27 @@ void getData() {
     gasC2H5OH.value = gas.measure_C2H5OH(); 
   }
 }
+void logTwentySecondObs(float latestValue, float (&twentySecondgas)[3]){
+  Serial.print("latestValue: ") & Serial.println(latestValue); //#DEBUG
+  if ( twentySecondgas[0] == NULL ) twentySecondgas[0] = latestValue;
+  else if ( twentySecondgas[1] == NULL ) twentySecondgas[1] = latestValue;
+  else if ( twentySecondgas[2] == NULL ) 
+  {
+    twentySecondgas[2] = latestValue;
+    Serial.print("value[0]: ") & Serial.println(twentySecondgas[0]); //#DEBUG
+    Serial.print("value[1]: ") & Serial.println(twentySecondgas[1]); //#DEBUG
+    Serial.print("value[2]: ") & Serial.println(twentySecondgas[2]); //#DEBUG
+    Serial.println(""); //#DEBUG
+    float sixtySecondSum = twentySecondgas[0] + twentySecondgas[1] + twentySecondgas[2];
+    Serial.print("sixtySecondSum: ") & Serial.println(sixtySecondSum);  //#DEBUG
+    float sixtySecondAvg = sixtySecondSum / 3;
+    Serial.print("sixtySecondAvg: ") & Serial.println(sixtySecondAvg);  //#DEBUG
+    Serial.println("");  //#DEBUG
+    twentySecondgas[0] = latestValue;
+    twentySecondgas[1] = NULL;
+    twentySecondgas[2] = NULL;
+  }
+}
 void encodeData() {
   gasUnion a;  
   if ( isValid(1, gasNH3.value) )

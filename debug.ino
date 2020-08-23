@@ -4,9 +4,9 @@ void displayDebug()
   if ( Serial )
   {
     Serial.println("This sensor: kencana air sensor");
-    Serial.println("LoRa address: 0x") & Serial.println(localAddress, HEX);
+    Serial.print("LoRa address: 0x") & Serial.println(localAddress, HEX);
     Serial.print("outputLVL: ") & Serial.println(outputLVL);
-    Serial.print("Gas Sensor Firmware Version: ");
+    Serial.print("Gas Sensor Firmware Version: ") & Serial.println(gasFirmwareversion);
     Serial.print("LastReceivedTrans: ") & Serial.print(LastReceivedTrans);
     Serial.println(gasFirmwareversion);
     Serial.println(" "); 

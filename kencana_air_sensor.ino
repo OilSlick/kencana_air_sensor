@@ -89,17 +89,27 @@ struct gas_t {
   const int maxDetectable;
   const int warn;
   const int alarm;
+  float twentySecondObs[3];
 };
 
 //https://stackoverflow.com/questions/47883151/arduino-ide-does-not-allow-struct-variables-outside-a-function
-gas_t gasNH3 = { 1, 0, 1, 1, 500, 200, 300 };
-gas_t gasCO = { 2, 0, 1, 1, 1000, 50, 100 }; 
-gas_t gasNO2 = { 3, 0, 1, 0.05, 10, 4, 5 };
-gas_t gasC3H8 = { 4, 0, 1, 0, 4000, 1500, 2100 };
-gas_t gasC4H10 = { 5, 0, 1, 0, 1500, 900, 1000 };
-gas_t gasCH4 = { 6, 0, 1, 0, 50000, 50000, 50000 };
-gas_t gasH2 = { 7, 0, 1, 1, 1000, 1000, 1000 };
-gas_t gasC2H5OH = { 8, 0, 1, 10, 500, 2000, 3300 };
+gas_t gasNH3 = { 1, 0, 1, 1, 500, 200, 300, {0,0,0} };
+gas_t gasCO = { 2, 0, 1, 1, 1000, 50, 100, {0,0,0} }; 
+gas_t gasNO2 = { 3, 0, 1, 0.05, 10, 4, 5, {0,0,0} };
+gas_t gasC3H8 = { 4, 0, 1, 0, 4000, 1500, 2100, {0,0,0} };
+gas_t gasC4H10 = { 5, 0, 1, 0, 1500, 900, 1000, {0,0,0} };
+gas_t gasCH4 = { 6, 0, 1, 0, 50000, 50000, 50000, {0,0,0} };
+gas_t gasH2 = { 7, 0, 1, 1, 1000, 1000, 1000, {0,0,0} };
+gas_t gasC2H5OH = { 8, 0, 1, 10, 500, 2000, 3300, {0,0,0} };
+
+/*float twentySecondgasNH3[3]{0,0,0};
+float twentySecondgasCO[3]{0,0,0};
+float twentySecondgasNO2[3]{0,0,0};
+float twentySecondgasC3H8[3]{0,0,0};
+float twentySecondgasC4H10[3]{0,0,0};
+float twentySecondgasCH4[3]{0,0,0};
+float twentySecondgasH2[3]{0,0,0};
+float twentySecondgasC2H5OH[3]{0,0,0};*/
 
 int outputLVL {0};                     //To enable debugging
 bool debugPrinted {false};             //track if we've printed debug data (don't spam serial console)
@@ -198,9 +208,18 @@ void loop()
     if (Serial) handleSerial();  //permit sending codes through serial
   #endif
   currentMillis = millis();
-  if ( currentMillis - previousBlinked > twentySeconds ) 
+  if ( currentMillis - previousBlinked > twentySeconds) 
   {
     getData();
+    logTwentySecondObs(gasNH3.value, gasNH3.twentySecondObs );
+    logTwentySecondObs(gasCO.value, gasCO.twentySecondObs );
+    logTwentySecondObs(gasNO2.value, gasNO2.twentySecondObs );
+    logTwentySecondObs(gasC3H8.value, gasC3H8.twentySecondObs );
+    logTwentySecondObs(gasC4H10.value, gasC4H10.twentySecondObs );
+    logTwentySecondObs(gasCH4.value, gasCH4.twentySecondObs );
+    logTwentySecondObs(gasH2.value, gasH2.twentySecondObs );
+    logTwentySecondObs(gasC2H5OH.value, gasC2H5OH.twentySecondObs );
+
     previousBlinked = currentMillis;
     if ( alarming == false ) blinkGreen();
     blinked = true;
@@ -283,15 +302,6 @@ void loop()
     if ( propaneAlarming == true) propaneAlarming = false;
   }
   if ( coAlarming == false && propaneAlarming == false && alarming == true ) alarming = false;
-  
-  /*// alarm and frequent checks
-  if ( gasI2Cerror == 0 && (gasCO.value >= 70 || gasC3H8.value >= 2100 || gasC4H10.value >= 1000) )
-  {
-    gasCO.value = gas.measure_CO();
-    gasC3H8.value = gas.measure_C3H8();
-    gasC4H10.value = gas.measure_C4H10();
-    alarmRed();
-  }*/
 }
 void chirp()
 {
