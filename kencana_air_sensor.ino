@@ -255,7 +255,7 @@ void loop()
     blinked = true;
   }
   else blinked = false;
-  if ( currentMillis - previousMillis > fiveMinutes || TwentySecondCyclesCnt == 15 )
+  if ( ( currentMillis - previousMillis ) > fiveMinutes )
   {
     previousMillis = currentMillis;
     if ( gasI2Cerror == 0 ) 
