@@ -21,7 +21,7 @@
 #include <Wire.h>                     //Needed for I2C 
 #include "MutichannelGasSensor.h"     //Needed for gas sensor
 #include <Adafruit_NeoPixel.h>
-#define DEBUG 1
+//#define DEBUG 1
 
 //For Neopixel
 const int NeoPin {13};
@@ -105,15 +105,6 @@ gas_t gasCH4 = { 6, 0, 1, 0, 50000, 50000, 50000, 0, 0 };
 gas_t gasH2 = { 7, 0, 1, 1, 1000, 1000, 1000, 0, 0 };
 gas_t gasC2H5OH = { 8, 0, 1, 10, 500, 2000, 3300, 0, 0 };
 
-/*float twentySecondgasNH3[3]{0,0,0};
-float twentySecondgasCO[3]{0,0,0};
-float twentySecondgasNO2[3]{0,0,0};
-float twentySecondgasC3H8[3]{0,0,0};
-float twentySecondgasC4H10[3]{0,0,0};
-float twentySecondgasCH4[3]{0,0,0};
-float twentySecondgasH2[3]{0,0,0};
-float twentySecondgasC2H5OH[3]{0,0,0};*/
-
 int outputLVL {0};                     //To enable debugging
 bool debugPrinted {false};             //track if we've printed debug data (don't spam serial console)
 
@@ -166,14 +157,11 @@ void setup() {
     gas.begin(gasI2Caddress);        //the default I2C address of the slave is 0x04
     gasFirmwareversion = gas.getVersion();
     gas.powerOn();
-  #ifdef DEBUG 
-    if ( Serial ) Serial.print("Gas sensor Initialized. Preheating...");
-  #endif
-  currentMillis = millis();
+  
   #ifndef DEBUG
+    currentMillis = millis();  //preheat sensor before we take readings
     while ( currentMillis < fifteenMinutes ) 
     {
-      if ( Serial ) Serial.print(".");
       delay(1000);
       currentMillis = millis();
     }
@@ -224,14 +212,16 @@ void loop()
     logFiveMinuteObs(gasC2H5OH.value, gasC2H5OH.twentySecondObs, gasC2H5OH.runningAvg );
     if ( TwentySecondCyclesCnt == 15 ) TwentySecondCyclesCnt = 0;
     else TwentySecondCyclesCnt++;
-    Serial.print("TwentySecondCyclesCnt: ") & Serial.println(TwentySecondCyclesCnt); //#DEBUG
+    #ifdef DEBUG
+      Serial.print("TwentySecondCyclesCnt: ") & Serial.println(TwentySecondCyclesCnt); //#DEBUG
+    #endif
 
     previousBlinked = currentMillis;
     if ( alarming == false ) blinkGreen();
     blinked = true;
   }
   else blinked = false;
-  if ( currentMillis - previousMillis > fiveMinutes )
+  if ( currentMillis - previousMillis > fiveMinutes || TwentySecondCyclesCnt == 15 )
   {
     previousMillis = currentMillis;
     if ( gasI2Cerror == 0 ) 
