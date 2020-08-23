@@ -76,6 +76,8 @@ unsigned char gasFirmwareversion;
 int gasValueMapped;
 float decodedValue;
 int propaneMapped;                    //convert propane value to percent of STEL level. i.e. 1890 = 90% to 2100
+int TwentySecondCyclesCnt{0};
+
 union gasUnion  //Used to convert float to bytes[4] adapted from: http://www.cplusplus.com/forum/beginner/18566/
 {
         float gasVal;
@@ -89,18 +91,19 @@ struct gas_t {
   const int maxDetectable;
   const int warn;
   const int alarm;
-  float twentySecondObs[3];
+  float twentySecondObs[15];
+  float runningAvg;
 };
 
 //https://stackoverflow.com/questions/47883151/arduino-ide-does-not-allow-struct-variables-outside-a-function
-gas_t gasNH3 = { 1, 0, 1, 1, 500, 200, 300, {0,0,0} };
-gas_t gasCO = { 2, 0, 1, 1, 1000, 50, 100, {0,0,0} }; 
-gas_t gasNO2 = { 3, 0, 1, 0.05, 10, 4, 5, {0,0,0} };
-gas_t gasC3H8 = { 4, 0, 1, 0, 4000, 1500, 2100, {0,0,0} };
-gas_t gasC4H10 = { 5, 0, 1, 0, 1500, 900, 1000, {0,0,0} };
-gas_t gasCH4 = { 6, 0, 1, 0, 50000, 50000, 50000, {0,0,0} };
-gas_t gasH2 = { 7, 0, 1, 1, 1000, 1000, 1000, {0,0,0} };
-gas_t gasC2H5OH = { 8, 0, 1, 10, 500, 2000, 3300, {0,0,0} };
+gas_t gasNH3 = { 1, 0, 1, 1, 500, 200, 300, 0, 0 };
+gas_t gasCO = { 2, 0, 1, 1, 1000, 50, 100, 0, 0 }; 
+gas_t gasNO2 = { 3, 0, 1, 0.05, 10, 4, 5, 0, 0 };
+gas_t gasC3H8 = { 4, 0, 1, 0, 4000, 1500, 2100, 0, 0 };
+gas_t gasC4H10 = { 5, 0, 1, 0, 1500, 900, 1000, 0, 0 };
+gas_t gasCH4 = { 6, 0, 1, 0, 50000, 50000, 50000, 0, 0 };
+gas_t gasH2 = { 7, 0, 1, 1, 1000, 1000, 1000, 0, 0 };
+gas_t gasC2H5OH = { 8, 0, 1, 10, 500, 2000, 3300, 0, 0 };
 
 /*float twentySecondgasNH3[3]{0,0,0};
 float twentySecondgasCO[3]{0,0,0};
@@ -211,14 +214,17 @@ void loop()
   if ( currentMillis - previousBlinked > twentySeconds) 
   {
     getData();
-    logTwentySecondObs(gasNH3.value, gasNH3.twentySecondObs );
-    logTwentySecondObs(gasCO.value, gasCO.twentySecondObs );
-    logTwentySecondObs(gasNO2.value, gasNO2.twentySecondObs );
-    logTwentySecondObs(gasC3H8.value, gasC3H8.twentySecondObs );
-    logTwentySecondObs(gasC4H10.value, gasC4H10.twentySecondObs );
-    logTwentySecondObs(gasCH4.value, gasCH4.twentySecondObs );
-    logTwentySecondObs(gasH2.value, gasH2.twentySecondObs );
-    logTwentySecondObs(gasC2H5OH.value, gasC2H5OH.twentySecondObs );
+    logFiveMinuteObs(gasNH3.value, gasNH3.twentySecondObs, gasNH3.runningAvg );
+    logFiveMinuteObs(gasCO.value, gasCO.twentySecondObs, gasCO.runningAvg );
+    logFiveMinuteObs(gasNO2.value, gasNO2.twentySecondObs, gasNO2.runningAvg );
+    logFiveMinuteObs(gasC3H8.value, gasC3H8.twentySecondObs, gasC3H8.runningAvg );
+    logFiveMinuteObs(gasC4H10.value, gasC4H10.twentySecondObs, gasC4H10.runningAvg );
+    logFiveMinuteObs(gasCH4.value, gasCH4.twentySecondObs, gasCH4.runningAvg );
+    logFiveMinuteObs(gasH2.value, gasH2.twentySecondObs, gasH2.runningAvg );
+    logFiveMinuteObs(gasC2H5OH.value, gasC2H5OH.twentySecondObs, gasC2H5OH.runningAvg );
+    if ( TwentySecondCyclesCnt == 15 ) TwentySecondCyclesCnt = 0;
+    else TwentySecondCyclesCnt++;
+    Serial.print("TwentySecondCyclesCnt: ") & Serial.println(TwentySecondCyclesCnt); //#DEBUG
 
     previousBlinked = currentMillis;
     if ( alarming == false ) blinkGreen();
@@ -230,7 +236,7 @@ void loop()
     previousMillis = currentMillis;
     if ( gasI2Cerror == 0 ) 
     {
-      getData(); 
+      //getData(); 
       encodeData();
       transmitData();
     }
