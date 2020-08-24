@@ -258,7 +258,7 @@ void loop()
     {
       //getData(); 
       encodeData();
-      //transmitData();
+      transmitData();
     }
     #ifdef DEBUG
       if (Serial) printData();
