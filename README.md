@@ -11,4 +11,4 @@ Some general information here: [http://blog.michaelcwright.com/2020/07/14/air-qu
 
 The AIO dashboard is here: https://io.adafruit.com/mcwresearch/dashboards/air-quality At the bottom of that dashboard, I also include some local weather conditions (updated every 10 minutes from OpenWeatherMap) as well as a link to a second dashboard to analyze NO2 data: https://io.adafruit.com/mcwresearch/dashboards/nitrogen-dioxide-no2-aq-stats
 
-Keep in mind the base gas sensor from Seeed provides only a qualitative measurement. I have not calibrated it beyond what was done by the manufacturer. This is a hobby/experimental exercise, not a true environmental monitoring project. 
+Keep in mind the base gas sensor from Seeed provides only a qualitative measurement. I have not calibrated it beyond what was done by the manufacturer. This is a hobby/experimental exercise, not a true environment-monitoring project. 
