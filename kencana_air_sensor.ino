@@ -21,7 +21,7 @@
 #include <Wire.h>                     //Needed for I2C 
 #include "MutichannelGasSensor.h"     //Needed for gas sensor
 #include <Adafruit_NeoPixel.h>
-#define DEBUG 1
+#//define DEBUG 1
 
 //For Neopixel
 const int NeoPin {13};
@@ -56,15 +56,15 @@ bool alarming {false};                 // track if we're currently sounding warn
 long previousMillis {0};               // stores the last time data collected
 unsigned long currentMillis; 
 unsigned long setPointMillis;
-const long fourSeconds {4000};            
-const long twentySeconds {20000};               
-const long twoMinutes {120000};                 
-const long fiveMinutes {300000};                
-const long fifteenMinutes {900000}; 
+#define fourSeconds 4000            
+#define twentySeconds 20000             
+#define twoMinutes 120000                
+#define fiveMinutes 300000                
+#define fifteenMinutes 900000 
 
 const int buzzerPin {10};
 int beepCount {0};                                //number of times to beep()
-bool silence {false};
+bool silence {true};  //#DEBUG
 
 //For gas sensor
 //to pullup or not to pullup: https://forum.seeedstudio.com/t/problems-with-grove-multichannel-gas-sensor/6004/4
@@ -124,13 +124,7 @@ void setup() {
   #endif
   
   //--------- Lora Settings
-  //setup LoRa transceiver module
-  //LoRa.setPins(csPin, resetPin, irqPin);// set CS, reset, IRQ pin
   LoRa.setPins(RFM95_SS, RFM95_RST, RFM95_INT);
-  //replace the LoRa.begin(---E-) argument with your location's frequency 
-  //433E6 for Asia (433E6 for MCW home)
-  //866E6 for Europe
-  //915E6 for North America
   #ifdef DEBUG
     if ( Serial ) Serial.println("Initializing LoRa");
   #endif
@@ -148,6 +142,7 @@ void setup() {
 
   // For gas sensor
   Wire.begin();
+  delay(1000);
   Wire.beginTransmission(gasI2Caddress);
   gasI2Cerror = Wire.endTransmission();
   
@@ -160,11 +155,11 @@ void setup() {
     gasFirmwareversion = gas.getVersion();
     gas.powerOn();
   }
-  
   #ifndef DEBUG
     currentMillis = millis();  //preheat sensor before we take readings
     while ( currentMillis < fifteenMinutes ) 
     {
+      getData();
       delay(1000);
       splitYellow();
       currentMillis = millis();
@@ -199,6 +194,7 @@ void setup() {
 
 void loop() 
 {
+  if ( gasI2Cerror != 0 ) cycleRed();
   #ifdef DEBUG 
     if (Serial) handleSerial();  //permit sending codes through serial
   #endif
@@ -247,7 +243,7 @@ void loop()
     if ( TwentySecondCyclesCnt == 15 ) TwentySecondCyclesCnt = 0;
     else TwentySecondCyclesCnt++;
     #ifdef DEBUG
-      Serial.print("TwentySecondCyclesCnt: ") & Serial.println(TwentySecondCyclesCnt); //#DEBUG
+      Serial.print("TwentySecondCyclesCnt: ") & Serial.println(TwentySecondCyclesCnt); 
     #endif
 
     previousBlinked = currentMillis;
@@ -262,7 +258,7 @@ void loop()
     {
       //getData(); 
       encodeData();
-      transmitData();
+      //transmitData();
     }
     #ifdef DEBUG
       if (Serial) printData();
