@@ -3,7 +3,7 @@ An air sensor for inside a home.
 
 Currently I have the sensor deployed in my kitchen, near an LPG tank connected to the cooker. 
 
-Update August 25, 2020: The device now samples the air every twenty seconds as before, but now it maintains an average of these 20s samples for five minutes and then reports the five minute average to the web gateway to be further analyzed and ultimately sent to Adafruit's IO (AIO) platform. Previously the sensor sampled every 20s, and then every five minutes it sent a 'spot' sample to the gateway. Now the data sent to the gateway is more representative of the previous five minutes, not simply a spot-reading. 
+Update August 25, 2020: The device samples the air every twenty seconds as before, but now it maintains an average of these 20s samples for five minutes and then reports the five minute average to the web gateway to be further analyzed and ultimately sent to Adafruit's IO (AIO) platform. Previously the sensor sampled every 20s, and then every five minutes it sent a 'spot' sample to the gateway. Now the data sent to the gateway is more representative of the previous five minutes, not simply a spot-reading. 
 
 - [ ] I need to improve the warning and alarm feature of the sensor
 
