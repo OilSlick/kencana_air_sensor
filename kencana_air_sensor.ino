@@ -21,7 +21,7 @@
 #include <Wire.h>                     //Needed for I2C 
 #include "MutichannelGasSensor.h"     //Needed for gas sensor
 #include <Adafruit_NeoPixel.h>
-#//define DEBUG 1
+#define DEBUG 1
 
 //For Neopixel
 const int NeoPin {13};
@@ -288,7 +288,12 @@ void loop()
   {
     propaneAlarming = true;
     alarming = true;
-    if ( setPointMillis == 0 ) setPointMillis = currentMillis;
+    if ( setPointMillis == 0 )
+      {
+        setPointMillis = currentMillis;
+        encodeData();
+        transmitData();
+      }
     else 
     {
       currentMillis = millis();
