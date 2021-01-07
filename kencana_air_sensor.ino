@@ -22,6 +22,8 @@
 #include "MutichannelGasSensor.h"     //Needed for gas sensor
 #include <Adafruit_NeoPixel.h>
 #define DEBUG 1
+int outputLVL{3};                     //To enable debugging
+bool debugPrinted {false};             //track if we've printed debug data (don't spam serial console)
 
 //For Neopixel
 const int NeoPin {13};
@@ -93,20 +95,19 @@ struct gas_t {
   const int alarm;
   float twentySecondObs[15];
   float runningAvg;
+  float hourlyminobs;
+  float hourlmaxobs;
 };
 
 //https://stackoverflow.com/questions/47883151/arduino-ide-does-not-allow-struct-variables-outside-a-function
-gas_t gasNH3 = { 1, 0, 1, 1, 500, 200, 300, 0, 0 };
-gas_t gasCO = { 2, 0, 1, 1, 1000, 50, 100, 0, 0 }; 
-gas_t gasNO2 = { 3, 0, 1, 0.05, 10, 4, 5, 0, 0 };
-gas_t gasC3H8 = { 4, 0, 1, 0, 4000, 1500, 2100, 0, 0 };
-gas_t gasC4H10 = { 5, 0, 1, 0, 1500, 900, 1000, 0, 0 };
-gas_t gasCH4 = { 6, 0, 1, 0, 50000, 50000, 50000, 0, 0 };
-gas_t gasH2 = { 7, 0, 1, 1, 1000, 1000, 1000, 0, 0 };
-gas_t gasC2H5OH = { 8, 0, 1, 10, 500, 2000, 3300, 0, 0 };
-
-int outputLVL{0};                     //To enable debugging
-bool debugPrinted {false};             //track if we've printed debug data (don't spam serial console)
+gas_t gasNH3 = { 1, 0, 1, 1, 500, 200, 300, 0.0, 0.0, 0.0, 0.0 };
+gas_t gasCO = { 2, 0, 1, 1, 1000, 50, 100, 0.0, 0.0, 0.0, 0.0 }; 
+gas_t gasNO2 = { 3, 0, 1, 0.05, 10, 4, 5, 0.0, 0.0, 0.0, 0.0 };
+gas_t gasC3H8 = { 4, 0, 1, 0, 4000, 1500, 2100, 0.0, 0.0, 0.0, 0.0 };
+gas_t gasC4H10 = { 5, 0, 1, 0, 1500, 900, 1000, 0.0, 0.0, 0.0, 0.0 };
+gas_t gasCH4 = { 6, 0, 1, 0, 50000, 50000, 50000, 0.0, 0.0, 0.0, 0.0 };
+gas_t gasH2 = { 7, 0, 1, 1, 1000, 1000, 1000, 0.0, 0.0, 0.0, 0.0 };
+gas_t gasC2H5OH = { 8, 0, 1, 10, 500, 2000, 3300, 0.0, 0.0, 0.0, 0.0 };
 
 void setup() {
   // Create a new NeoPixel object dynamically with these values:
@@ -203,47 +204,50 @@ void loop()
   {
     getData();
     #ifdef DEBUG 
-      Serial.println("+----------+----------------+-----------+-------------+");
-      Serial.println("|   Gas    |  Latest Value  |  obsSum   |  runningAvg |");
-      Serial.println("+----------+----------------+-----------+-------------+");
-      Serial.print("| NH3      |  ");
+      if ( outputLVL == 3 && Serial )
+      {
+        Serial.println("+----------+----------------+-----------+-------------+");
+        Serial.println("|   Gas    |  Latest Value  |  obsSum   |  runningAvg |");
+        Serial.println("+----------+----------------+-----------+-------------+");
+        Serial.print("| NH3      |  ");
+      }
     #endif
     logFiveMinuteObs(gasNH3.value, gasNH3.twentySecondObs, gasNH3.runningAvg );
     #ifdef DEBUG 
-      Serial.print("| CO       |  ");
+      if ( outputLVL == 3 && Serial ) Serial.print("| CO       |  ");
     #endif
     logFiveMinuteObs(gasCO.value, gasCO.twentySecondObs, gasCO.runningAvg );
     #ifdef DEBUG 
-      Serial.print("| NO2      |  ");
+      if ( outputLVL == 3 && Serial ) Serial.print("| NO2      |  ");
     #endif
     logFiveMinuteObs(gasNO2.value, gasNO2.twentySecondObs, gasNO2.runningAvg );
     #ifdef DEBUG 
-      Serial.print("| C3H8     |  ");
+      if ( outputLVL == 3 && Serial ) Serial.print("| C3H8     |  ");
     #endif
     logFiveMinuteObs(gasC3H8.value, gasC3H8.twentySecondObs, gasC3H8.runningAvg );
     #ifdef DEBUG 
-      Serial.print("| C4H10    |  ");
+      if ( outputLVL == 3 && Serial ) Serial.print("| C4H10    |  ");
     #endif
     logFiveMinuteObs(gasC4H10.value, gasC4H10.twentySecondObs, gasC4H10.runningAvg );
     #ifdef DEBUG 
-      Serial.print("| CH4      |  ");
+      if ( outputLVL == 3 && Serial ) Serial.print("| CH4      |  ");
     #endif
     logFiveMinuteObs(gasCH4.value, gasCH4.twentySecondObs, gasCH4.runningAvg );
     #ifdef DEBUG 
-      Serial.print("| H2       |  ");
+      if ( outputLVL == 3 && Serial ) Serial.print("| H2       |  ");
     #endif
     logFiveMinuteObs(gasH2.value, gasH2.twentySecondObs, gasH2.runningAvg );
     #ifdef DEBUG 
-      Serial.print("| C2H5OH   |  ");
+      if ( outputLVL == 3 && Serial ) Serial.print("| C2H5OH   |  ");
     #endif
     logFiveMinuteObs(gasC2H5OH.value, gasC2H5OH.twentySecondObs, gasC2H5OH.runningAvg );
     #ifdef DEBUG
-    Serial.println("+----------+----------------+-----------+-------------+");
+    if ( outputLVL == 3 && Serial ) Serial.println("+----------+----------------+-----------+-------------+");
     #endif
     if ( TwentySecondCyclesCnt == 15 ) TwentySecondCyclesCnt = 0;
     else TwentySecondCyclesCnt++;
     #ifdef DEBUG
-      Serial.print("TwentySecondCyclesCnt: ") & Serial.println(TwentySecondCyclesCnt); 
+      if ( outputLVL == 3 && Serial ) Serial.print("TwentySecondCyclesCnt: ") & Serial.println(TwentySecondCyclesCnt); 
     #endif
 
     previousBlinked = currentMillis;
@@ -333,7 +337,7 @@ void loop()
     if ( propaneAlarming == true) propaneAlarming = false;
   }
   if ( coAlarming == false && propaneAlarming == false && alarming == true ) alarming = false;
-}
+} //END loop()
 void chirp()
 {
   if ( silence == true ) return;
