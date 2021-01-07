@@ -55,8 +55,8 @@ bool transmitRequested {0};
 
 //For timer
 bool alarming {false};                 // track if we're currently sounding warning or alarm 
-long previousMillis {0};               // stores the last time data collected
-unsigned long currentMillis; 
+unsigned long previousMillis {0};               // stores the last time data collected
+//unsigned long currentMillis; 
 unsigned long setPointMillis;
 #define fourSeconds 4000            
 #define twentySeconds 20000             
@@ -157,7 +157,7 @@ void setup() {
     gas.powerOn();
   }
   #ifndef DEBUG
-    currentMillis = millis();  //preheat sensor before we take readings
+    unsigned long currentMillis = millis();  //preheat sensor before we take readings
     while ( currentMillis < fifteenMinutes ) 
     {
       getData();
@@ -199,8 +199,9 @@ void loop()
   #ifdef DEBUG 
     if (Serial) handleSerial();  //permit sending codes through serial
   #endif
-  currentMillis = millis();
-  if ( currentMillis - previousBlinked > twentySeconds) 
+  unsigned long currentMillis = millis();
+  unsigned long elapsedMillis = currentMillis - previousBlinked;
+  if ( elapsedMillis > twentySeconds) 
   {
     getData();
     #ifdef DEBUG 
@@ -250,12 +251,14 @@ void loop()
       if ( outputLVL == 3 && Serial ) Serial.print("TwentySecondCyclesCnt: ") & Serial.println(TwentySecondCyclesCnt); 
     #endif
 
-    previousBlinked = currentMillis;
+    previousBlinked = millis();
     if ( alarming == false ) blinkGreen();
     blinked = true;
   }
   else blinked = false;
-  if ( ( currentMillis - previousMillis ) > fiveMinutes )
+  currentMillis = millis();
+  elapsedMillis = currentMillis - previousMillis;
+  if ( elapsedMillis >= fiveMinutes )
   {
     previousMillis = currentMillis;
     if ( gasI2Cerror == 0 ) 
@@ -275,7 +278,8 @@ void loop()
     coAlarming = true;
     alarming = true;
     currentMillis = millis();
-    if ( currentMillis - setPointMillis >= fourSeconds )
+    elapsedMillis = currentMillis - setPointMillis;
+    if ( elapsedMillis >= fourSeconds )
     setPointMillis = currentMillis;
     {
       beep(5);
@@ -300,8 +304,9 @@ void loop()
       }
     else 
     {
-      currentMillis = millis();
-      if ( currentMillis - setPointMillis >= fourSeconds ) 
+      unsigned long currentMillis = millis();
+      unsigned long elapsedMillis = currentMillis - setPointMillis;
+      if ( elapsedMillis >= fourSeconds ) 
       {
         setPointMillis = 0;
         beep(2);
@@ -317,12 +322,12 @@ void loop()
   {
     propaneAlarming = true;
     alarming = true;
-    currentMillis = millis();
-    if ( setPointMillis == 0 ) setPointMillis = currentMillis;
+    if ( setPointMillis == 0 ) setPointMillis = millis();
     else 
     {
       currentMillis = millis();
-      if ( currentMillis - setPointMillis >= fourSeconds ) 
+      elapsedMillis = currentMillis - setPointMillis;
+      if ( elapsedMillis >= fourSeconds ) 
       {
         beep(2);
       }
