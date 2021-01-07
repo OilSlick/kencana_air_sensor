@@ -11,8 +11,12 @@ void getData() {
     gasC2H5OH.value = gas.measure_C2H5OH(); 
   }
 }
-void logFiveMinuteObs(float latestValue, float (&twentySecondgas)[15], float (&runningAvg) ) {
+void logFiveMinuteObs(float latestValue, float (&twentySecondgas)[15], float (&runningAvg), float (&hourlyminobs), float (&hourlymaxobs) ) {
   twentySecondgas[TwentySecondCyclesCnt] = latestValue;
+  if ( fiveMinCycleCount == 0 ) {
+    hourlyminobs = latestValue;
+    hourlymaxobs = latestValue;
+    }
   if ( TwentySecondCyclesCnt != 0 ) 
   {
     float obsSum{0};
@@ -20,13 +24,26 @@ void logFiveMinuteObs(float latestValue, float (&twentySecondgas)[15], float (&r
       obsSum = obsSum + twentySecondgas[i];
       if ( i == TwentySecondCyclesCnt ) break;
     }
-    runningAvg = obsSum / TwentySecondCyclesCnt;
+    runningAvg = obsSum / ( TwentySecondCyclesCnt + 1 );  //have to add 1 because the first obs is "0", second is "1", etc...
+    if ( latestValue < hourlyminobs ) hourlyminobs = latestValue;
+    if ( latestValue > hourlymaxobs ) hourlymaxobs = latestValue;
     #ifdef DEBUG
-      Serial.print(twentySecondgas[TwentySecondCyclesCnt]) & Serial.print("       | ");
-      Serial.print(obsSum) & Serial.print("       | ");
-      Serial.println(runningAvg);
+      Serial.print(twentySecondgas[TwentySecondCyclesCnt]); Serial.print("       | ");
+      Serial.print(obsSum); Serial.print("       | ");
+      Serial.print(runningAvg); Serial.print("       | ");
+      Serial.print(hourlyminobs); Serial.print("       | ");
+      Serial.print(hourlymaxobs); Serial.println("       | ");
     #endif
   }
+}
+void getMinMax(float latestValue, float (&hourlyminobs), float (&hourlymaxobs) ) {
+  if ( fiveMinCycleCount == 0 ) {
+    hourlyminobs = latestValue;
+    hourlymaxobs = latestValue;
+  }
+  else if ( latestValue < hourlyminobs ) hourlyminobs = latestValue;
+  else if ( latestValue > hourlymaxobs ) hourlymaxobs = latestValue;
+  
 }
 void encodeData() {
   gasUnion a;  

@@ -58,6 +58,7 @@ bool alarming {false};                 // track if we're currently sounding warn
 unsigned long previousMillis {0};               // stores the last time data collected
 //unsigned long currentMillis; 
 unsigned long setPointMillis;
+int fiveMinCycleCount{0};
 #define fourSeconds 4000            
 #define twentySeconds 20000             
 #define twoMinutes 120000                
@@ -96,7 +97,7 @@ struct gas_t {
   float twentySecondObs[15];
   float runningAvg;
   float hourlyminobs;
-  float hourlmaxobs;
+  float hourlymaxobs;
 };
 
 //https://stackoverflow.com/questions/47883151/arduino-ide-does-not-allow-struct-variables-outside-a-function
@@ -207,48 +208,54 @@ void loop()
     #ifdef DEBUG 
       if ( outputLVL == 3 && Serial )
       {
-        Serial.println("+----------+----------------+-----------+-------------+");
-        Serial.println("|   Gas    |  Latest Value  |  obsSum   |  runningAvg |");
-        Serial.println("+----------+----------------+-----------+-------------+");
+        Serial.println("+----------+----------------+-----------+-------------+--------------|--------------|");
+        Serial.println("|   Gas    |  Latest Value  |  obsSum   |  runningAvg | hourlyminobs | hourlymaxobs | ");
+        Serial.println("+----------+----------------+-----------+-------------+--------------|--------------|");
         Serial.print("| NH3      |  ");
       }
     #endif
-    logFiveMinuteObs(gasNH3.value, gasNH3.twentySecondObs, gasNH3.runningAvg );
+    logFiveMinuteObs(gasNH3.value, gasNH3.twentySecondObs, gasNH3.runningAvg, gasNH3.hourlyminobs, gasNH3.hourlymaxobs );
     #ifdef DEBUG 
       if ( outputLVL == 3 && Serial ) Serial.print("| CO       |  ");
     #endif
-    logFiveMinuteObs(gasCO.value, gasCO.twentySecondObs, gasCO.runningAvg );
+    logFiveMinuteObs(gasCO.value, gasCO.twentySecondObs, gasCO.runningAvg, gasCO.hourlyminobs, gasCO.hourlymaxobs );
     #ifdef DEBUG 
       if ( outputLVL == 3 && Serial ) Serial.print("| NO2      |  ");
     #endif
-    logFiveMinuteObs(gasNO2.value, gasNO2.twentySecondObs, gasNO2.runningAvg );
+    logFiveMinuteObs(gasNO2.value, gasNO2.twentySecondObs, gasNO2.runningAvg, gasNO2.hourlyminobs, gasNO2.hourlymaxobs );
     #ifdef DEBUG 
       if ( outputLVL == 3 && Serial ) Serial.print("| C3H8     |  ");
     #endif
-    logFiveMinuteObs(gasC3H8.value, gasC3H8.twentySecondObs, gasC3H8.runningAvg );
+    logFiveMinuteObs(gasC3H8.value, gasC3H8.twentySecondObs, gasC3H8.runningAvg, gasC3H8.hourlyminobs, gasC3H8.hourlymaxobs );
     #ifdef DEBUG 
       if ( outputLVL == 3 && Serial ) Serial.print("| C4H10    |  ");
     #endif
-    logFiveMinuteObs(gasC4H10.value, gasC4H10.twentySecondObs, gasC4H10.runningAvg );
+    logFiveMinuteObs(gasC4H10.value, gasC4H10.twentySecondObs, gasC4H10.runningAvg, gasC4H10.hourlyminobs, gasC4H10.hourlymaxobs );
     #ifdef DEBUG 
       if ( outputLVL == 3 && Serial ) Serial.print("| CH4      |  ");
     #endif
-    logFiveMinuteObs(gasCH4.value, gasCH4.twentySecondObs, gasCH4.runningAvg );
+    logFiveMinuteObs(gasCH4.value, gasCH4.twentySecondObs, gasCH4.runningAvg, gasCH4.hourlyminobs, gasCH4.hourlymaxobs );
     #ifdef DEBUG 
       if ( outputLVL == 3 && Serial ) Serial.print("| H2       |  ");
     #endif
-    logFiveMinuteObs(gasH2.value, gasH2.twentySecondObs, gasH2.runningAvg );
+    logFiveMinuteObs(gasH2.value, gasH2.twentySecondObs, gasH2.runningAvg, gasH2.hourlyminobs, gasH2.hourlymaxobs );
     #ifdef DEBUG 
       if ( outputLVL == 3 && Serial ) Serial.print("| C2H5OH   |  ");
     #endif
-    logFiveMinuteObs(gasC2H5OH.value, gasC2H5OH.twentySecondObs, gasC2H5OH.runningAvg );
+    logFiveMinuteObs(gasC2H5OH.value, gasC2H5OH.twentySecondObs, gasC2H5OH.runningAvg, gasC2H5OH.hourlyminobs, gasC2H5OH.hourlymaxobs );
     #ifdef DEBUG
-    if ( outputLVL == 3 && Serial ) Serial.println("+----------+----------------+-----------+-------------+");
+    if ( outputLVL == 3 && Serial ) Serial.println("+----------+----------------+-----------+-------------+--------------|--------------|");
     #endif
-    if ( TwentySecondCyclesCnt == 15 ) TwentySecondCyclesCnt = 0;
+    if ( TwentySecondCyclesCnt == 15 ) {
+      TwentySecondCyclesCnt = 0;
+      if ( fiveMinCycleCount == 12 ) fiveMinCycleCount = 0;
+      else fiveMinCycleCount++;
+    }
     else TwentySecondCyclesCnt++;
+    
     #ifdef DEBUG
-      if ( outputLVL == 3 && Serial ) Serial.print("TwentySecondCyclesCnt: ") & Serial.println(TwentySecondCyclesCnt); 
+      if ( outputLVL == 3 && Serial ) Serial.print("TwentySecondCyclesCnt: ") & Serial.println(TwentySecondCyclesCnt);
+      if ( outputLVL == 3 && Serial ) Serial.print("fiveMinCycleCount: ") & Serial.println(fiveMinCycleCount); 
     #endif
 
     previousBlinked = millis();
