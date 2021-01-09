@@ -50,7 +50,7 @@ String LastSentTrans;                 // Record last transmission sent from this
 byte GasPayLoad[32];                  // Byte array to store gas data for transmission https://www.thethingsnetwork.org/docs/devices/bytes.html
 byte MessagePayload[2];               // Byte array for network messages
 int sizeofGasPayLoad;
-bool transmitRequested {0};
+unsigned long previousWarnTx{0};
 //uint32_t convertedValue;             // store data after reducing decimal places (by * 100) before high/low encoding into two bytes
 
 //For timer
@@ -307,7 +307,8 @@ void loop()
       {
         setPointMillis = currentMillis;
         encodeData();
-        transmitData();
+        //transmitData(); //#DEBUG
+        previousWarnTx = millis();
       }
     else 
     {

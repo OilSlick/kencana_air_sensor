@@ -100,7 +100,6 @@ void encodeData() {
 void transmitData() {
     destination = webGatewayAddress;
     broadcastData(destination, GasPayLoad, sizeof(GasPayLoad));
-    transmitRequested = 0;
 }
 #ifdef DEBUG
 void printData() {
