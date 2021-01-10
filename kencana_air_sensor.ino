@@ -220,7 +220,17 @@ void loop()
     buildFiveMinuteData(gasH2.value, gasH2.twentySecondObs, gasH2.currentFiveMinAvg, gasH2.hourlyMin, gasH2.hourlyMax );
     buildFiveMinuteData(gasC2H5OH.value, gasC2H5OH.twentySecondObs, gasC2H5OH.currentFiveMinAvg, gasC2H5OH.hourlyMin, gasC2H5OH.hourlyMax );
 
-    if ( TwentySecondCyclesCnt == 15 ) {
+    //five-minute sub-routine
+    if ( TwentySecondCyclesCnt == 15 ) {     
+      gasNH3.fiveMinAvgs[fiveMinCyclesCnt] = gasNH3.currentFiveMinAvg;
+      gasCO.fiveMinAvgs[fiveMinCyclesCnt] = gasCO.currentFiveMinAvg;
+      gasNO2.fiveMinAvgs[fiveMinCyclesCnt] = gasNO2.currentFiveMinAvg;
+      gasC3H8.fiveMinAvgs[fiveMinCyclesCnt] = gasC3H8.currentFiveMinAvg;
+      gasC4H10.fiveMinAvgs[fiveMinCyclesCnt] = gasC4H10.currentFiveMinAvg;
+      gasCH4.fiveMinAvgs[fiveMinCyclesCnt] = gasCH4.currentFiveMinAvg;
+      gasH2.fiveMinAvgs[fiveMinCyclesCnt] = gasH2.currentFiveMinAvg;
+      gasC2H5OH.fiveMinAvgs[fiveMinCyclesCnt] = gasC2H5OH.currentFiveMinAvg;
+      
       TwentySecondCyclesCnt = 0;
       if ( fiveMinCyclesCnt == 12 ) fiveMinCyclesCnt = 0;
       else fiveMinCyclesCnt++;
@@ -256,93 +266,8 @@ void loop()
     #endif
   }
 
-  //Carbon Monoxide warn
-  /*if ( gasI2Cerror == 0 && (gasCO.value >= gasCO.warn && gasCO.value < gasCO.alarm) )
-  {
-    coAlarming = true;
-    alarming = true;
-    currentMillis = millis();
-    elapsedMillis = currentMillis - setPointMillis;
-    if ( elapsedMillis >= fourSeconds )
-    {
-      setPointMillis = currentMillis;
-      beep(5);
-    }
-    getData();
-    splitYellow();
-  }
-  else 
-  {
-    if ( coAlarming == true ) coAlarming = false;
-  }*/
-  //Propane warn
-  /*if ( coAlarming == false && gasI2Cerror == 0 && (gasC3H8.value >= gasC3H8.warn && gasC3H8.value < gasC3H8.alarm) )
-  {
-    #ifdef DEBUG
-      if ( outputLVL >= 2 && Serial ) {
-        Serial.print("Propane level at WARN: "); Serial.println( gasC3H8.value );
-      }
-    #endif
-    propaneAlarming = true;
-    alarming = true;
-    if ( setPointMillis == 0 && previousWarnTx == 0 )
-      {
-        setPointMillis = currentMillis;
-        encodeData();
-        //transmitData(); #DEBUG
-        previousWarnTx = millis();
-      }
-      else if ( setPointMillis == 0 && previousWarnTx != 0 ) {
-          unsigned long currentMillis = millis();
-          unsigned long elapsedMillis = currentMillis - previousWarnTx;
-          if ( elapsedMillis > fiveMinutes ) { 
-            setPointMillis = currentMillis;
-            encodeData();
-            //transmitData(); #DEBUG
-            previousWarnTx = millis();
-          }
-        }
-      }
-    else 
-    {
-      unsigned long currentMillis = millis();
-      unsigned long elapsedMillis = currentMillis - setPointMillis;
-      if ( elapsedMillis >= fourSeconds ) 
-      {
-        setPointMillis = 0;
-        beep(2);
-      }
-    }
-    getData(); 
-    propaneMapped = map(gasC3H8.value,0,2100,0,100);        //convert propane value to percent of STEL level. i.e. 1890 = 90% to 2100
-    propaneMapped = constrain(propaneMapped, 0, 100);   //constrain possible values to range of 0 - 100
-    neoPercent(propaneMapped);  
-  }*/
-  //Propane alarm
-  /*else if ( gasI2Cerror == 0 && (gasC3H8.value >= gasC3H8.alarm ) )
-  {
-    propaneAlarming = true;
-    alarming = true;
-    if ( setPointMillis == 0 ) setPointMillis = millis();
-    else 
-    {
-      currentMillis = millis();
-      elapsedMillis = currentMillis - setPointMillis;
-      if ( elapsedMillis >= fourSeconds ) 
-      {
-        beep(2);
-      }
-    }
-    getData(); 
-    propaneMapped = map(gasC3H8.value,0,2100,0,100);        //convert propane value to percent of STEL level. i.e. 1890 = 90% to 2100
-    propaneMapped = constrain(propaneMapped, 0, 100);   //constrain possible values to range of 0 - 100
-    neoPercent(propaneMapped);  
-  }
-  else 
-  {
-    if ( propaneAlarming == true) propaneAlarming = false;
-  }
-  if ( coAlarming == false && propaneAlarming == false && alarming == true ) alarming = false;*/
+  //Hourly routine
+
 } //END loop()
 void chirp()
 {
