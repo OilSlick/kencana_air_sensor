@@ -47,9 +47,8 @@ bool expectingMessage {false};        // Indicates alarm sent, ack needed
 bool messageReceived {false};         // Indicates a properly-formatted–but not necessarily appropriate–message received
 String LastReceivedTrans;             // Record last message received by this station
 String LastSentTrans;                 // Record last transmission sent from this station
-byte GasPayLoad[32];                  // Byte array to store gas data for transmission https://www.thethingsnetwork.org/docs/devices/bytes.html
+byte TransPayLoad[32];                  // Byte array to store gas data for transmission https://www.thethingsnetwork.org/docs/devices/bytes.html
 byte MessagePayload[2];               // Byte array for network messages
-int sizeofGasPayLoad;
 unsigned long previousWarnTx{0};
 //uint32_t convertedValue;             // store data after reducing decimal places (by * 100) before high/low encoding into two bytes
 
@@ -59,6 +58,7 @@ unsigned long previousMillis {0};               // stores the last time data col
 unsigned long setPointMillis;
 int fiveMinCyclesCnt{0};
 int TwentySecondCyclesCnt{0};
+bool hourlyDataProcessed{0};
 #define fourSeconds    4000            
 #define twentySeconds  20000             
 #define twoMinutes     120000                
@@ -232,9 +232,13 @@ void loop()
       gasCH4.fiveMinAvgs[fiveMinCyclesCnt] = gasCH4.currentFiveMinAvg;
       gasH2.fiveMinAvgs[fiveMinCyclesCnt] = gasH2.currentFiveMinAvg;
       gasC2H5OH.fiveMinAvgs[fiveMinCyclesCnt] = gasC2H5OH.currentFiveMinAvg;
-      
       TwentySecondCyclesCnt = 0;
-      if ( fiveMinCyclesCnt == 12 ) fiveMinCyclesCnt = 0;
+
+      //five-minute sub-routine
+      if ( fiveMinCyclesCnt == 12 ) {
+        processHourlyData();
+        fiveMinCyclesCnt = 0;
+      }
       else fiveMinCyclesCnt++;
     }
     else TwentySecondCyclesCnt++;
@@ -268,10 +272,8 @@ void loop()
   }
 
   //Hourly routine
-  currentMillis = millis();
-  elapsedMillis = currentMillis - previousMillis;
-  if ( elapsedMillis >= oneHour ) {
-    //processHourlyData();
+  if ( hourlyDataProcessed = true ) {
+    hourlyDataProcessed = false;
     //encodeHourlyData
     //transmitHourlyData
     //resetHourlyData
