@@ -3,13 +3,13 @@ void displayDebug()
 {
   if ( Serial )
   {
-    Serial.println("+--------------------+------------------------+");  //https://ozh.github.io/ascii-tables/
-    Serial.println("| This sensor        | kencana_air_sensor");
-    Serial.printf("| LoRa address       | 0x%d\r\n", localAddress);
-    Serial.printf("| outputLVL          | %d\r\n", outputLVL);
-    Serial.printf("| TwentySecondCyclesCnt | %d\r\n", TwentySecondCyclesCnt);
-    Serial.printf("| fiveMinCyclesCnt       | %d\r\n", fiveMinCyclesCnt); 
-    Serial.println("+--------------------+------------------------+");
+    Serial.println("+-----------------------+------------------------+");  //https://ozh.github.io/ascii-tables/
+    Serial.println("| This sensor           | kencana_air_sensor");
+     Serial.printf("| LoRa address          | 0x%d\r\n", localAddress);
+     Serial.printf("| outputLVL             | %d\r\n", outputLVL);
+     Serial.printf("| TwentySecondCyclesCnt | %d\r\n", TwentySecondCyclesCnt);
+     Serial.printf("| fiveMinCyclesCnt      | %d\r\n", fiveMinCyclesCnt); 
+    Serial.println("+-----------------------+------------------------+");
     Serial.println(" ");  
   }
   debugPrinted = true;
@@ -51,7 +51,7 @@ void handleSerial() {
   {
     getData();
     encodeData();
-    broadcastData(webGatewayAddress, TransPayLoad);
+    broadcastData(webGatewayAddress, TransPayLoad, sizeof(TransPayLoad));
     #ifdef DEBUG 
       printData();
     #endif

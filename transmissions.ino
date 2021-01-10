@@ -4,10 +4,10 @@ void txStatusOnline()
   destination = webGatewayAddress;
   MessagePayload[0] = byte(0);      //no alarm
   MessagePayload[1] = byte(255);    //status online
-  broadcastData(destination, MessagePayload);
+  broadcastData(destination, MessagePayload, sizeof(MessagePayload));
 }
-void broadcastData(byte destination, byte PayLoad[]) {
-  int sizeofPayLoad = sizeof(PayLoad);
+void broadcastData(byte destination, byte PayLoad[], int sizeofPayLoad) {
+  Serial.print("sizeofPayLoad before trans: "); Serial.println(sizeofPayLoad); //#DEBUG
   delay(200);                           // may be needed?
   LoRa.beginPacket();                   // start packet
   LoRa.write(destination);              // add destination address
@@ -18,7 +18,9 @@ void broadcastData(byte destination, byte PayLoad[]) {
   LoRa.endPacket();                     // finish packet and send it
   msgCount++;                           // increment message ID
   #ifdef DEBUG
-    if (Serial) displayDebug();
+    char Message[30];
+    sprintf(Message, "Transmitted %d bytes to 0x%d", sizeofPayLoad, destination);
+    if ( Serial ) Serial.println(Message);
   #endif
   digitalWrite(RFM95_SS, HIGH);
 }

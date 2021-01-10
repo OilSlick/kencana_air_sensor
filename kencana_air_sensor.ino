@@ -22,7 +22,7 @@
 #include "MutichannelGasSensor.h"     //Needed for gas sensor
 #include <Adafruit_NeoPixel.h>
 #define DEBUG 1
-int outputLVL{3};                     //To enable debugging
+int outputLVL{2};                     //To enable debugging
 bool debugPrinted {false};             //track if we've printed debug data (don't spam serial console)
 
 //For Neopixel
@@ -229,8 +229,6 @@ void loop()
       gasH2.fiveMinAvgs[fiveMinCyclesCnt] = gasH2.currentFiveMinAvg;
       gasC2H5OH.fiveMinAvgs[fiveMinCyclesCnt] = gasC2H5OH.currentFiveMinAvg;
       TwentySecondCyclesCnt = 0;
-
-      //five-minute sub-routine
       if ( fiveMinCyclesCnt == 12 ) {
         processHourlyData();
         fiveMinCyclesCnt = 0;
@@ -260,7 +258,9 @@ void loop()
     {
       //getData(); 
       encodeData();
-      broadcastData(webGatewayAddress, TransPayLoad);
+      int payloadsize = sizeof(TransPayLoad);
+      Serial.print("payloadsize: "); Serial.println(payloadsize); //#DEBUG
+      broadcastData(webGatewayAddress, TransPayLoad, sizeof(TransPayLoad));
     }
     #ifdef DEBUG
       if (Serial) printData();
