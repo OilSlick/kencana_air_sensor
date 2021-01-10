@@ -264,7 +264,8 @@ void loop()
     {
       //getData(); 
       encodeData();
-      transmitData();
+      //transmitData();
+      broadcastData(webGatewayAddress, TransPayLoad);
     }
     #ifdef DEBUG
       if (Serial) printData();

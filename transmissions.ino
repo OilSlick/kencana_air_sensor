@@ -5,15 +5,15 @@ void txStatusOnline()
   MessagePayload[1] = byte(255);    //status online
   broadcastData(destination, MessagePayload);
 }
-void broadcastData(byte destination, byte TransPayLoad[]) {
-  int sizeofGasPayLoad = sizeof(TransPayLoad);
+void broadcastData(byte destination, byte PayLoad[]) {
+  int sizeofPayLoad = sizeof(PayLoad);
   delay(200);                           // may be needed?
   LoRa.beginPacket();                   // start packet
   LoRa.write(destination);              // add destination address
   LoRa.write(localAddress);             // add sender address
   LoRa.write(msgCount);                 // add message ID
-  LoRa.write(sizeofGasPayLoad);        // add payload length
-  LoRa.write(TransPayLoad, sizeofGasPayLoad);              // add payload
+  LoRa.write(sizeofPayLoad);        // add payload length
+  LoRa.write(PayLoad, sizeofPayLoad);              // add payload
   LoRa.endPacket();                     // finish packet and send it
   msgCount++;                           // increment message ID
   //LastSentTrans = byte(GasPayLoad[1]);
