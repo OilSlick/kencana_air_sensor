@@ -210,14 +210,14 @@ void loop()
     getData();
 
     //#DEBUG this is quite cludgy—need to find a better way
-    logFiveMinuteObs(gasNH3.value, gasNH3.twentySecondObs, gasNH3.fiveMinAvg, gasNH3.hourlyMin, gasNH3.hourlyMax );
-    logFiveMinuteObs(gasCO.value, gasCO.twentySecondObs, gasCO.fiveMinAvg, gasCO.hourlyMin, gasCO.hourlyMax );
-    logFiveMinuteObs(gasNO2.value, gasNO2.twentySecondObs, gasNO2.fiveMinAvg, gasNO2.hourlyMin, gasNO2.hourlyMax );
-    logFiveMinuteObs(gasC3H8.value, gasC3H8.twentySecondObs, gasC3H8.fiveMinAvg, gasC3H8.hourlyMin, gasC3H8.hourlyMax );
-    logFiveMinuteObs(gasC4H10.value, gasC4H10.twentySecondObs, gasC4H10.fiveMinAvg, gasC4H10.hourlyMin, gasC4H10.hourlyMax );
-    logFiveMinuteObs(gasCH4.value, gasCH4.twentySecondObs, gasCH4.fiveMinAvg, gasCH4.hourlyMin, gasCH4.hourlyMax );
-    logFiveMinuteObs(gasH2.value, gasH2.twentySecondObs, gasH2.fiveMinAvg, gasH2.hourlyMin, gasH2.hourlyMax );
-    logFiveMinuteObs(gasC2H5OH.value, gasC2H5OH.twentySecondObs, gasC2H5OH.fiveMinAvg, gasC2H5OH.hourlyMin, gasC2H5OH.hourlyMax );
+    buildFiveMinuteData(gasNH3.value, gasNH3.twentySecondObs, gasNH3.fiveMinAvg, gasNH3.hourlyMin, gasNH3.hourlyMax );
+    buildFiveMinuteData(gasCO.value, gasCO.twentySecondObs, gasCO.fiveMinAvg, gasCO.hourlyMin, gasCO.hourlyMax );
+    buildFiveMinuteData(gasNO2.value, gasNO2.twentySecondObs, gasNO2.fiveMinAvg, gasNO2.hourlyMin, gasNO2.hourlyMax );
+    buildFiveMinuteData(gasC3H8.value, gasC3H8.twentySecondObs, gasC3H8.fiveMinAvg, gasC3H8.hourlyMin, gasC3H8.hourlyMax );
+    buildFiveMinuteData(gasC4H10.value, gasC4H10.twentySecondObs, gasC4H10.fiveMinAvg, gasC4H10.hourlyMin, gasC4H10.hourlyMax );
+    buildFiveMinuteData(gasCH4.value, gasCH4.twentySecondObs, gasCH4.fiveMinAvg, gasCH4.hourlyMin, gasCH4.hourlyMax );
+    buildFiveMinuteData(gasH2.value, gasH2.twentySecondObs, gasH2.fiveMinAvg, gasH2.hourlyMin, gasH2.hourlyMax );
+    buildFiveMinuteData(gasC2H5OH.value, gasC2H5OH.twentySecondObs, gasC2H5OH.fiveMinAvg, gasC2H5OH.hourlyMin, gasC2H5OH.hourlyMax );
 
     if ( TwentySecondCyclesCnt == 15 ) {
       TwentySecondCyclesCnt = 0;

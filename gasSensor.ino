@@ -11,7 +11,7 @@ void getData() {
     gasC2H5OH.value = gas.measure_C2H5OH(); 
   }
 }
-void logFiveMinuteObs(float currentValue, float (&twentySecondgas)[15], float (&fiveMinAvg), float (&hourlyMin), float (&hourlyMax) ) {
+void buildFiveMinuteData(float currentValue, float (&twentySecondgas)[15], float (&fiveMinAvg), float (&hourlyMin), float (&hourlyMax) ) {
   twentySecondgas[TwentySecondCyclesCnt] = currentValue;
   if ( fiveMinCycleCount == 0 ) {
     hourlyMin = currentValue;
