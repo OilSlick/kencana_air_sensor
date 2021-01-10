@@ -95,8 +95,8 @@ struct gas_t {
   const int alarm;
   float twentySecondObs[15];
   float fiveMinAvg;
-  float hourlyminobs;
-  float hourlymaxobs;
+  float hourlyMin;
+  float hourlyMax;
 };
 
 //https://stackoverflow.com/questions/47883151/arduino-ide-does-not-allow-struct-variables-outside-a-function
@@ -145,7 +145,14 @@ void setup() {
   Wire.begin();
   delay(1000);
   Wire.beginTransmission(gasI2Caddress);
-  gasI2Cerror = Wire.endTransmission();
+  gasI2Cerror = Wire.endTransmission();  //#DEBUG need to utilize this more in loop()
+  /* Wire errors: https://www.arduino.cc/en/Reference/WireEndTransmission
+   * 0:success
+   * 1:data too long to fit in transmit buffer
+   * 2:received NACK on transmit of address
+   * 3:received NACK on transmit of data
+   * 4:other error
+   */
   
   if (gasI2Cerror == 0)
   {
@@ -195,24 +202,27 @@ void setup() {
 
 void loop() 
 {
-  if ( gasI2Cerror != 0 ) cycleRed();
+  if ( gasI2Cerror > 0 ) cycleRed();
   #ifdef DEBUG 
     if (Serial) handleSerial();
   #endif
+
+  //Twenty-second routine
   unsigned long currentMillis = millis();
   unsigned long elapsedMillis = currentMillis - previousBlinked;
   if ( elapsedMillis > twentySeconds) 
   {
     getData();
 
-    logFiveMinuteObs(gasNH3.value, gasNH3.twentySecondObs, gasNH3.fiveMinAvg, gasNH3.hourlyminobs, gasNH3.hourlymaxobs );
-    logFiveMinuteObs(gasCO.value, gasCO.twentySecondObs, gasCO.fiveMinAvg, gasCO.hourlyminobs, gasCO.hourlymaxobs );
-    logFiveMinuteObs(gasNO2.value, gasNO2.twentySecondObs, gasNO2.fiveMinAvg, gasNO2.hourlyminobs, gasNO2.hourlymaxobs );
-    logFiveMinuteObs(gasC3H8.value, gasC3H8.twentySecondObs, gasC3H8.fiveMinAvg, gasC3H8.hourlyminobs, gasC3H8.hourlymaxobs );
-    logFiveMinuteObs(gasC4H10.value, gasC4H10.twentySecondObs, gasC4H10.fiveMinAvg, gasC4H10.hourlyminobs, gasC4H10.hourlymaxobs );
-    logFiveMinuteObs(gasCH4.value, gasCH4.twentySecondObs, gasCH4.fiveMinAvg, gasCH4.hourlyminobs, gasCH4.hourlymaxobs );
-    logFiveMinuteObs(gasH2.value, gasH2.twentySecondObs, gasH2.fiveMinAvg, gasH2.hourlyminobs, gasH2.hourlymaxobs );
-    logFiveMinuteObs(gasC2H5OH.value, gasC2H5OH.twentySecondObs, gasC2H5OH.fiveMinAvg, gasC2H5OH.hourlyminobs, gasC2H5OH.hourlymaxobs );
+    //#DEBUG this is quite cludgy—need to find a better way
+    logFiveMinuteObs(gasNH3.value, gasNH3.twentySecondObs, gasNH3.fiveMinAvg, gasNH3.hourlyMin, gasNH3.hourlyMax );
+    logFiveMinuteObs(gasCO.value, gasCO.twentySecondObs, gasCO.fiveMinAvg, gasCO.hourlyMin, gasCO.hourlyMax );
+    logFiveMinuteObs(gasNO2.value, gasNO2.twentySecondObs, gasNO2.fiveMinAvg, gasNO2.hourlyMin, gasNO2.hourlyMax );
+    logFiveMinuteObs(gasC3H8.value, gasC3H8.twentySecondObs, gasC3H8.fiveMinAvg, gasC3H8.hourlyMin, gasC3H8.hourlyMax );
+    logFiveMinuteObs(gasC4H10.value, gasC4H10.twentySecondObs, gasC4H10.fiveMinAvg, gasC4H10.hourlyMin, gasC4H10.hourlyMax );
+    logFiveMinuteObs(gasCH4.value, gasCH4.twentySecondObs, gasCH4.fiveMinAvg, gasCH4.hourlyMin, gasCH4.hourlyMax );
+    logFiveMinuteObs(gasH2.value, gasH2.twentySecondObs, gasH2.fiveMinAvg, gasH2.hourlyMin, gasH2.hourlyMax );
+    logFiveMinuteObs(gasC2H5OH.value, gasC2H5OH.twentySecondObs, gasC2H5OH.fiveMinAvg, gasC2H5OH.hourlyMin, gasC2H5OH.hourlyMax );
 
     if ( TwentySecondCyclesCnt == 15 ) {
       TwentySecondCyclesCnt = 0;
@@ -231,6 +241,8 @@ void loop()
     blinked = true;
   }
   else blinked = false;
+
+  //Five-minute routine
   currentMillis = millis();
   elapsedMillis = currentMillis - previousMillis;
   if ( elapsedMillis >= fiveMinutes )
