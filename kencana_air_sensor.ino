@@ -94,7 +94,7 @@ struct gas_t {
   const int warn;
   const int alarm;
   float twentySecondObs[15];
-  float runningAvg;
+  float fiveMinAvg;
   float hourlyminobs;
   float hourlymaxobs;
 };
@@ -204,47 +204,16 @@ void loop()
   if ( elapsedMillis > twentySeconds) 
   {
     getData();
-    #ifdef DEBUG 
-      if ( outputLVL == 3 && Serial )
-      {
-        Serial.println("+----------+----------------+-----------+-------------+--------------|--------------|");
-        Serial.println("|   Gas    |  Latest Value  |  obsSum   |  runningAvg | hourlyminobs | hourlymaxobs | ");
-        Serial.println("+----------+----------------+-----------+-------------+--------------|--------------|");
-        Serial.print("| NH3      |  ");
-      }
-    #endif
-    logFiveMinuteObs(gasNH3.value, gasNH3.twentySecondObs, gasNH3.runningAvg, gasNH3.hourlyminobs, gasNH3.hourlymaxobs );
-    #ifdef DEBUG 
-      if ( outputLVL == 3 && Serial ) Serial.print("| CO       |  ");
-    #endif
-    logFiveMinuteObs(gasCO.value, gasCO.twentySecondObs, gasCO.runningAvg, gasCO.hourlyminobs, gasCO.hourlymaxobs );
-    #ifdef DEBUG 
-      if ( outputLVL == 3 && Serial ) Serial.print("| NO2      |  ");
-    #endif
-    logFiveMinuteObs(gasNO2.value, gasNO2.twentySecondObs, gasNO2.runningAvg, gasNO2.hourlyminobs, gasNO2.hourlymaxobs );
-    #ifdef DEBUG 
-      if ( outputLVL == 3 && Serial ) Serial.print("| C3H8     |  ");
-    #endif
-    logFiveMinuteObs(gasC3H8.value, gasC3H8.twentySecondObs, gasC3H8.runningAvg, gasC3H8.hourlyminobs, gasC3H8.hourlymaxobs );
-    #ifdef DEBUG 
-      if ( outputLVL == 3 && Serial ) Serial.print("| C4H10    |  ");
-    #endif
-    logFiveMinuteObs(gasC4H10.value, gasC4H10.twentySecondObs, gasC4H10.runningAvg, gasC4H10.hourlyminobs, gasC4H10.hourlymaxobs );
-    #ifdef DEBUG 
-      if ( outputLVL == 3 && Serial ) Serial.print("| CH4      |  ");
-    #endif
-    logFiveMinuteObs(gasCH4.value, gasCH4.twentySecondObs, gasCH4.runningAvg, gasCH4.hourlyminobs, gasCH4.hourlymaxobs );
-    #ifdef DEBUG 
-      if ( outputLVL == 3 && Serial ) Serial.print("| H2       |  ");
-    #endif
-    logFiveMinuteObs(gasH2.value, gasH2.twentySecondObs, gasH2.runningAvg, gasH2.hourlyminobs, gasH2.hourlymaxobs );
-    #ifdef DEBUG 
-      if ( outputLVL == 3 && Serial ) Serial.print("| C2H5OH   |  ");
-    #endif
-    logFiveMinuteObs(gasC2H5OH.value, gasC2H5OH.twentySecondObs, gasC2H5OH.runningAvg, gasC2H5OH.hourlyminobs, gasC2H5OH.hourlymaxobs );
-    #ifdef DEBUG
-    if ( outputLVL == 3 && Serial ) Serial.println("+----------+----------------+-----------+-------------+--------------|--------------|");
-    #endif
+
+    logFiveMinuteObs(gasNH3.value, gasNH3.twentySecondObs, gasNH3.fiveMinAvg, gasNH3.hourlyminobs, gasNH3.hourlymaxobs );
+    logFiveMinuteObs(gasCO.value, gasCO.twentySecondObs, gasCO.fiveMinAvg, gasCO.hourlyminobs, gasCO.hourlymaxobs );
+    logFiveMinuteObs(gasNO2.value, gasNO2.twentySecondObs, gasNO2.fiveMinAvg, gasNO2.hourlyminobs, gasNO2.hourlymaxobs );
+    logFiveMinuteObs(gasC3H8.value, gasC3H8.twentySecondObs, gasC3H8.fiveMinAvg, gasC3H8.hourlyminobs, gasC3H8.hourlymaxobs );
+    logFiveMinuteObs(gasC4H10.value, gasC4H10.twentySecondObs, gasC4H10.fiveMinAvg, gasC4H10.hourlyminobs, gasC4H10.hourlymaxobs );
+    logFiveMinuteObs(gasCH4.value, gasCH4.twentySecondObs, gasCH4.fiveMinAvg, gasCH4.hourlyminobs, gasCH4.hourlymaxobs );
+    logFiveMinuteObs(gasH2.value, gasH2.twentySecondObs, gasH2.fiveMinAvg, gasH2.hourlyminobs, gasH2.hourlymaxobs );
+    logFiveMinuteObs(gasC2H5OH.value, gasC2H5OH.twentySecondObs, gasC2H5OH.fiveMinAvg, gasC2H5OH.hourlyminobs, gasC2H5OH.hourlymaxobs );
+
     if ( TwentySecondCyclesCnt == 15 ) {
       TwentySecondCyclesCnt = 0;
       if ( fiveMinCycleCount == 12 ) fiveMinCycleCount = 0;
