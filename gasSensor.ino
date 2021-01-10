@@ -235,3 +235,24 @@ bool isValid(int gas_id, float gas_value) {
     else return true;
   }
 }
+void processHourlyData() {
+  for ( int i = 0; i < 12; i++ ) {
+    gasNH3.hourlyAvg += gasNH3.fiveMinAvgs[i];
+    gasCO.hourlyAvg += gasCO.fiveMinAvgs[i];
+    gasNO2.hourlyAvg += gasNO2.fiveMinAvgs[i];
+    gasC3H8.hourlyAvg += gasC3H8.fiveMinAvgs[i];
+    gasC4H10.hourlyAvg += gasC4H10.fiveMinAvgs[i];
+    gasCH4.hourlyAvg += gasCH4.fiveMinAvgs[i];
+    gasH2.hourlyAvg += gasH2.fiveMinAvgs[i];
+    gasC2H5OH.hourlyAvg += gasC2H5OH.fiveMinAvgs[i];
+  }
+  //#DEBUG:
+  Serial.print("gasNH3.hourlyAvg: "); Serial.println(gasNH3.hourlyAvg);
+  Serial.print("gasCO.hourlyAvg: "); Serial.println(gasCO.hourlyAvg);
+  Serial.print("gasNO2.hourlyAvg: "); Serial.println(gasNO2.hourlyAvg);
+  Serial.print("gasC3H8.hourlyAvg: "); Serial.println(gasC3H8.hourlyAvg);
+  Serial.print("gasC4H10.hourlyAvg: "); Serial.println(gasC4H10.hourlyAvg);
+  Serial.print("gasCH4.hourlyAvg: "); Serial.println(gasCH4.hourlyAvg);
+  Serial.print("gasH2.hourlyAvg: "); Serial.println(gasH2.hourlyAvg);
+  Serial.print("gasC2H5OH.hourlyAvg: "); Serial.println(gasC2H5OH.hourlyAvg);
+}

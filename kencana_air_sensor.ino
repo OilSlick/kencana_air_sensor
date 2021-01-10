@@ -59,11 +59,12 @@ unsigned long previousMillis {0};               // stores the last time data col
 unsigned long setPointMillis;
 int fiveMinCyclesCnt{0};
 int TwentySecondCyclesCnt{0};
-#define fourSeconds 4000            
-#define twentySeconds 20000             
-#define twoMinutes 120000                
-#define fiveMinutes 300000                
-#define fifteenMinutes 900000 
+#define fourSeconds    4000            
+#define twentySeconds  20000             
+#define twoMinutes     120000                
+#define fiveMinutes    300000                
+#define fifteenMinutes 900000
+#define oneHour        3600000
 
 const int buzzerPin {10};
 int beepCount {0};                                //number of times to beep()
@@ -93,17 +94,18 @@ struct gas_t {
   float currentFiveMinAvg;
   float hourlyMin;
   float hourlyMax;
+  float hourlyAvg;
 };
 
 //https://stackoverflow.com/questions/47883151/arduino-ide-does-not-allow-struct-variables-outside-a-function
-gas_t gasNH3 = { 1, 0, 1, 1, 500, 200, 300, 0.0, 0.0, 0.0, 0.0, 0.0 };
-gas_t gasCO = { 2, 0, 1, 1, 1000, 50, 100, 0.0, 0.0, 0.0, 0.0, 0.0 }; 
-gas_t gasNO2 = { 3, 0, 1, 0.05, 10, 4, 5, 0.0, 0.0, 0.0, 0.0, 0.0 };
-gas_t gasC3H8 = { 4, 0, 1, 0, 4000, 1500, 2100, 0.0, 0.0, 0.0, 0.0, 0.0 };
-gas_t gasC4H10 = { 5, 0, 1, 0, 1500, 900, 1000, 0.0, 0.0, 0.0, 0.0, 0.0 };
-gas_t gasCH4 = { 6, 0, 1, 0, 50000, 50000, 50000, 0.0, 0.0, 0.0, 0.0, 0.0 };
-gas_t gasH2 = { 7, 0, 1, 1, 1000, 1000, 1000, 0.0, 0.0, 0.0, 0.0, 0.0 };
-gas_t gasC2H5OH = { 8, 0, 1, 10, 500, 2000, 3300, 0.0, 0.0, 0.0, 0.0, 0.0 };
+gas_t gasNH3 = { 1, 0, 1, 1, 500, 200, 300, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
+gas_t gasCO = { 2, 0, 1, 1, 1000, 50, 100, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 }; 
+gas_t gasNO2 = { 3, 0, 1, 0.05, 10, 4, 5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
+gas_t gasC3H8 = { 4, 0, 1, 0, 4000, 1500, 2100, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
+gas_t gasC4H10 = { 5, 0, 1, 0, 1500, 900, 1000, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
+gas_t gasCH4 = { 6, 0, 1, 0, 50000, 50000, 50000, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
+gas_t gasH2 = { 7, 0, 1, 1, 1000, 1000, 1000, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
+gas_t gasC2H5OH = { 8, 0, 1, 10, 500, 2000, 3300, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
 
 void setup() {
   // Create a new NeoPixel object dynamically with these values:
@@ -257,7 +259,6 @@ void loop()
     if ( gasI2Cerror == 0 ) 
     {
       //getData(); 
-      
       encodeData();
       transmitData();
     }
@@ -267,6 +268,14 @@ void loop()
   }
 
   //Hourly routine
+  currentMillis = millis();
+  elapsedMillis = currentMillis - previousMillis;
+  if ( elapsedMillis >= oneHour ) {
+    //processHourlyData();
+    //encodeHourlyData
+    //transmitHourlyData
+    //resetHourlyData
+  }
 
 } //END loop()
 void chirp()
