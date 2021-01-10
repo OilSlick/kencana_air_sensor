@@ -11,11 +11,11 @@ void getData() {
     gasC2H5OH.value = gas.measure_C2H5OH(); 
   }
 }
-void logFiveMinuteObs(float latestValue, float (&twentySecondgas)[15], float (&fiveMinAvg), float (&hourlyMin), float (&hourlyMax) ) {
-  twentySecondgas[TwentySecondCyclesCnt] = latestValue;
+void logFiveMinuteObs(float currentValue, float (&twentySecondgas)[15], float (&fiveMinAvg), float (&hourlyMin), float (&hourlyMax) ) {
+  twentySecondgas[TwentySecondCyclesCnt] = currentValue;
   if ( fiveMinCycleCount == 0 ) {
-    hourlyMin = latestValue;
-    hourlyMax = latestValue;
+    hourlyMin = currentValue;
+    hourlyMax = currentValue;
     }
   if ( TwentySecondCyclesCnt != 0 ) 
   {
@@ -25,8 +25,8 @@ void logFiveMinuteObs(float latestValue, float (&twentySecondgas)[15], float (&f
       if ( i == TwentySecondCyclesCnt ) break;
     }
     fiveMinAvg = obsSum / ( TwentySecondCyclesCnt + 1 );  //have to add 1 because the first obs is "0", second is "1", etc...
-    if ( latestValue < hourlyMin ) hourlyMin = latestValue;
-    if ( latestValue > hourlyMax ) hourlyMax = latestValue;
+    if ( currentValue < hourlyMin ) hourlyMin = currentValue;
+    if ( currentValue > hourlyMax ) hourlyMax = currentValue;
   }
 }
 void encodeData() {

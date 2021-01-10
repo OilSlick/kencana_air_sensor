@@ -72,8 +72,8 @@ bool silence {true};  //#DEBUG
 //to pullup or not to pullup: https://forum.seeedstudio.com/t/problems-with-grove-multichannel-gas-sensor/6004/4
 bool coAlarming {false};
 bool propaneAlarming {false};
-const byte gasI2Caddress = 4;
-byte gasI2Cerror = 9;                      //Track any I2C errors from gas sensor on startup, 9 = (hopefully) unrealistic number, just for init
+#define gasI2Caddress 4
+byte gasI2Cerror = 9;                      //Track any I2C errors from gas sensor on startup, 9 = unrealistic number, just for init
 unsigned char gasFirmwareversion;
 int gasValueMapped;
 float decodedValue;
