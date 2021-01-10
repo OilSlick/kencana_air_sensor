@@ -80,11 +80,6 @@ float decodedValue;
 int propaneMapped;                    //convert propane value to percent of STEL level. i.e. 1890 = 90% to 2100
 int TwentySecondCyclesCnt{0};
 
-union gasUnion  //Used to convert float to bytes[4] adapted from: http://www.cplusplus.com/forum/beginner/18566/
-{
-        float gasVal;
-        unsigned char gasBytes[4];
-};
 struct gas_t {
   const int gas_id;
   float value;

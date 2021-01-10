@@ -30,6 +30,11 @@ void logFiveMinuteObs(float latestValue, float (&twentySecondgas)[15], float (&f
   }
 }
 void encodeData() {
+  union gasUnion  //Used to convert float to bytes[4] adapted from: http://www.cplusplus.com/forum/beginner/18566/
+  {
+    float gasVal;
+    unsigned char gasBytes[4];
+  };
   gasUnion a;  
    
   a.gasVal = gasNH3.fiveMinAvg;
