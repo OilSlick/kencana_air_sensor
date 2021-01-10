@@ -23,7 +23,6 @@ void onLoRaReceive(int packetSize) {
     {            
       ReceivedAlarmStatus = LoRa.read();
       ReceivedPayload = LoRa.read();
-      LastReceivedTrans = ReceivedPayload;
     }
     if (ReceivedPayload == byte(247))          //status request
     {

@@ -85,11 +85,6 @@ void encodeData() {
   TransPayLoad[30] = a.gasBytes[2];
   TransPayLoad[31] = a.gasBytes[3];  
 }
-
-void transmitData() {
-    destination = webGatewayAddress;
-    broadcastData(destination, TransPayLoad);
-}
 #ifdef DEBUG
 void printData() {
   Serial.println("+-------------------------+-------------------+--------+---------+");

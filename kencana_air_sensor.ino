@@ -45,17 +45,13 @@ byte destination {0xFF};              // destination to send to
 byte msgCount {0};                    // count of outgoing messages
 bool expectingMessage {false};        // Indicates alarm sent, ack needed
 bool messageReceived {false};         // Indicates a properly-formatted–but not necessarily appropriate–message received
-String LastReceivedTrans;             // Record last message received by this station
-String LastSentTrans;                 // Record last transmission sent from this station
-byte TransPayLoad[32];                  // Byte array to store gas data for transmission https://www.thethingsnetwork.org/docs/devices/bytes.html
-byte MessagePayload[2];               // Byte array for network messages
+byte TransPayLoad[32]{0};                  // Byte array to store gas data for transmission https://www.thethingsnetwork.org/docs/devices/bytes.html
 unsigned long previousWarnTx{0};
-//uint32_t convertedValue;             // store data after reducing decimal places (by * 100) before high/low encoding into two bytes
 
 //For timer
 bool alarming {false};                 // track if we're currently sounding warning or alarm 
-unsigned long previousMillis {0};               // stores the last time data collected
-unsigned long setPointMillis;
+unsigned long previousMillis{0};               // stores the last time data collected
+unsigned long setPointMillis{0};
 int fiveMinCyclesCnt{0};
 int TwentySecondCyclesCnt{0};
 bool hourlyDataProcessed{0};
@@ -264,7 +260,6 @@ void loop()
     {
       //getData(); 
       encodeData();
-      //transmitData();
       broadcastData(webGatewayAddress, TransPayLoad);
     }
     #ifdef DEBUG

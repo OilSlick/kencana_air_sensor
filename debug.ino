@@ -3,14 +3,14 @@ void displayDebug()
 {
   if ( Serial )
   {
-    Serial.println("This sensor: kencana air sensor");
-    Serial.print("LoRa address: 0x") & Serial.println(localAddress, HEX);
-    Serial.print("outputLVL: ") & Serial.println(outputLVL);
-    Serial.print("Gas Sensor Firmware Version: ") & Serial.println(gasFirmwareversion);
-    Serial.print("LastReceivedTrans: ") & Serial.print(LastReceivedTrans);
-    Serial.println(gasFirmwareversion);
-    Serial.println(" "); 
-    Serial.println("-----");
+    Serial.println("+--------------------+------------------------+");  //https://ozh.github.io/ascii-tables/
+    Serial.println("| This sensor        | kencana_air_sensor");
+    Serial.printf("| LoRa address       | 0x%d\r\n", localAddress);
+    Serial.printf("| outputLVL          | %d\r\n", outputLVL);
+    Serial.printf("| TwentySecondCyclesCnt | %d\r\n", TwentySecondCyclesCnt);
+    Serial.printf("| fiveMinCyclesCnt       | %d\r\n", fiveMinCyclesCnt); 
+    Serial.println("+--------------------+------------------------+");
+    Serial.println(" ");  
   }
   debugPrinted = true;
 } //END displayDebug()
@@ -51,7 +51,7 @@ void handleSerial() {
   {
     getData();
     encodeData();
-    transmitData();
+    broadcastData(webGatewayAddress, TransPayLoad);
     #ifdef DEBUG 
       printData();
     #endif
