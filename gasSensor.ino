@@ -13,7 +13,7 @@ void getData() {
 }
 void buildFiveMinuteData(float currentValue, float (&twentySecondgas)[15], float (&currentFiveMinAvg), float (&hourlyMin), float (&hourlyMax) ) {
   twentySecondgas[TwentySecondCyclesCnt] = currentValue;
-  if ( fiveMinCycleCount == 0 ) {     //hourly reset
+  if ( fiveMinCyclesCnt == 0 ) {     //hourly reset
     hourlyMin = currentValue;
     hourlyMax = currentValue;
     }

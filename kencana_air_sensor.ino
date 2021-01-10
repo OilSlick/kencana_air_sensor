@@ -57,7 +57,8 @@ unsigned long previousWarnTx{0};
 bool alarming {false};                 // track if we're currently sounding warning or alarm 
 unsigned long previousMillis {0};               // stores the last time data collected
 unsigned long setPointMillis;
-int fiveMinCycleCount{0};
+int fiveMinCyclesCnt{0};
+int TwentySecondCyclesCnt{0};
 #define fourSeconds 4000            
 #define twentySeconds 20000             
 #define twoMinutes 120000                
@@ -78,7 +79,6 @@ unsigned char gasFirmwareversion;
 int gasValueMapped;
 float decodedValue;
 int propaneMapped;                    //convert propane value to percent of STEL level. i.e. 1890 = 90% to 2100
-int TwentySecondCyclesCnt{0};
 
 struct gas_t {
   const int gas_id;
@@ -89,6 +89,7 @@ struct gas_t {
   const int warn;
   const int alarm;
   float twentySecondObs[15];        //fifteen X 20s = five minutes of data
+  float fiveMinAvgs[12];            //twelve X 5m = one hour of data
   float currentFiveMinAvg;
   float hourlyMin;
   float hourlyMax;
@@ -221,14 +222,14 @@ void loop()
 
     if ( TwentySecondCyclesCnt == 15 ) {
       TwentySecondCyclesCnt = 0;
-      if ( fiveMinCycleCount == 12 ) fiveMinCycleCount = 0;
-      else fiveMinCycleCount++;
+      if ( fiveMinCyclesCnt == 12 ) fiveMinCyclesCnt = 0;
+      else fiveMinCyclesCnt++;
     }
     else TwentySecondCyclesCnt++;
     
     #ifdef DEBUG
       if ( outputLVL == 3 && Serial ) Serial.print("TwentySecondCyclesCnt: ") & Serial.println(TwentySecondCyclesCnt);
-      if ( outputLVL == 3 && Serial ) Serial.print("fiveMinCycleCount: ") & Serial.println(fiveMinCycleCount); 
+      if ( outputLVL == 3 && Serial ) Serial.print("fiveMinCyclesCnt: ") & Serial.println(fiveMinCyclesCnt); 
     #endif
 
     previousBlinked = millis();
