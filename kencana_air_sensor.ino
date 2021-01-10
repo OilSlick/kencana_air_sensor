@@ -88,21 +88,21 @@ struct gas_t {
   const int maxDetectable;
   const int warn;
   const int alarm;
-  float twentySecondObs[15];
-  float fiveMinAvg;
+  float twentySecondObs[15];        //fifteen X 20s = five minutes of data
+  float currentFiveMinAvg;
   float hourlyMin;
   float hourlyMax;
 };
 
 //https://stackoverflow.com/questions/47883151/arduino-ide-does-not-allow-struct-variables-outside-a-function
-gas_t gasNH3 = { 1, 0, 1, 1, 500, 200, 300, 0.0, 0.0, 0.0, 0.0 };
-gas_t gasCO = { 2, 0, 1, 1, 1000, 50, 100, 0.0, 0.0, 0.0, 0.0 }; 
-gas_t gasNO2 = { 3, 0, 1, 0.05, 10, 4, 5, 0.0, 0.0, 0.0, 0.0 };
-gas_t gasC3H8 = { 4, 0, 1, 0, 4000, 1500, 2100, 0.0, 0.0, 0.0, 0.0 };
-gas_t gasC4H10 = { 5, 0, 1, 0, 1500, 900, 1000, 0.0, 0.0, 0.0, 0.0 };
-gas_t gasCH4 = { 6, 0, 1, 0, 50000, 50000, 50000, 0.0, 0.0, 0.0, 0.0 };
-gas_t gasH2 = { 7, 0, 1, 1, 1000, 1000, 1000, 0.0, 0.0, 0.0, 0.0 };
-gas_t gasC2H5OH = { 8, 0, 1, 10, 500, 2000, 3300, 0.0, 0.0, 0.0, 0.0 };
+gas_t gasNH3 = { 1, 0, 1, 1, 500, 200, 300, 0.0, 0.0, 0.0, 0.0, 0.0 };
+gas_t gasCO = { 2, 0, 1, 1, 1000, 50, 100, 0.0, 0.0, 0.0, 0.0, 0.0 }; 
+gas_t gasNO2 = { 3, 0, 1, 0.05, 10, 4, 5, 0.0, 0.0, 0.0, 0.0, 0.0 };
+gas_t gasC3H8 = { 4, 0, 1, 0, 4000, 1500, 2100, 0.0, 0.0, 0.0, 0.0, 0.0 };
+gas_t gasC4H10 = { 5, 0, 1, 0, 1500, 900, 1000, 0.0, 0.0, 0.0, 0.0, 0.0 };
+gas_t gasCH4 = { 6, 0, 1, 0, 50000, 50000, 50000, 0.0, 0.0, 0.0, 0.0, 0.0 };
+gas_t gasH2 = { 7, 0, 1, 1, 1000, 1000, 1000, 0.0, 0.0, 0.0, 0.0, 0.0 };
+gas_t gasC2H5OH = { 8, 0, 1, 10, 500, 2000, 3300, 0.0, 0.0, 0.0, 0.0, 0.0 };
 
 void setup() {
   // Create a new NeoPixel object dynamically with these values:
@@ -210,14 +210,14 @@ void loop()
     getData();
 
     //#DEBUG this is quite cludgy—need to find a better way
-    buildFiveMinuteData(gasNH3.value, gasNH3.twentySecondObs, gasNH3.fiveMinAvg, gasNH3.hourlyMin, gasNH3.hourlyMax );
-    buildFiveMinuteData(gasCO.value, gasCO.twentySecondObs, gasCO.fiveMinAvg, gasCO.hourlyMin, gasCO.hourlyMax );
-    buildFiveMinuteData(gasNO2.value, gasNO2.twentySecondObs, gasNO2.fiveMinAvg, gasNO2.hourlyMin, gasNO2.hourlyMax );
-    buildFiveMinuteData(gasC3H8.value, gasC3H8.twentySecondObs, gasC3H8.fiveMinAvg, gasC3H8.hourlyMin, gasC3H8.hourlyMax );
-    buildFiveMinuteData(gasC4H10.value, gasC4H10.twentySecondObs, gasC4H10.fiveMinAvg, gasC4H10.hourlyMin, gasC4H10.hourlyMax );
-    buildFiveMinuteData(gasCH4.value, gasCH4.twentySecondObs, gasCH4.fiveMinAvg, gasCH4.hourlyMin, gasCH4.hourlyMax );
-    buildFiveMinuteData(gasH2.value, gasH2.twentySecondObs, gasH2.fiveMinAvg, gasH2.hourlyMin, gasH2.hourlyMax );
-    buildFiveMinuteData(gasC2H5OH.value, gasC2H5OH.twentySecondObs, gasC2H5OH.fiveMinAvg, gasC2H5OH.hourlyMin, gasC2H5OH.hourlyMax );
+    buildFiveMinuteData(gasNH3.value, gasNH3.twentySecondObs, gasNH3.currentFiveMinAvg, gasNH3.hourlyMin, gasNH3.hourlyMax );
+    buildFiveMinuteData(gasCO.value, gasCO.twentySecondObs, gasCO.currentFiveMinAvg, gasCO.hourlyMin, gasCO.hourlyMax );
+    buildFiveMinuteData(gasNO2.value, gasNO2.twentySecondObs, gasNO2.currentFiveMinAvg, gasNO2.hourlyMin, gasNO2.hourlyMax );
+    buildFiveMinuteData(gasC3H8.value, gasC3H8.twentySecondObs, gasC3H8.currentFiveMinAvg, gasC3H8.hourlyMin, gasC3H8.hourlyMax );
+    buildFiveMinuteData(gasC4H10.value, gasC4H10.twentySecondObs, gasC4H10.currentFiveMinAvg, gasC4H10.hourlyMin, gasC4H10.hourlyMax );
+    buildFiveMinuteData(gasCH4.value, gasCH4.twentySecondObs, gasCH4.currentFiveMinAvg, gasCH4.hourlyMin, gasCH4.hourlyMax );
+    buildFiveMinuteData(gasH2.value, gasH2.twentySecondObs, gasH2.currentFiveMinAvg, gasH2.hourlyMin, gasH2.hourlyMax );
+    buildFiveMinuteData(gasC2H5OH.value, gasC2H5OH.twentySecondObs, gasC2H5OH.currentFiveMinAvg, gasC2H5OH.hourlyMin, gasC2H5OH.hourlyMax );
 
     if ( TwentySecondCyclesCnt == 15 ) {
       TwentySecondCyclesCnt = 0;
@@ -246,6 +246,7 @@ void loop()
     if ( gasI2Cerror == 0 ) 
     {
       //getData(); 
+      
       encodeData();
       transmitData();
     }

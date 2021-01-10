@@ -11,9 +11,9 @@ void getData() {
     gasC2H5OH.value = gas.measure_C2H5OH(); 
   }
 }
-void buildFiveMinuteData(float currentValue, float (&twentySecondgas)[15], float (&fiveMinAvg), float (&hourlyMin), float (&hourlyMax) ) {
+void buildFiveMinuteData(float currentValue, float (&twentySecondgas)[15], float (&currentFiveMinAvg), float (&hourlyMin), float (&hourlyMax) ) {
   twentySecondgas[TwentySecondCyclesCnt] = currentValue;
-  if ( fiveMinCycleCount == 0 ) {
+  if ( fiveMinCycleCount == 0 ) {     //hourly reset
     hourlyMin = currentValue;
     hourlyMax = currentValue;
     }
@@ -24,7 +24,7 @@ void buildFiveMinuteData(float currentValue, float (&twentySecondgas)[15], float
       obsSum = obsSum + twentySecondgas[i];
       if ( i == TwentySecondCyclesCnt ) break;
     }
-    fiveMinAvg = obsSum / ( TwentySecondCyclesCnt + 1 );  //have to add 1 because the first obs is "0", second is "1", etc...
+    currentFiveMinAvg = obsSum / ( TwentySecondCyclesCnt + 1 );  //have to add 1 because the first obs is "0", second is "1", etc...
     if ( currentValue < hourlyMin ) hourlyMin = currentValue;
     if ( currentValue > hourlyMax ) hourlyMax = currentValue;
   }
@@ -37,49 +37,49 @@ void encodeData() {
   };
   gasUnion a;  
    
-  a.gasVal = gasNH3.fiveMinAvg;
+  a.gasVal = gasNH3.currentFiveMinAvg;
   GasPayLoad[0] = a.gasBytes[0];
   GasPayLoad[1] = a.gasBytes[1];
   GasPayLoad[2] = a.gasBytes[2];
   GasPayLoad[3] = a.gasBytes[3];
   
-  a.gasVal = gasCO.fiveMinAvg;
+  a.gasVal = gasCO.currentFiveMinAvg;
   GasPayLoad[4] = a.gasBytes[0];
   GasPayLoad[5] = a.gasBytes[1];
   GasPayLoad[6] = a.gasBytes[2];
   GasPayLoad[7] = a.gasBytes[3];
    
-  a.gasVal = gasNO2.fiveMinAvg;
+  a.gasVal = gasNO2.currentFiveMinAvg;
   GasPayLoad[8] = a.gasBytes[0];
   GasPayLoad[9] = a.gasBytes[1];
   GasPayLoad[10] = a.gasBytes[2];
   GasPayLoad[11] = a.gasBytes[3];
   
-  a.gasVal = gasC3H8.fiveMinAvg;
+  a.gasVal = gasC3H8.currentFiveMinAvg;
   GasPayLoad[12] = a.gasBytes[0];
   GasPayLoad[13] = a.gasBytes[1];
   GasPayLoad[14] = a.gasBytes[2];
   GasPayLoad[15] = a.gasBytes[3];
   
-  a.gasVal = gasC4H10.fiveMinAvg;
+  a.gasVal = gasC4H10.currentFiveMinAvg;
   GasPayLoad[16] = a.gasBytes[0];
   GasPayLoad[17] = a.gasBytes[1];
   GasPayLoad[18] = a.gasBytes[2];
   GasPayLoad[19] = a.gasBytes[3];
 
-  a.gasVal = gasCH4.fiveMinAvg;
+  a.gasVal = gasCH4.currentFiveMinAvg;
   GasPayLoad[20] = a.gasBytes[0];
   GasPayLoad[21] = a.gasBytes[1];
   GasPayLoad[22] = a.gasBytes[2];
   GasPayLoad[23] = a.gasBytes[3];
   
-  a.gasVal = gasH2.fiveMinAvg;
+  a.gasVal = gasH2.currentFiveMinAvg;
   GasPayLoad[24] = a.gasBytes[0];
   GasPayLoad[25] = a.gasBytes[1];
   GasPayLoad[26] = a.gasBytes[2];
   GasPayLoad[27] = a.gasBytes[3];
   
-  a.gasVal = gasC2H5OH.fiveMinAvg;
+  a.gasVal = gasC2H5OH.currentFiveMinAvg;
   GasPayLoad[28] = a.gasBytes[0];
   GasPayLoad[29] = a.gasBytes[1];
   GasPayLoad[30] = a.gasBytes[2];
