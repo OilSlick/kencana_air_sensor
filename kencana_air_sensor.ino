@@ -56,7 +56,6 @@ unsigned long previousWarnTx{0};
 //For timer
 bool alarming {false};                 // track if we're currently sounding warning or alarm 
 unsigned long previousMillis {0};               // stores the last time data collected
-//unsigned long currentMillis; 
 unsigned long setPointMillis;
 int fiveMinCycleCount{0};
 #define fourSeconds 4000            
@@ -198,7 +197,7 @@ void loop()
 {
   if ( gasI2Cerror != 0 ) cycleRed();
   #ifdef DEBUG 
-    if (Serial) handleSerial();  //permit sending codes through serial
+    if (Serial) handleSerial();
   #endif
   unsigned long currentMillis = millis();
   unsigned long elapsedMillis = currentMillis - previousBlinked;
@@ -280,15 +279,15 @@ void loop()
   }
 
   //Carbon Monoxide warn
-  if ( gasI2Cerror == 0 && (gasCO.value >= gasCO.warn && gasCO.value < gasCO.alarm) )
+  /*if ( gasI2Cerror == 0 && (gasCO.value >= gasCO.warn && gasCO.value < gasCO.alarm) )
   {
     coAlarming = true;
     alarming = true;
     currentMillis = millis();
     elapsedMillis = currentMillis - setPointMillis;
     if ( elapsedMillis >= fourSeconds )
-    setPointMillis = currentMillis;
     {
+      setPointMillis = currentMillis;
       beep(5);
     }
     getData();
@@ -297,18 +296,34 @@ void loop()
   else 
   {
     if ( coAlarming == true ) coAlarming = false;
-  }
+  }*/
   //Propane warn
-  if ( coAlarming == false && gasI2Cerror == 0 && (gasC3H8.value >= gasC3H8.warn && gasC3H8.value < gasC3H8.alarm) )
+  /*if ( coAlarming == false && gasI2Cerror == 0 && (gasC3H8.value >= gasC3H8.warn && gasC3H8.value < gasC3H8.alarm) )
   {
+    #ifdef DEBUG
+      if ( outputLVL >= 2 && Serial ) {
+        Serial.print("Propane level at WARN: "); Serial.println( gasC3H8.value );
+      }
+    #endif
     propaneAlarming = true;
     alarming = true;
-    if ( setPointMillis == 0 )
+    if ( setPointMillis == 0 && previousWarnTx == 0 )
       {
         setPointMillis = currentMillis;
         encodeData();
-        //transmitData(); //#DEBUG
+        //transmitData(); #DEBUG
         previousWarnTx = millis();
+      }
+      else if ( setPointMillis == 0 && previousWarnTx != 0 ) {
+          unsigned long currentMillis = millis();
+          unsigned long elapsedMillis = currentMillis - previousWarnTx;
+          if ( elapsedMillis > fiveMinutes ) { 
+            setPointMillis = currentMillis;
+            encodeData();
+            //transmitData(); #DEBUG
+            previousWarnTx = millis();
+          }
+        }
       }
     else 
     {
@@ -324,9 +339,9 @@ void loop()
     propaneMapped = map(gasC3H8.value,0,2100,0,100);        //convert propane value to percent of STEL level. i.e. 1890 = 90% to 2100
     propaneMapped = constrain(propaneMapped, 0, 100);   //constrain possible values to range of 0 - 100
     neoPercent(propaneMapped);  
-  }
+  }*/
   //Propane alarm
-  else if ( gasI2Cerror == 0 && (gasC3H8.value >= gasC3H8.alarm ) )
+  /*else if ( gasI2Cerror == 0 && (gasC3H8.value >= gasC3H8.alarm ) )
   {
     propaneAlarming = true;
     alarming = true;
@@ -349,7 +364,7 @@ void loop()
   {
     if ( propaneAlarming == true) propaneAlarming = false;
   }
-  if ( coAlarming == false && propaneAlarming == false && alarming == true ) alarming = false;
+  if ( coAlarming == false && propaneAlarming == false && alarming == true ) alarming = false;*/
 } //END loop()
 void chirp()
 {
