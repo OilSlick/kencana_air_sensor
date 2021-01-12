@@ -258,8 +258,6 @@ void loop()
     {
       //getData(); 
       encodeData();
-      int payloadsize = sizeof(TransPayLoad);
-      Serial.print("payloadsize: "); Serial.println(payloadsize); //#DEBUG
       broadcastData(webGatewayAddress, TransPayLoad, sizeof(TransPayLoad));
     }
     #ifdef DEBUG

@@ -7,7 +7,6 @@ void txStatusOnline()
   broadcastData(destination, MessagePayload, sizeof(MessagePayload));
 }
 void broadcastData(byte destination, byte PayLoad[], int sizeofPayLoad) {
-  Serial.print("sizeofPayLoad before trans: "); Serial.println(sizeofPayLoad); //#DEBUG
   delay(200);                           // may be needed?
   LoRa.beginPacket();                   // start packet
   LoRa.write(destination);              // add destination address

@@ -19,12 +19,12 @@ void buildFiveMinuteData(float currentValue, float (&twentySecondgas)[15], float
     }
   if ( TwentySecondCyclesCnt != 0 ) 
   {
-    float obsSum{0};
+    float FiveMinSum{0};
     for (int i = 0; i < TwentySecondCyclesCnt; i++) {
-      obsSum = obsSum + twentySecondgas[i];
+      FiveMinSum = FiveMinSum + twentySecondgas[i];
       if ( i == TwentySecondCyclesCnt ) break;
     }
-    currentFiveMinAvg = obsSum / ( TwentySecondCyclesCnt + 1 );  //have to add 1 because the first obs is "0", second is "1", etc...
+    currentFiveMinAvg = FiveMinSum / ( TwentySecondCyclesCnt + 1 );  //have to add 1 because the first obs is "0", second is "1", etc...
     if ( currentValue < hourlyMin ) hourlyMin = currentValue;
     if ( currentValue > hourlyMax ) hourlyMax = currentValue;
   }
