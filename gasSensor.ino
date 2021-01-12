@@ -269,29 +269,32 @@ void processHourlyData() {
   Serial.print("gasH2.hourlyAvg: "); Serial.println(gasH2.hourlyAvg);
   Serial.print("gasC2H5OH.hourlyAvg: "); Serial.println(gasC2H5OH.hourlyAvg);
 }
-void encodeHourlyData() {
+void encode_sendHourlyData() {
   union gasUnion  //Used to convert float to bytes[4] adapted from: http://www.cplusplus.com/forum/beginner/18566/
   {
     float gasFloat;
     unsigned char gasBytes[4];
   };
-  gasUnion a; 
+  gasUnion a;
+  byte hourlyPayLoad[12]{0};
 
   a.gasFloat = gasNO2.hourlyMin;
-  TransPayLoad[0] = a.gasBytes[0];
-  TransPayLoad[1] = a.gasBytes[1];
-  TransPayLoad[2] = a.gasBytes[2];
-  TransPayLoad[3] = a.gasBytes[3];
+  hourlyPayLoad[0] = a.gasBytes[0];
+  hourlyPayLoad[1] = a.gasBytes[1];
+  hourlyPayLoad[2] = a.gasBytes[2];
+  hourlyPayLoad[3] = a.gasBytes[3];
 
   a.gasFloat = gasNO2.hourlyMax;
-  TransPayLoad[4] = a.gasBytes[0];
-  TransPayLoad[5] = a.gasBytes[1];
-  TransPayLoad[6] = a.gasBytes[2];
-  TransPayLoad[7] = a.gasBytes[3];
+  hourlyPayLoad[4] = a.gasBytes[0];
+  hourlyPayLoad[5] = a.gasBytes[1];
+  hourlyPayLoad[6] = a.gasBytes[2];
+  hourlyPayLoad[7] = a.gasBytes[3];
 
   a.gasFloat = gasNO2.hourlyAvg;
-  TransPayLoad[8] = a.gasBytes[0];
-  TransPayLoad[9] = a.gasBytes[1];
-  TransPayLoad[10] = a.gasBytes[2];
-  TransPayLoad[11] = a.gasBytes[3];
+  hourlyPayLoad[8] = a.gasBytes[0];
+  hourlyPayLoad[9] = a.gasBytes[1];
+  hourlyPayLoad[10] = a.gasBytes[2];
+  hourlyPayLoad[11] = a.gasBytes[3];
+
+  broadcastData(webGatewayAddress, hourlyPayLoad, sizeof(hourlyPayLoad));
 }

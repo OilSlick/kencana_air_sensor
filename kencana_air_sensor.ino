@@ -268,8 +268,7 @@ void loop()
   //Hourly routine
   if ( hourlyDataProcessed = true ) {
     hourlyDataProcessed = false;
-    //encodeHourlyData
-    //transmitHourlyData
+    //encode_sendHourlyData()
     //resetHourlyData
   }
 
