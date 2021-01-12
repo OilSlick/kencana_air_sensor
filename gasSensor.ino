@@ -231,16 +231,33 @@ bool isValid(int gas_id, float gas_value) {
   }
 }
 void processHourlyData() {
+  float gasNH3hourlySum{0.0};
+  float gasCOhourlySum{0.0};
+  float gasNO2hourlySum{0.0};
+  float gasC3H8hourlySum{0.0};
+  float gasC4H10hourlySum{0.0};
+  float gasCH4hourlySum{0.0};
+  float gasH2hourlySum{0.0};
+  float gasC2H5OHhourlySum{0.0};
   for ( int i = 0; i < 12; i++ ) {
-    gasNH3.hourlyAvg += gasNH3.fiveMinAvgs[i];
-    gasCO.hourlyAvg += gasCO.fiveMinAvgs[i];
-    gasNO2.hourlyAvg += gasNO2.fiveMinAvgs[i];
-    gasC3H8.hourlyAvg += gasC3H8.fiveMinAvgs[i];
-    gasC4H10.hourlyAvg += gasC4H10.fiveMinAvgs[i];
-    gasCH4.hourlyAvg += gasCH4.fiveMinAvgs[i];
-    gasH2.hourlyAvg += gasH2.fiveMinAvgs[i];
-    gasC2H5OH.hourlyAvg += gasC2H5OH.fiveMinAvgs[i];
+    gasNH3hourlySum += gasNH3.fiveMinAvgs[i];
+    gasCOhourlySum += gasCO.fiveMinAvgs[i];
+    gasNO2hourlySum += gasNO2.fiveMinAvgs[i];
+    gasC3H8hourlySum += gasC3H8.fiveMinAvgs[i];
+    gasC4H10hourlySum += gasC4H10.fiveMinAvgs[i];
+    gasCH4hourlySum += gasCH4.fiveMinAvgs[i];
+    gasH2hourlySum += gasH2.fiveMinAvgs[i];
+    gasC2H5OHhourlySum += gasC2H5OH.fiveMinAvgs[i];
   }
+  gasNH3.hourlyAvg = gasNH3hourlySum / 12;
+  gasCO.hourlyAvg = gasCOhourlySum / 12;
+  gasNO2.hourlyAvg = gasNO2hourlySum / 12;
+  gasC3H8.hourlyAvg = gasC3H8hourlySum / 12;
+  gasC4H10.hourlyAvg = gasC4H10hourlySum / 12;
+  gasCH4.hourlyAvg = gasCH4hourlySum / 12;
+  gasH2.hourlyAvg = gasH2hourlySum / 12;
+  gasC2H5OH.hourlyAvg = gasC2H5OHhourlySum / 12;
+    
   hourlyDataProcessed = true;
   //#DEBUG:
   Serial.print("gasNH3.hourlyAvg: "); Serial.println(gasNH3.hourlyAvg);
