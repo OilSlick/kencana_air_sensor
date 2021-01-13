@@ -1,14 +1,15 @@
 void getData() {
   if ( gasI2Cerror == 0 ) 
   {
-    gasNH3.value = gas.measure_NH3();
-    gasCO.value = gas.measure_CO();
-    gasNO2.value = gas.measure_NO2();
-    gasC3H8.value = gas.measure_C3H8();
-    gasC4H10.value = gas.measure_C4H10();
-    gasCH4.value = gas.measure_CH4();
-    gasH2.value = gas.measure_H2();
-    gasC2H5OH.value = gas.measure_C2H5OH(); 
+    //convert all to ppb from ppm
+    gasNH3.value = gas.measure_NH3() * 1000;
+    gasCO.value = gas.measure_CO() * 1000;
+    gasNO2.value = gas.measure_NO2() * 1000;
+    gasC3H8.value = gas.measure_C3H8() * 1000;
+    gasC4H10.value = gas.measure_C4H10() * 1000;
+    gasCH4.value = gas.measure_CH4() * 1000;
+    gasH2.value = gas.measure_H2() * 1000;
+    gasC2H5OH.value = gas.measure_C2H5OH() * 1000; 
   }
 }
 void buildFiveMinuteData(float currentValue, float (&twentySecondgas)[15], float (&currentFiveMinAvg), float (&hourlyMin), float (&hourlyMax) ) {
