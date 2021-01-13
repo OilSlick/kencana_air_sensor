@@ -19,7 +19,7 @@ void handleSerial() {
  if (Serial.available() > 0) 
  {
   char incomingCharacter = Serial.read();
-  if ( incomingCharacter == '1' ) txStatusOnline();
+  if ( incomingCharacter == '1' ) printData();
   if ( incomingCharacter == '2' ) cycleRed();
   if ( incomingCharacter == '3' ) cycleGreen();
   if ( incomingCharacter == '4' ) splitBlue();
@@ -34,21 +34,22 @@ void handleSerial() {
   }
   if ( incomingCharacter == 'h' )
   {
-    Serial.println("d -> display debug");
-    Serial.println("1 -> transmit status online");
+    Serial.println("1 -> display data");
     Serial.println("2 -> cycle red");
     Serial.println("3 -> cycle green");
     Serial.println("4 -> cycle blue");
     Serial.println("5 -> alarm red");
+    Serial.println("d -> display debug");
     Serial.println("g -> get gas data");
     Serial.println("h -> This Menu");
     Serial.println("r -> Reset");
     Serial.println("s -> Silence");
+    Serial.println("t -> Transmit payload");
+    Serial.println("o -> transmit status online");
   }
   if ( incomingCharacter == 'r' ) setup();
   if ( incomingCharacter == 's' ) silence = true;
-  if ( incomingCharacter == 't' ) 
-  {
+  if ( incomingCharacter == 't' ) {
     getData();
     encodeData();
     broadcastData(webGatewayAddress, TransPayLoad, sizeof(TransPayLoad));
@@ -56,6 +57,7 @@ void handleSerial() {
       printData();
     #endif
   }
+  if ( incomingCharacter == 'o' ) txStatusOnline();
  }
 }
 void logReceipt(byte sender, byte recipient, byte incomingMsgId, byte incomingLength) {

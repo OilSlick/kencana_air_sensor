@@ -72,7 +72,6 @@ bool coAlarming {false};
 bool propaneAlarming {false};
 #define gasI2Caddress 4
 byte gasI2Cerror = 9;                      //Track any I2C errors from gas sensor on startup, 9 = unrealistic number, just for init
-unsigned char gasFirmwareversion;
 int gasValueMapped;
 float decodedValue;
 int propaneMapped;                    //convert propane value to percent of STEL level. i.e. 1890 = 90% to 2100
@@ -154,7 +153,6 @@ void setup() {
       if ( Serial ) Serial.println("Initializing gas sensor");
     #endif
     gas.begin(gasI2Caddress);        //the default I2C address of the slave is 0x04
-    gasFirmwareversion = gas.getVersion();
     gas.powerOn();
   }
   #ifndef DEBUG
@@ -266,9 +264,9 @@ void loop()
   }
 
   //Hourly routine
-  if ( hourlyDataProcessed = true ) {
+  if ( hourlyDataProcessed == true ) {
     hourlyDataProcessed = false;
-    //encode_sendHourlyData()
+    encode_sendHourlyData();
     //resetHourlyData
   }
 

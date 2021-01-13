@@ -158,7 +158,6 @@ void printData() {
   //ethyl alcohol < 3300 ppm
   Serial.println("+-------------------------+-------------------+--------+---------+");
   Serial.println();
-  Serial.println();
 }
 #endif
 
