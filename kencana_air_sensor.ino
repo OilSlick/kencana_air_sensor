@@ -54,10 +54,8 @@ unsigned long previousMillis{0};               // stores the last time data coll
 unsigned long setPointMillis{0};
 int fiveMinCyclesCnt{0};
 int TwentySecondCyclesCnt{0};
-bool hourlyDataProcessed{0};
-#define fourSeconds    4000            
-#define twentySeconds  20000             
-#define twoMinutes     120000                
+bool hourlyDataProcessed{0};      
+#define twentySeconds  20000                 
 #define fiveMinutes    300000                
 #define fifteenMinutes 900000
 #define oneHour        3600000

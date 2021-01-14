@@ -11,10 +11,6 @@ void onLoRaReceive(int packetSize) {
   byte incomingMsgId = LoRa.read();     // incoming msg ID
   byte incomingLength = LoRa.read();    // incoming msg length
   if (recipient != localAddress && recipient != 0xFF) {
-    if ( outputLVL == 3 )
-    {
-      
-    }
     return;                                       // skip rest of function
   }
   else if (incomingLength == byte(2) )  //standard format: two-byte payload
