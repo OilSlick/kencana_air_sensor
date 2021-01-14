@@ -1,7 +1,7 @@
 void getData() {
   if ( gasI2Cerror == 0 ) 
   {
-    //convert all to ppb from ppm
+    //convert all to ppb from ppm 
     gasNH3.value = gas.measure_NH3() * 1000;
     gasCO.value = gas.measure_CO() * 1000;
     gasNO2.value = gas.measure_NO2() * 1000;
@@ -96,7 +96,7 @@ void printData() {
   if( gasNH3.value >= 0 ) Serial.print(gasNH3.value);
   else Serial.print("invalid");
   Serial.print(" ppm ");
-  if( gasNH3.value >= 200 ) Serial.print(" (value high)");
+  if( gasNH3.value >= gasNH3.warn ) Serial.print("          X");
   Serial.println();
   //Amonia < 300ppm
 
@@ -106,7 +106,7 @@ void printData() {
   Serial.print(" ppm ");
   if( gasCO.value >= gasCO.warn ) 
   {
-    Serial.print(" (value high)");
+    Serial.print("          X");
   }
   Serial.println();
   // want < 70ppm https://www.cacgas.com.au/blog/carbon-monoxide-co-toxic-gas-workplace-safety
@@ -115,7 +115,7 @@ void printData() {
   if( gasNO2.value >= 0 ) Serial.print( gasNO2.value );
   else Serial.print("invalid");
   Serial.print(" ppm ");
-  if( gasNO2.value >= 4 ) Serial.print("          X");
+  if( gasNO2.value >= gasNO2.warn ) Serial.print("          X");
   Serial.println();
   //want < 5ppm https://www.cdc.gov/niosh/idlh/10102440.html
 
@@ -132,29 +132,29 @@ void printData() {
   if( gasC4H10.value >= 0 ) Serial.print(gasC4H10.value);
   else Serial.print("invalid");
   Serial.print(" ppm ");
-  if( gasC4H10.value >= 900 ) Serial.print("          X");
+  if( gasC4H10.value >= gasC4H10.warn ) Serial.print("          X");
   Serial.println();
   //Butane < 1000ppm STEL (short term exposure limit of < 15 minutes) https://pubchem.ncbi.nlm.nih.gov/compound/Butane#section=Immediately-Dangerous-to-Life-or-Health-(IDLH)
 
   Serial.print(F("| Methane (CH4)           |  "));
   if( gasCH4.value >= 0 ) Serial.print(gasCH4.value);
   else Serial.print("invalid");
-  Serial.print(" ppm ");
+  Serial.print(" ppb ");
   Serial.println();
   //methane no recommendations
 
   Serial.print(F("| Hydrogen gas (H2)       |  "));
   if( gasH2.value >= 0) Serial.print(gasH2.value);
   else Serial.print("invalid");
-  Serial.print(" ppm ");
+  Serial.print(" ppb ");
   Serial.println();
   //hydrogen no recommendations
 
   Serial.print(F("| Ethyl alcohol (C2H5OH)  |  "));
   if( gasC2H5OH.value >= 0 ) Serial.print(gasC2H5OH.value);
   else Serial.print("invalid");
-  Serial.print(" ppm ");
-  if( gasC2H5OH.value >= 2500 ) Serial.print(" (value high)");
+  Serial.print(" ppb ");
+  if( gasC2H5OH.value >= gasC2H5OH.warn ) Serial.print("          X");
   Serial.println();
   //ethyl alcohol < 3300 ppm
   Serial.println("+-------------------------+-------------------+--------+---------+");
@@ -260,7 +260,7 @@ void processHourlyData() {
     
   hourlyDataProcessed = true;
   #ifdef DEBUG
-  if (outputLVL >= 2 %% Serial ) {
+  if (outputLVL >= 2 && Serial ) {
       Serial.print("gasNH3.hourlyAvg: "); Serial.println(gasNH3.hourlyAvg);
       Serial.print("gasCO.hourlyAvg: "); Serial.println(gasCO.hourlyAvg);
       Serial.print("gasNO2.hourlyAvg: "); Serial.println(gasNO2.hourlyAvg);
