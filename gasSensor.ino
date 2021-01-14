@@ -259,15 +259,18 @@ void processHourlyData() {
   gasC2H5OH.hourlyAvg = gasC2H5OHhourlySum / 12;
     
   hourlyDataProcessed = true;
-  //#DEBUG:
-  Serial.print("gasNH3.hourlyAvg: "); Serial.println(gasNH3.hourlyAvg);
-  Serial.print("gasCO.hourlyAvg: "); Serial.println(gasCO.hourlyAvg);
-  Serial.print("gasNO2.hourlyAvg: "); Serial.println(gasNO2.hourlyAvg);
-  Serial.print("gasC3H8.hourlyAvg: "); Serial.println(gasC3H8.hourlyAvg);
-  Serial.print("gasC4H10.hourlyAvg: "); Serial.println(gasC4H10.hourlyAvg);
-  Serial.print("gasCH4.hourlyAvg: "); Serial.println(gasCH4.hourlyAvg);
-  Serial.print("gasH2.hourlyAvg: "); Serial.println(gasH2.hourlyAvg);
-  Serial.print("gasC2H5OH.hourlyAvg: "); Serial.println(gasC2H5OH.hourlyAvg);
+  #ifdef DEBUG
+  if (outputLVL >= 2 %% Serial ) {
+      Serial.print("gasNH3.hourlyAvg: "); Serial.println(gasNH3.hourlyAvg);
+      Serial.print("gasCO.hourlyAvg: "); Serial.println(gasCO.hourlyAvg);
+      Serial.print("gasNO2.hourlyAvg: "); Serial.println(gasNO2.hourlyAvg);
+      Serial.print("gasC3H8.hourlyAvg: "); Serial.println(gasC3H8.hourlyAvg);
+      Serial.print("gasC4H10.hourlyAvg: "); Serial.println(gasC4H10.hourlyAvg);
+      Serial.print("gasCH4.hourlyAvg: "); Serial.println(gasCH4.hourlyAvg);
+      Serial.print("gasH2.hourlyAvg: "); Serial.println(gasH2.hourlyAvg);
+      Serial.print("gasC2H5OH.hourlyAvg: "); Serial.println(gasC2H5OH.hourlyAvg);
+    }
+  #endif
 }
 void encode_sendHourlyData() {
   union gasUnion  //Used to convert float to bytes[4] adapted from: http://www.cplusplus.com/forum/beginner/18566/

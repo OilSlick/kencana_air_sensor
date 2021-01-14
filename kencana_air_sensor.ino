@@ -64,7 +64,7 @@ bool hourlyDataProcessed{0};
 
 const int buzzerPin {10};
 int beepCount {0};                                //number of times to beep()
-bool silence {true};  //#DEBUG
+bool silence {false};
 
 //For gas sensor
 //to pullup or not to pullup: https://forum.seeedstudio.com/t/problems-with-grove-multichannel-gas-sensor/6004/4
@@ -103,6 +103,9 @@ gas_t gasH2 = { 7, 0, 1, 1, 1000, 1000, 1000, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
 gas_t gasC2H5OH = { 8, 0, 1, 10, 500, 2000, 3300, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
 
 void setup() {
+  #ifdef DEBUG
+    silence = true;
+  #endif
   // Create a new NeoPixel object dynamically with these values:
   pixels = new Adafruit_NeoPixel(numPixels, NeoPin, pixelFormat);
   pixels->begin(); // INITIALIZE NeoPixel strip object (REQUIRED)
