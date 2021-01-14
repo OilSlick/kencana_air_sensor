@@ -88,9 +88,9 @@ void encodeData() {
 }
 #ifdef DEBUG
 void printData() {
-  Serial.println("+-------------------------+-------------------+--------+---------+");
-  Serial.println("|          Gas            |    Value (PPM)    |  High  | Invalid |");
-  Serial.println("+-------------------------+-------------------+--------+---------+");
+  Serial.println("+-------------------------+-------------------+--------+");
+  Serial.println("|          Gas            |    Value (PPM)    |  High  |");
+  Serial.println("+-------------------------+-------------------+--------+");
 
   Serial.print(F("| Amonia (NH3)            |  "));
   if( gasNH3.value >= 0 ) Serial.print(gasNH3.value);
@@ -157,7 +157,7 @@ void printData() {
   if( gasC2H5OH.value >= gasC2H5OH.warn ) Serial.print("          X");
   Serial.println();
   //ethyl alcohol < 3300 ppm
-  Serial.println("+-------------------------+-------------------+--------+---------+");
+  Serial.println("+-------------------------+-------------------+--------+");
   Serial.println();
 }
 #endif
