@@ -30,19 +30,19 @@ void handleSerial() {
     switch ( Wire.endTransmission() )
     {
       case 0:
-        Serial.println("0: success");
+        Serial.println("(0) success");
         break;
       case 1:
-        Serial.println("1: data too long to fit in transmit buffer");
+        Serial.println("(1) data too long to fit in transmit buffer");
         break;
       case 2:
-        Serial.println("2: received NACK on transmit of address");
+        Serial.println("(2) received NACK on transmit of address");
         break;
       case 3:
-        Serial.println("3: received NACK on transmit of data");
+        Serial.println("(3) received NACK on transmit of data");
         break;
       case 4:
-        Serial.println("4: other error");
+        Serial.println("(4) other error");
         break;
     }
     
