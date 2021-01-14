@@ -24,6 +24,29 @@ void handleSerial() {
   if ( incomingCharacter == '3' ) cycleGreen();
   if ( incomingCharacter == '4' ) splitBlue();
   if ( incomingCharacter == '5' ) alarmRed();
+  if ( incomingCharacter == 'c' ) {
+    Serial.print("gasI2Cerror: ");
+    Wire.beginTransmission(gasI2Caddress);
+    switch ( Wire.endTransmission() )
+    {
+      case 0:
+        Serial.println("0: success");
+        break;
+      case 1:
+        Serial.println("1: data too long to fit in transmit buffer");
+        break;
+      case 2:
+        Serial.println("2: received NACK on transmit of address");
+        break;
+      case 3:
+        Serial.println("3: received NACK on transmit of data");
+        break;
+      case 4:
+        Serial.println("4: other error");
+        break;
+    }
+    
+  }
   if ( incomingCharacter == 'd' ) displayDebug();
   if ( incomingCharacter == 'g' ) 
   {
@@ -39,6 +62,7 @@ void handleSerial() {
     Serial.println("3 -> cycle green");
     Serial.println("4 -> cycle blue");
     Serial.println("5 -> alarm red");
+    Serial.println("c -> check gas sensor");
     Serial.println("d -> display debug");
     Serial.println("g -> get gas data");
     Serial.println("h -> This Menu");

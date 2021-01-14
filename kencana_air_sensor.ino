@@ -204,6 +204,7 @@ void loop()
   if ( elapsedMillis > twentySeconds) 
   {
     getData();
+    if (gasI2Cerror != 0) return;
 
     //#DEBUG this is quite cludgy—need to find a better way
     buildFiveMinuteData(gasNH3.value, gasNH3.twentySecondObs, gasNH3.currentFiveMinAvg, gasNH3.hourlyMin, gasNH3.hourlyMax );
