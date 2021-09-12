@@ -117,7 +117,7 @@ void printData() {
   Serial.print(" ppm ");
   if( gasNO2.value >= gasNO2.warn ) Serial.print("          X");
   Serial.println();
-  //want < 5ppm https://www.cdc.gov/niosh/idlh/10102440.html
+  //want < 5000ppb https://www.cdc.gov/niosh/idlh/10102440.html
 
   Serial.print(F("| Propane (C3H8)          |  "));
   if( gasC3H8.value >= 0 ) Serial.print(gasC3H8.value);

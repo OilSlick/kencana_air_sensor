@@ -21,8 +21,8 @@
 #include <Wire.h>                     //Needed for I2C 
 #include "MutichannelGasSensor.h"     //Needed for gas sensor
 #include <Adafruit_NeoPixel.h>
-#define DEBUG 1
-int outputLVL{2};                     //To enable debugging
+//#define DEBUG 1
+int outputLVL{0};                     //To enable debugging
 bool debugPrinted {false};             //track if we've printed debug data (don't spam serial console)
 
 //For Neopixel
@@ -257,6 +257,14 @@ void loop()
       //getData(); 
       encodeData();
       broadcastData(webGatewayAddress, TransPayLoad, sizeof(TransPayLoad));
+      gasNH3.currentFiveMinAvg = 0;       //five-minute reset
+      gasCO.currentFiveMinAvg = 0;
+      gasNO2.currentFiveMinAvg = 0;
+      gasC3H8.currentFiveMinAvg = 0;
+      gasC4H10.currentFiveMinAvg = 0;
+      gasCH4.currentFiveMinAvg = 0;
+      gasH2.currentFiveMinAvg = 0;
+      gasC2H5OH.currentFiveMinAvg = 0;
     }
     #ifdef DEBUG
       if (Serial) printData();
