@@ -206,8 +206,103 @@ void loop()
     getData();
     if (gasI2Cerror != 0) return;
 
+    //populate twentySecondgas[] with 20s obs
+    gasNH3.twentySecondObs[TwentySecondCyclesCnt] = gasNH3.value;
+    gasCO.twentySecondObs[TwentySecondCyclesCnt] = gasCO.value;
+    gasNO2.twentySecondObs[TwentySecondCyclesCnt] = gasNO2.value;
+    gasC3H8.twentySecondObs[TwentySecondCyclesCnt] = gasC3H8.value;
+    gasC4H10.twentySecondObs[TwentySecondCyclesCnt] = gasC4H10.value;
+    gasCH4.twentySecondObs[TwentySecondCyclesCnt] = gasCH4.value;
+    gasH2.twentySecondObs[TwentySecondCyclesCnt] = gasH2.value;
+    gasC2H5OH.twentySecondObs[TwentySecondCyclesCnt] = gasC2H5OH.value;
+
+    if ( TwentySecondCyclesCnt == 15 ) { 
+      gasNH3.fiveMinAvgs[fiveMinCyclesCnt] = buildFiveMinuteData(gasNH3.twentySecondObs );
+      if ( fiveMinCyclesCnt == 0 ) {
+        gasNH3.hourlyMin = gasNH3.fiveMinAvgs[fiveMinCyclesCnt];
+        gasNH3.hourlyMax = gasNH3.fiveMinAvgs[fiveMinCyclesCnt];
+      }
+      else {
+        if ( gasNH3.fiveMinAvgs[fiveMinCyclesCnt] < gasNH3.hourlyMin ) gasNH3.hourlyMin = gasNH3.fiveMinAvgs[fiveMinCyclesCnt];
+        if ( gasNH3.fiveMinAvgs[fiveMinCyclesCnt] < gasNH3.hourlyMax ) gasNH3.hourlyMax = gasNH3.fiveMinAvgs[fiveMinCyclesCnt];
+      }
+      
+      gasCO.fiveMinAvgs[fiveMinCyclesCnt] = buildFiveMinuteData(gasCO.twentySecondObs );
+      if ( fiveMinCyclesCnt == 0 ) {
+        gasCO.hourlyMin = gasCO.fiveMinAvgs[fiveMinCyclesCnt];
+        gasCO.hourlyMax = gasCO.fiveMinAvgs[fiveMinCyclesCnt];
+      }
+      else {
+        if ( gasCO.fiveMinAvgs[fiveMinCyclesCnt] < gasCO.hourlyMin ) gasCO.hourlyMin = gasCO.fiveMinAvgs[fiveMinCyclesCnt];
+        if ( gasCO.fiveMinAvgs[fiveMinCyclesCnt] < gasCO.hourlyMax ) gasCO.hourlyMax = gasCO.fiveMinAvgs[fiveMinCyclesCnt];
+      }
+      
+      gasNO2.fiveMinAvgs[fiveMinCyclesCnt] = buildFiveMinuteData(gasNO2.twentySecondObs );
+      if ( fiveMinCyclesCnt == 0 ) {
+        gasNO2.hourlyMin = gasNO2.fiveMinAvgs[fiveMinCyclesCnt];
+        gasNO2.hourlyMax = gasNO2.fiveMinAvgs[fiveMinCyclesCnt];
+      }
+      else {
+        if ( gasNO2.fiveMinAvgs[fiveMinCyclesCnt] < gasNO2.hourlyMin ) gasNO2.hourlyMin = gasNO2.fiveMinAvgs[fiveMinCyclesCnt];
+        if ( gasNO2.fiveMinAvgs[fiveMinCyclesCnt] < gasNO2.hourlyMax ) gasNO2.hourlyMax = gasNO2.fiveMinAvgs[fiveMinCyclesCnt];
+      }
+      
+      gasC3H8.fiveMinAvgs[fiveMinCyclesCnt] = buildFiveMinuteData(gasC3H8.twentySecondObs );
+      if ( fiveMinCyclesCnt == 0 ) {
+        gasC3H8.hourlyMin = gasC3H8.fiveMinAvgs[fiveMinCyclesCnt];
+        gasC3H8.hourlyMax = gasC3H8.fiveMinAvgs[fiveMinCyclesCnt];
+      }
+      else {
+        if ( gasC3H8.fiveMinAvgs[fiveMinCyclesCnt] < gasC3H8.hourlyMin ) gasC3H8.hourlyMin = gasC3H8.fiveMinAvgs[fiveMinCyclesCnt];
+        if ( gasC3H8.fiveMinAvgs[fiveMinCyclesCnt] < gasC3H8.hourlyMax ) gasC3H8.hourlyMax = gasC3H8.fiveMinAvgs[fiveMinCyclesCnt];
+      }
+      
+      gasC4H10.fiveMinAvgs[fiveMinCyclesCnt] = buildFiveMinuteData(gasC4H10.twentySecondObs );
+      if ( fiveMinCyclesCnt == 0 ) {
+        gasC4H10.hourlyMin = gasC4H10.fiveMinAvgs[fiveMinCyclesCnt];
+        gasC4H10.hourlyMax = gasC4H10.fiveMinAvgs[fiveMinCyclesCnt];
+      }
+      else {
+        if ( gasC4H10.fiveMinAvgs[fiveMinCyclesCnt] < gasC4H10.hourlyMin ) gasC4H10.hourlyMin = gasC4H10.fiveMinAvgs[fiveMinCyclesCnt];
+        if ( gasC4H10.fiveMinAvgs[fiveMinCyclesCnt] < gasC4H10.hourlyMax ) gasC4H10.hourlyMax = gasC4H10.fiveMinAvgs[fiveMinCyclesCnt];
+      }
+      
+      gasCH4.fiveMinAvgs[fiveMinCyclesCnt] = buildFiveMinuteData(gasCH4.twentySecondObs );
+      if ( fiveMinCyclesCnt == 0 ) {
+        gasCH4.hourlyMin = gasCH4.fiveMinAvgs[fiveMinCyclesCnt];
+        gasCH4.hourlyMax = gasCH4.fiveMinAvgs[fiveMinCyclesCnt];
+      }
+      else {
+        if ( gasCH4.fiveMinAvgs[fiveMinCyclesCnt] < gasCH4.hourlyMin ) gasCH4.hourlyMin = gasCH4.fiveMinAvgs[fiveMinCyclesCnt];
+        if ( gasCH4.fiveMinAvgs[fiveMinCyclesCnt] < gasCH4.hourlyMax ) gasCH4.hourlyMax = gasCH4.fiveMinAvgs[fiveMinCyclesCnt];
+      }
+      
+      gasH2.fiveMinAvgs[fiveMinCyclesCnt] = buildFiveMinuteData(gasH2.twentySecondObs );
+      if ( fiveMinCyclesCnt == 0 ) {
+        gasH2.hourlyMin = gasH2.fiveMinAvgs[fiveMinCyclesCnt];
+        gasH2.hourlyMax = gasH2.fiveMinAvgs[fiveMinCyclesCnt];
+      }
+      else {
+        if ( gasH2.fiveMinAvgs[fiveMinCyclesCnt] < gasH2.hourlyMin ) gasH2.hourlyMin = gasH2.fiveMinAvgs[fiveMinCyclesCnt];
+        if ( gasH2.fiveMinAvgs[fiveMinCyclesCnt] < gasH2.hourlyMax ) gasH2.hourlyMax = gasH2.fiveMinAvgs[fiveMinCyclesCnt];
+      }
+     
+      gasC2H5OH.fiveMinAvgs[fiveMinCyclesCnt] = buildFiveMinuteData(gasC2H5OH.twentySecondObs );
+      if ( fiveMinCyclesCnt == 0 ) {
+        gasC2H5OH.hourlyMin = gasC2H5OH.fiveMinAvgs[fiveMinCyclesCnt];
+        gasC2H5OH.hourlyMax = gasC2H5OH.fiveMinAvgs[fiveMinCyclesCnt];
+      }
+      else {
+        if ( gasC2H5OH.fiveMinAvgs[fiveMinCyclesCnt] < gasC2H5OH.hourlyMin ) gasC2H5OH.hourlyMin = gasC2H5OH.fiveMinAvgs[fiveMinCyclesCnt];
+        if ( gasC2H5OH.fiveMinAvgs[fiveMinCyclesCnt] < gasC2H5OH.hourlyMax ) gasC2H5OH.hourlyMax = gasC2H5OH.fiveMinAvgs[fiveMinCyclesCnt];
+      }
+      
+      TwentySecondCyclesCnt = 0;
+    }
+
     //#DEBUG this is quite cludgy—need to find a better way
-    buildFiveMinuteData(gasNH3.value, gasNH3.twentySecondObs, gasNH3.currentFiveMinAvg, gasNH3.hourlyMin, gasNH3.hourlyMax );
+    /*
+    gasNH3.fiveMinAvgs[fiveMinCyclesCnt] = buildFiveMinuteData(gasNH3.value, gasNH3.twentySecondObs, gasNH3.currentFiveMinAvg, gasNH3.hourlyMin, gasNH3.hourlyMax );
     buildFiveMinuteData(gasCO.value, gasCO.twentySecondObs, gasCO.currentFiveMinAvg, gasCO.hourlyMin, gasCO.hourlyMax );
     buildFiveMinuteData(gasNO2.value, gasNO2.twentySecondObs, gasNO2.currentFiveMinAvg, gasNO2.hourlyMin, gasNO2.hourlyMax );
     buildFiveMinuteData(gasC3H8.value, gasC3H8.twentySecondObs, gasC3H8.currentFiveMinAvg, gasC3H8.hourlyMin, gasC3H8.hourlyMax );
@@ -215,9 +310,11 @@ void loop()
     buildFiveMinuteData(gasCH4.value, gasCH4.twentySecondObs, gasCH4.currentFiveMinAvg, gasCH4.hourlyMin, gasCH4.hourlyMax );
     buildFiveMinuteData(gasH2.value, gasH2.twentySecondObs, gasH2.currentFiveMinAvg, gasH2.hourlyMin, gasH2.hourlyMax );
     buildFiveMinuteData(gasC2H5OH.value, gasC2H5OH.twentySecondObs, gasC2H5OH.currentFiveMinAvg, gasC2H5OH.hourlyMin, gasC2H5OH.hourlyMax );
+    */
 
     //five-minute sub-routine
-    if ( TwentySecondCyclesCnt == 15 ) {     
+    if ( TwentySecondCyclesCnt == 15 ) {  
+      /*   
       gasNH3.fiveMinAvgs[fiveMinCyclesCnt] = gasNH3.currentFiveMinAvg;
       gasCO.fiveMinAvgs[fiveMinCyclesCnt] = gasCO.currentFiveMinAvg;
       gasNO2.fiveMinAvgs[fiveMinCyclesCnt] = gasNO2.currentFiveMinAvg;
@@ -227,6 +324,7 @@ void loop()
       gasH2.fiveMinAvgs[fiveMinCyclesCnt] = gasH2.currentFiveMinAvg;
       gasC2H5OH.fiveMinAvgs[fiveMinCyclesCnt] = gasC2H5OH.currentFiveMinAvg;
       TwentySecondCyclesCnt = 0;
+      */
       if ( fiveMinCyclesCnt == 12 ) {
         processHourlyData();
         fiveMinCyclesCnt = 0;

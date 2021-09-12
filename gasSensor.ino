@@ -12,23 +12,15 @@ void getData() {
     gasC2H5OH.value = gas.measure_C2H5OH() * 1000; 
   }
 }
-void buildFiveMinuteData(float currentValue, float (&twentySecondgas)[15], float (&currentFiveMinAvg), float (&hourlyMin), float (&hourlyMax) ) {
-  twentySecondgas[TwentySecondCyclesCnt] = currentValue;
-  if ( fiveMinCyclesCnt == 0 ) {     //hourly reset
-    hourlyMin = currentValue;
-    hourlyMax = currentValue;
-    }
-  if ( TwentySecondCyclesCnt != 0 ) 
-  {
-    float FiveMinSum{0};
-    for (int i = 0; i < TwentySecondCyclesCnt; i++) {
-      FiveMinSum = FiveMinSum + twentySecondgas[i];
-      if ( i == TwentySecondCyclesCnt ) break;
-    }
-    currentFiveMinAvg = FiveMinSum / ( TwentySecondCyclesCnt + 1 );  //have to add 1 because the first obs is "0", second is "1", etc...
-    if ( currentValue < hourlyMin ) hourlyMin = currentValue;
-    if ( currentValue > hourlyMax ) hourlyMax = currentValue;
+float buildFiveMinuteData(float (&twentySecondgas)[15]) {
+  float currentFiveMinAvg{0};
+  float FiveMinSum{0};
+  for (int i = 0; i < TwentySecondCyclesCnt; i++) {
+    FiveMinSum = FiveMinSum + twentySecondgas[i];
+    if ( i == TwentySecondCyclesCnt ) break;
   }
+  currentFiveMinAvg = FiveMinSum / ( TwentySecondCyclesCnt + 1 );  //have to add 1 because the first obs is "0", second is "1", etc...
+  return currentFiveMinAvg;
 }
 void encodeData() {
   union gasUnion  //Used to convert float to bytes[4] adapted from: http://www.cplusplus.com/forum/beginner/18566/
