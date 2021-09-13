@@ -21,8 +21,8 @@
 #include <Wire.h>                     //Needed for I2C 
 #include "MutichannelGasSensor.h"     //Needed for gas sensor
 #include <Adafruit_NeoPixel.h>
-//#define DEBUG 1
-int outputLVL{0};                     //To enable debugging
+#define DEBUG 1
+int outputLVL{3};                     //To enable debugging
 bool debugPrinted {false};             //track if we've printed debug data (don't spam serial console)
 
 //For Neopixel
@@ -206,8 +206,11 @@ void loop()
     getData();
     if (gasI2Cerror != 0) return;
 
-    //populate twentySecondgas[] with 20s obs
     gasNH3.twentySecondObs[TwentySecondCyclesCnt] = gasNH3.value;
+    #ifdef DEBUG //#DEBUG
+        Serial.print("gasNH3.twentySecondObs["); Serial.print(TwentySecondCyclesCnt); Serial.print("]: ");
+        Serial.println(gasNH3.twentySecondObs[TwentySecondCyclesCnt]);
+      #endif
     gasCO.twentySecondObs[TwentySecondCyclesCnt] = gasCO.value;
     gasNO2.twentySecondObs[TwentySecondCyclesCnt] = gasNO2.value;
     gasC3H8.twentySecondObs[TwentySecondCyclesCnt] = gasC3H8.value;
@@ -216,8 +219,12 @@ void loop()
     gasH2.twentySecondObs[TwentySecondCyclesCnt] = gasH2.value;
     gasC2H5OH.twentySecondObs[TwentySecondCyclesCnt] = gasC2H5OH.value;
 
-    if ( TwentySecondCyclesCnt == 15 ) { 
+    if ( TwentySecondCyclesCnt == 14 ) { 
       gasNH3.fiveMinAvgs[fiveMinCyclesCnt] = buildFiveMinuteData(gasNH3.twentySecondObs );
+      #ifdef DEBUG //#DEBUG
+        Serial.print("gasNH3.fiveMinAvgs["); Serial.print(fiveMinCyclesCnt); Serial.print("]: ");
+        Serial.println(gasNH3.fiveMinAvgs[fiveMinCyclesCnt]);
+      #endif
       if ( fiveMinCyclesCnt == 0 ) {
         gasNH3.hourlyMin = gasNH3.fiveMinAvgs[fiveMinCyclesCnt];
         gasNH3.hourlyMax = gasNH3.fiveMinAvgs[fiveMinCyclesCnt];
@@ -298,33 +305,7 @@ void loop()
       }
       
       TwentySecondCyclesCnt = 0;
-    }
-
-    //#DEBUG this is quite cludgy—need to find a better way
-    /*
-    gasNH3.fiveMinAvgs[fiveMinCyclesCnt] = buildFiveMinuteData(gasNH3.value, gasNH3.twentySecondObs, gasNH3.currentFiveMinAvg, gasNH3.hourlyMin, gasNH3.hourlyMax );
-    buildFiveMinuteData(gasCO.value, gasCO.twentySecondObs, gasCO.currentFiveMinAvg, gasCO.hourlyMin, gasCO.hourlyMax );
-    buildFiveMinuteData(gasNO2.value, gasNO2.twentySecondObs, gasNO2.currentFiveMinAvg, gasNO2.hourlyMin, gasNO2.hourlyMax );
-    buildFiveMinuteData(gasC3H8.value, gasC3H8.twentySecondObs, gasC3H8.currentFiveMinAvg, gasC3H8.hourlyMin, gasC3H8.hourlyMax );
-    buildFiveMinuteData(gasC4H10.value, gasC4H10.twentySecondObs, gasC4H10.currentFiveMinAvg, gasC4H10.hourlyMin, gasC4H10.hourlyMax );
-    buildFiveMinuteData(gasCH4.value, gasCH4.twentySecondObs, gasCH4.currentFiveMinAvg, gasCH4.hourlyMin, gasCH4.hourlyMax );
-    buildFiveMinuteData(gasH2.value, gasH2.twentySecondObs, gasH2.currentFiveMinAvg, gasH2.hourlyMin, gasH2.hourlyMax );
-    buildFiveMinuteData(gasC2H5OH.value, gasC2H5OH.twentySecondObs, gasC2H5OH.currentFiveMinAvg, gasC2H5OH.hourlyMin, gasC2H5OH.hourlyMax );
-    */
-
-    //five-minute sub-routine
-    if ( TwentySecondCyclesCnt == 15 ) {  
-      /*   
-      gasNH3.fiveMinAvgs[fiveMinCyclesCnt] = gasNH3.currentFiveMinAvg;
-      gasCO.fiveMinAvgs[fiveMinCyclesCnt] = gasCO.currentFiveMinAvg;
-      gasNO2.fiveMinAvgs[fiveMinCyclesCnt] = gasNO2.currentFiveMinAvg;
-      gasC3H8.fiveMinAvgs[fiveMinCyclesCnt] = gasC3H8.currentFiveMinAvg;
-      gasC4H10.fiveMinAvgs[fiveMinCyclesCnt] = gasC4H10.currentFiveMinAvg;
-      gasCH4.fiveMinAvgs[fiveMinCyclesCnt] = gasCH4.currentFiveMinAvg;
-      gasH2.fiveMinAvgs[fiveMinCyclesCnt] = gasH2.currentFiveMinAvg;
-      gasC2H5OH.fiveMinAvgs[fiveMinCyclesCnt] = gasC2H5OH.currentFiveMinAvg;
-      TwentySecondCyclesCnt = 0;
-      */
+      
       if ( fiveMinCyclesCnt == 12 ) {
         processHourlyData();
         fiveMinCyclesCnt = 0;
