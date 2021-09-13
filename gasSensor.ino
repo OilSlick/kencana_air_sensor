@@ -162,7 +162,7 @@ void processHourlyData() {
   float gasCH4hourlySum{0.0};
   float gasH2hourlySum{0.0};
   float gasC2H5OHhourlySum{0.0};
-  for ( int i = 0; i < 12; i++ ) {
+  for ( int i = 0; i < 11; i++ ) {
     gasNH3hourlySum += gasNH3.fiveMinAvgs[i];
     gasCOhourlySum += gasCO.fiveMinAvgs[i];
     gasNO2hourlySum += gasNO2.fiveMinAvgs[i];

@@ -306,7 +306,7 @@ void loop()
       
       TwentySecondCyclesCnt = 0;
       
-      if ( fiveMinCyclesCnt == 12 ) {
+      if ( fiveMinCyclesCnt == 11 ) {
         processHourlyData();
         fiveMinCyclesCnt = 0;
       }
