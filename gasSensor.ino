@@ -85,7 +85,7 @@ void printData() {
   Serial.println("+-------------------------+-------------------+--------+");
 
   Serial.print(F("| Amonia (NH3)            |  "));
-  if( gasNH3.value >= 0 ) Serial.print(gasNH3.value);
+  if( gasNH3.value >= 0 ) Serial.print(gasNH3.currentFiveMinAvg);
   else Serial.print("invalid");
   Serial.print(" ppm ");
   if( gasNH3.value >= gasNH3.warn ) Serial.print("          X");
@@ -93,7 +93,7 @@ void printData() {
   //Amonia < 300ppm
 
   Serial.print(F("| Carbon monoxide (CO)    |  "));
-  if( gasCO.value >= 0 ) Serial.print(gasCO.value);
+  if( gasCO.value >= 0 ) Serial.print(gasCO.currentFiveMinAvg);
   else Serial.print("invalid");
   Serial.print(" ppm ");
   if( gasCO.value >= gasCO.warn ) 
@@ -104,7 +104,7 @@ void printData() {
   // want < 70ppm https://www.cacgas.com.au/blog/carbon-monoxide-co-toxic-gas-workplace-safety
 
   Serial.print(F("| Nitrous dioxide (NO2)   |  "));
-  if( gasNO2.value >= 0 ) Serial.print( gasNO2.value );
+  if( gasNO2.value >= 0 ) Serial.print( gasNO2.currentFiveMinAvg );
   else Serial.print("invalid");
   Serial.print(" ppm ");
   if( gasNO2.value >= gasNO2.warn ) Serial.print("          X");
@@ -112,7 +112,7 @@ void printData() {
   //want < 5000ppb https://www.cdc.gov/niosh/idlh/10102440.html
 
   Serial.print(F("| Propane (C3H8)          |  "));
-  if( gasC3H8.value >= 0 ) Serial.print(gasC3H8.value);
+  if( gasC3H8.value >= 0 ) Serial.print(gasC3H8.currentFiveMinAvg);
   else Serial.print("invalid");
   Serial.print(" ppm ");
   if( gasC3H8.value >= gasC3H8.warn ) Serial.print("          X");
@@ -121,7 +121,7 @@ void printData() {
   //More info on gases: https://safety.honeywell.com/content/dam/his-sandbox/products/gas-and-flame-detection/documents/Application-Note-202_The-ABC27s-Of-Gases-In-The-Industry_04-99.pdf
 
   Serial.print(F("| Butane (C4H10)          |  "));
-  if( gasC4H10.value >= 0 ) Serial.print(gasC4H10.value);
+  if( gasC4H10.value >= 0 ) Serial.print(gasC4H10.currentFiveMinAvg);
   else Serial.print("invalid");
   Serial.print(" ppm ");
   if( gasC4H10.value >= gasC4H10.warn ) Serial.print("          X");
@@ -129,21 +129,21 @@ void printData() {
   //Butane < 1000ppm STEL (short term exposure limit of < 15 minutes) https://pubchem.ncbi.nlm.nih.gov/compound/Butane#section=Immediately-Dangerous-to-Life-or-Health-(IDLH)
 
   Serial.print(F("| Methane (CH4)           |  "));
-  if( gasCH4.value >= 0 ) Serial.print(gasCH4.value);
+  if( gasCH4.value >= 0 ) Serial.print(gasCH4.currentFiveMinAvg);
   else Serial.print("invalid");
   Serial.print(" ppb ");
   Serial.println();
   //methane no recommendations
 
   Serial.print(F("| Hydrogen gas (H2)       |  "));
-  if( gasH2.value >= 0) Serial.print(gasH2.value);
+  if( gasH2.value >= 0) Serial.print(gasH2.currentFiveMinAvg);
   else Serial.print("invalid");
   Serial.print(" ppb ");
   Serial.println();
   //hydrogen no recommendations
 
   Serial.print(F("| Ethyl alcohol (C2H5OH)  |  "));
-  if( gasC2H5OH.value >= 0 ) Serial.print(gasC2H5OH.value);
+  if( gasC2H5OH.value >= 0 ) Serial.print(gasC2H5OH.currentFiveMinAvg);
   else Serial.print("invalid");
   Serial.print(" ppb ");
   if( gasC2H5OH.value >= gasC2H5OH.warn ) Serial.print("          X");
@@ -223,4 +223,15 @@ void encode_sendHourlyData() {
   hourlyPayLoad[11] = a.gasBytes[3];
 
   broadcastData(webGatewayAddress, hourlyPayLoad, sizeof(hourlyPayLoad));
+
+  for ( int i = 0; i < 11; i++ ) {  //reset
+    gasNH3.fiveMinAvgs[i] = 0;
+    gasCO.fiveMinAvgs[i] = 0;
+    gasNO2.fiveMinAvgs[i] = 0;
+    gasC3H8.fiveMinAvgs[i] = 0;
+    gasC4H10.fiveMinAvgs[i] = 0;
+    gasCH4.fiveMinAvgs[i] = 0;
+    gasH2.fiveMinAvgs[i] = 0;
+    gasC2H5OH.fiveMinAvgs[i] = 0;
+  }
 }
