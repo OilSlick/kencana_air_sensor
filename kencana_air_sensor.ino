@@ -314,7 +314,7 @@ void loop()
         encodeData();
         broadcastData(webGatewayAddress, TransPayLoad, sizeof(TransPayLoad));
         #ifdef DEBUG
-          if (Serial) printData();
+          if (Serial) displayCurrentFiveMin();
         #endif
         gasNH3.currentFiveMinAvg = 0;       //five-minute reset
         gasCO.currentFiveMinAvg = 0;
@@ -349,6 +349,9 @@ void loop()
 
   //Hourly routine
   if ( hourlyDataProcessed == true ) {
+    #ifdef DEBUG
+      displayHourlyStats();
+    #endif
     hourlyDataProcessed = false;
     encode_sendHourlyData();
     //resetHourlyData
