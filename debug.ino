@@ -102,43 +102,43 @@ void displayHourlyStats(){
       Serial.println("+-------------------------+-----------+-----------+-----------+");
 
       Serial.print(F("| Amonia (NH3)            |  "));
-      Serial.print(gasNH3.hourlyMin); 
-      Serial.print(gasNH3.hourlyMax); 
+      Serial.print(gasNH3.hourlyMin); Serial.print("      ");
+      Serial.print(gasNH3.hourlyMax); Serial.print("      ");
       Serial.println(gasNH3.hourlyAvg); 
 
       Serial.print(F("| Carbon monoxide (CO)    |  "));
-      Serial.print(gasCO.hourlyMin);
-      Serial.print(gasCO.hourlyMax);
+      Serial.print(gasCO.hourlyMin); Serial.print("      ");
+      Serial.print(gasCO.hourlyMax); Serial.print("      ");
       Serial.println(gasCO.hourlyAvg);
 
       Serial.print(F("| Nitrous dioxide (NO2)   |  "));
-      Serial.print( gasNO2.hourlyMin );
-      Serial.print( gasNO2.hourlyMax );
+      Serial.print( gasNO2.hourlyMin ); Serial.print("      ");
+      Serial.print( gasNO2.hourlyMax ); Serial.print("      ");
       Serial.println( gasNO2.hourlyAvg );
 
       Serial.print(F("| Propane (C3H8)          |  "));
-      Serial.print(gasC3H8.hourlyMin);
-      Serial.print(gasC3H8.hourlyMax);
+      Serial.print(gasC3H8.hourlyMin); Serial.print("      ");
+      Serial.print(gasC3H8.hourlyMax); Serial.print("      ");
       Serial.println(gasC3H8.hourlyAvg);
       
       Serial.print(F("| Butane (C4H10)          |  "));
-      Serial.print(gasC4H10.hourlyMin);
-      Serial.print(gasC4H10.hourlyMax);
+      Serial.print(gasC4H10.hourlyMin); Serial.print("      ");
+      Serial.print(gasC4H10.hourlyMax); Serial.print("      ");
       Serial.println(gasC4H10.hourlyAvg);
 
       Serial.print(F("| Methane (CH4)           |  "));
-      Serial.print(gasCH4.hourlyMin);
-      Serial.print(gasCH4.hourlyMax);
+      Serial.print(gasCH4.hourlyMin); Serial.print("      ");
+      Serial.print(gasCH4.hourlyMax); Serial.print("      ");
       Serial.println(gasCH4.hourlyAvg);
 
       Serial.print(F("| Hydrogen gas (H2)       |  "));
-      Serial.print(gasH2.hourlyMin);
-      Serial.print(gasH2.hourlyMax);
+      Serial.print(gasH2.hourlyMin); Serial.print("      ");
+      Serial.print(gasH2.hourlyMax); Serial.print("      ");
       Serial.println(gasH2.hourlyAvg);
 
       Serial.print(F("| Ethyl alcohol (C2H5OH)  |  "));
-      Serial.print(gasC2H5OH.hourlyMin);
-      Serial.print(gasC2H5OH.hourlyMax);
+      Serial.print(gasC2H5OH.hourlyMin); Serial.print("      ");
+      Serial.print(gasC2H5OH.hourlyMax); Serial.print("      ");
       Serial.println(gasC2H5OH.hourlyAvg);
       Serial.println("+-------------------------+-----------+-----------+-----------+");
       Serial.println();
@@ -207,5 +207,18 @@ void displayCurrentFiveMin() {
   //ethyl alcohol < 3300 ppm
   Serial.println("+-------------------------+-------------------+--------+");
   Serial.println();
+
+  Serial.print("gasNH3.fiveMinAvgs["); Serial.print(fiveMinCyclesCnt); Serial.print("]: ");
+  Serial.println(gasNH3.fiveMinAvgs[fiveMinCyclesCnt]);
+  Serial.print("gasNH3.currentFiveMinAvg: "); Serial.println(gasNH3.currentFiveMinAvg);
+  for (int i = 0; i < TwentySecondCyclesCnt; i++) {
+    Serial.print("gasNH3.twentySecondObs["); Serial.print(i);Serial.print("]: "); Serial.println(gasNH3.twentySecondObs[i]);
+    if ( i == TwentySecondCyclesCnt ) break;
+    }
 }
+void displayCounts() {
+  if ( outputLVL == 3 && Serial ) Serial.print("TwentySecondCyclesCnt: ") & Serial.println(TwentySecondCyclesCnt);
+  if ( outputLVL == 3 && Serial ) Serial.print("fiveMinCyclesCnt: ") & Serial.println(fiveMinCyclesCnt); 
+}
+
 #endif

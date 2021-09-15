@@ -22,9 +22,11 @@
 #include "MutichannelGasSensor.h"     //Needed for gas sensor
 #include <Adafruit_NeoPixel.h>
 #define DEBUG 1
-bool NOTX{1};                          //1 = no transmission, radio silence
-int outputLVL{3};                     //To enable debugging
-bool debugPrinted {false};            //track if we've printed debug data (don't spam serial console)
+#ifdef DEBUG
+  bool NOTX{1};                         //1 = no transmission, radio silence
+  int outputLVL{3};                     //level of verboseness
+  bool debugPrinted {false};            //track if we've printed debug data (don't spam serial console)
+#endif
 
 //For Neopixel
 const int NeoPin {13};
@@ -208,10 +210,6 @@ void loop()
     if (gasI2Cerror != 0) return;
 
     gasNH3.twentySecondObs[TwentySecondCyclesCnt] = gasNH3.value;
-    #ifdef DEBUG //#DEBUG
-        Serial.print("gasNH3.twentySecondObs["); Serial.print(TwentySecondCyclesCnt); Serial.print("]: ");
-        Serial.println(gasNH3.twentySecondObs[TwentySecondCyclesCnt]);
-     #endif
     gasCO.twentySecondObs[TwentySecondCyclesCnt] = gasCO.value;
     gasNO2.twentySecondObs[TwentySecondCyclesCnt] = gasNO2.value;
     gasC3H8.twentySecondObs[TwentySecondCyclesCnt] = gasC3H8.value;
@@ -222,15 +220,6 @@ void loop()
 
     if ( TwentySecondCyclesCnt == 14 ) { 
       gasNH3.currentFiveMinAvg = gasNH3.fiveMinAvgs[fiveMinCyclesCnt] = buildFiveMinuteData(gasNH3.twentySecondObs );
-      #ifdef DEBUG //#DEBUG
-        Serial.print("gasNH3.fiveMinAvgs["); Serial.print(fiveMinCyclesCnt); Serial.print("]: ");
-        Serial.println(gasNH3.fiveMinAvgs[fiveMinCyclesCnt]);
-        Serial.print("gasNH3.currentFiveMinAvg: "); Serial.println(gasNH3.currentFiveMinAvg);
-        for (int i = 0; i < TwentySecondCyclesCnt; i++) {
-          Serial.print("gasNH3.twentySecondObs["); Serial.print(i);Serial.print("]: "); Serial.println(gasNH3.twentySecondObs[i]);
-          if ( i == TwentySecondCyclesCnt ) break;
-        }
-      #endif
       if ( fiveMinCyclesCnt == 0 ) {
         gasNH3.hourlyMin = gasNH3.fiveMinAvgs[fiveMinCyclesCnt];
         gasNH3.hourlyMax = gasNH3.fiveMinAvgs[fiveMinCyclesCnt];
@@ -337,8 +326,7 @@ void loop()
     else TwentySecondCyclesCnt++;
     
     #ifdef DEBUG
-      if ( outputLVL == 3 && Serial ) Serial.print("TwentySecondCyclesCnt: ") & Serial.println(TwentySecondCyclesCnt);
-      if ( outputLVL == 3 && Serial ) Serial.print("fiveMinCyclesCnt: ") & Serial.println(fiveMinCyclesCnt); 
+      displayCounts();
     #endif
 
     previousBlinked = millis();
