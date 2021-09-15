@@ -344,7 +344,6 @@ void loop()
     encode_sendHourlyData();
     //resetHourlyData
   }
-
 } //END loop()
 void chirp()
 {

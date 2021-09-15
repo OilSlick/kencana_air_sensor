@@ -20,6 +20,7 @@ float buildFiveMinuteData(float (&twentySecondgas)[15]) {
     if ( i == TwentySecondCyclesCnt ) break;
   }
   currentFiveMinAvg = FiveMinSum / ( TwentySecondCyclesCnt + 1 );  //have to add 1 because the first obs is "0", second is "1", etc...
+  resetTwentySecondObsArray();
   return currentFiveMinAvg;
 }
 void encodeData() {
@@ -148,7 +149,10 @@ void encode_sendHourlyData() {
   hourlyPayLoad[11] = a.gasBytes[3];
 
   broadcastData(webGatewayAddress, hourlyPayLoad, sizeof(hourlyPayLoad));
-
+  resetFiveMinAvgs();
+  resetHourlyMinMaxAvg();
+}
+void resetFiveMinAvgs() {
   for ( int i = 0; i < 11; i++ ) {  //reset
     gasNH3.fiveMinAvgs[i] = 0;
     gasCO.fiveMinAvgs[i] = 0;
@@ -158,5 +162,29 @@ void encode_sendHourlyData() {
     gasCH4.fiveMinAvgs[i] = 0;
     gasH2.fiveMinAvgs[i] = 0;
     gasC2H5OH.fiveMinAvgs[i] = 0;
+  }
+}
+void resetHourlyMinMaxAvg(){
+  gasNH3.hourlyMin = gasNH3.hourlyMax = gasNH3.hourlyAvg = 0;
+  gasCO.hourlyMin = gasCO.hourlyMax = gasCO.hourlyAvg = 0;
+  gasNO2.hourlyMin = gasNO2.hourlyMax = gasNO2.hourlyAvg = 0;
+  gasC3H8.hourlyMin = gasC3H8.hourlyMax = gasC3H8.hourlyAvg = 0;
+  gasC4H10.hourlyMin = gasC4H10.hourlyMax = gasC4H10.hourlyAvg = 0;
+  gasCH4.hourlyMin = gasCH4.hourlyMax = gasCH4.hourlyAvg = 0;
+  gasH2.hourlyMin = gasH2.hourlyMax = gasH2.hourlyAvg = 0;
+  gasC2H5OH.hourlyMin = gasC2H5OH.hourlyMax = gasC2H5OH.hourlyAvg = 0;
+
+}
+void resetTwentySecondObsArray(){
+  for (int i = 0; i < 15; i++) {
+    gasNH3.twentySecondObs[i] = 0;
+    gasCO.twentySecondObs[i] = 0;
+    gasNO2.twentySecondObs[i] = 0;
+    gasC3H8.twentySecondObs[i] = 0;
+    gasC4H10.twentySecondObs[i] = 0;
+    gasCH4.twentySecondObs[i] = 0;
+    gasH2.twentySecondObs[i] = 0;
+    gasC2H5OH.twentySecondObs[i] = 0;
+    if ( i == 15 ) break;
   }
 }
