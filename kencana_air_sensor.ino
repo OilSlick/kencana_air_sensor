@@ -321,6 +321,7 @@ void loop()
         fiveMinCyclesCnt = 0;
       }
       else fiveMinCyclesCnt++;
+      resetTwentySecondObsArray();
       TwentySecondCyclesCnt = 0;
     }
     else TwentySecondCyclesCnt++;

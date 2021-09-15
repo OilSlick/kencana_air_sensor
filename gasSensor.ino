@@ -20,7 +20,6 @@ float buildFiveMinuteData(float (&twentySecondgas)[15]) {
     if ( i == TwentySecondCyclesCnt ) break;
   }
   currentFiveMinAvg = FiveMinSum / ( TwentySecondCyclesCnt + 1 );  //have to add 1 because the first obs is "0", second is "1", etc...
-  resetTwentySecondObsArray();
   return currentFiveMinAvg;
 }
 void encodeData() {
