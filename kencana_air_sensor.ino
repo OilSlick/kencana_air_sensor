@@ -218,7 +218,7 @@ void loop()
     gasH2.twentySecondObs[TwentySecondCyclesCnt] = gasH2.value;
     gasC2H5OH.twentySecondObs[TwentySecondCyclesCnt] = gasC2H5OH.value;
 
-    if ( TwentySecondCyclesCnt == 14 ) { 
+    if ( TwentySecondCyclesCnt == 15 ) { 
       gasNH3.currentFiveMinAvg = gasNH3.fiveMinAvgs[fiveMinCyclesCnt] = buildFiveMinuteData(gasNH3.twentySecondObs );
       #ifdef DEBUG //#DEBUG
         Serial.print("gasNH3.fiveMinAvgs["); Serial.print(fiveMinCyclesCnt); Serial.print("]: "); Serial.println(gasNH3.fiveMinAvgs[fiveMinCyclesCnt]);
@@ -321,15 +321,13 @@ void loop()
       }
 
       //// Hourly Routine ////
-      if ( fiveMinCyclesCnt == 11 ) {   
+      if ( fiveMinCyclesCnt == 12 ) {   
         processHourlyData();
         fiveMinCyclesCnt = 0;
       }
-      else fiveMinCyclesCnt++;
       resetTwentySecondObsArray();
       TwentySecondCyclesCnt = 0;
     }
-    else TwentySecondCyclesCnt++;
     
     #ifdef DEBUG
       displayCounts();

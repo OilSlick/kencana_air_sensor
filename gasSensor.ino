@@ -9,17 +9,19 @@ void getData() {
     gasC4H10.value = gas.measure_C4H10() * 1000;
     gasCH4.value = gas.measure_CH4() * 1000;
     gasH2.value = gas.measure_H2() * 1000;
-    gasC2H5OH.value = gas.measure_C2H5OH() * 1000; 
+    gasC2H5OH.value = gas.measure_C2H5OH() * 1000;
+    TwentySecondCyclesCnt++; 
   }
 }
 float buildFiveMinuteData(float (&twentySecondgas)[15]) {
+  fiveMinCyclesCnt++;
   float currentFiveMinAvg{0};
   float FiveMinSum{0};
   for (int i = 0; i < TwentySecondCyclesCnt; i++) {
     FiveMinSum = FiveMinSum + twentySecondgas[i];
     if ( i == TwentySecondCyclesCnt ) break;
   }
-  currentFiveMinAvg = FiveMinSum / ( TwentySecondCyclesCnt + 1 );  //have to add 1 because the first obs is "0", second is "1", etc...
+  currentFiveMinAvg = FiveMinSum / ( TwentySecondCyclesCnt + 1 );  //have to add 1 because the first obs in array is "0", second is "1", etc...
   return currentFiveMinAvg;
 }
 void encodeData() {
@@ -87,7 +89,7 @@ void processHourlyData() {
   float gasCH4hourlySum{0.0};
   float gasH2hourlySum{0.0};
   float gasC2H5OHhourlySum{0.0};
-  for ( int i = 0; i < 11; i++ ) {
+  for ( int i = 0; i < fiveMinCyclesCnt; i++ ) {
     gasNH3hourlySum += gasNH3.fiveMinAvgs[i];
     gasCOhourlySum += gasCO.fiveMinAvgs[i];
     gasNO2hourlySum += gasNO2.fiveMinAvgs[i];
@@ -97,14 +99,14 @@ void processHourlyData() {
     gasH2hourlySum += gasH2.fiveMinAvgs[i];
     gasC2H5OHhourlySum += gasC2H5OH.fiveMinAvgs[i];
   }
-  gasNH3.hourlyAvg = gasNH3hourlySum / 12;
-  gasCO.hourlyAvg = gasCOhourlySum / 12;
-  gasNO2.hourlyAvg = gasNO2hourlySum / 12;
-  gasC3H8.hourlyAvg = gasC3H8hourlySum / 12;
-  gasC4H10.hourlyAvg = gasC4H10hourlySum / 12;
-  gasCH4.hourlyAvg = gasCH4hourlySum / 12;
-  gasH2.hourlyAvg = gasH2hourlySum / 12;
-  gasC2H5OH.hourlyAvg = gasC2H5OHhourlySum / 12;
+  gasNH3.hourlyAvg = gasNH3hourlySum / (fiveMinCyclesCnt +1);
+  gasCO.hourlyAvg = gasCOhourlySum / (fiveMinCyclesCnt +1);
+  gasNO2.hourlyAvg = gasNO2hourlySum / (fiveMinCyclesCnt +1);
+  gasC3H8.hourlyAvg = gasC3H8hourlySum / (fiveMinCyclesCnt +1);
+  gasC4H10.hourlyAvg = gasC4H10hourlySum / (fiveMinCyclesCnt +1);
+  gasCH4.hourlyAvg = gasCH4hourlySum / (fiveMinCyclesCnt +1);
+  gasH2.hourlyAvg = gasH2hourlySum / (fiveMinCyclesCnt +1);
+  gasC2H5OH.hourlyAvg = gasC2H5OHhourlySum / (fiveMinCyclesCnt +1);
     
   hourlyDataProcessed = true;
   #ifdef DEBUG
