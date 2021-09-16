@@ -217,6 +217,7 @@ void loop()
     gasCH4.twentySecondObs[TwentySecondCyclesCnt] = gasCH4.value;
     gasH2.twentySecondObs[TwentySecondCyclesCnt] = gasH2.value;
     gasC2H5OH.twentySecondObs[TwentySecondCyclesCnt] = gasC2H5OH.value;
+    TwentySecondCyclesCnt++;
 
     if ( TwentySecondCyclesCnt == 15 ) { 
       gasNH3.currentFiveMinAvg = gasNH3.fiveMinAvgs[fiveMinCyclesCnt] = buildFiveMinuteData(gasNH3.twentySecondObs );
@@ -225,7 +226,7 @@ void loop()
         Serial.print("gasNH3.hourlyMin:"); Serial.println(gasNH3.hourlyMin);
         Serial.print("gasNH3.hourlyMax:"); Serial.println(gasNH3.hourlyMax);
       #endif
-      if ( fiveMinCyclesCnt == 0 ) {
+      if ( fiveMinCyclesCnt == 1 ) {
         gasNH3.hourlyMin = gasNH3.fiveMinAvgs[fiveMinCyclesCnt];
         gasNH3.hourlyMax = gasNH3.fiveMinAvgs[fiveMinCyclesCnt];
       }
@@ -235,7 +236,7 @@ void loop()
       }
       
       gasCO.currentFiveMinAvg = gasCO.fiveMinAvgs[fiveMinCyclesCnt] = buildFiveMinuteData(gasCO.twentySecondObs );
-      if ( fiveMinCyclesCnt == 0 ) {
+      if ( fiveMinCyclesCnt == 1 ) {
         gasCO.hourlyMin = gasCO.fiveMinAvgs[fiveMinCyclesCnt];
         gasCO.hourlyMax = gasCO.fiveMinAvgs[fiveMinCyclesCnt];
       }
@@ -245,7 +246,7 @@ void loop()
       }
       
       gasNO2.currentFiveMinAvg = gasNO2.fiveMinAvgs[fiveMinCyclesCnt] = buildFiveMinuteData(gasNO2.twentySecondObs );
-      if ( fiveMinCyclesCnt == 0 ) {
+      if ( fiveMinCyclesCnt == 1 ) {
         gasNO2.hourlyMin = gasNO2.fiveMinAvgs[fiveMinCyclesCnt];
         gasNO2.hourlyMax = gasNO2.fiveMinAvgs[fiveMinCyclesCnt];
       }
@@ -255,7 +256,7 @@ void loop()
       }
       
       gasC3H8.currentFiveMinAvg = gasC3H8.fiveMinAvgs[fiveMinCyclesCnt] = buildFiveMinuteData(gasC3H8.twentySecondObs );
-      if ( fiveMinCyclesCnt == 0 ) {
+      if ( fiveMinCyclesCnt == 1 ) {
         gasC3H8.hourlyMin = gasC3H8.fiveMinAvgs[fiveMinCyclesCnt];
         gasC3H8.hourlyMax = gasC3H8.fiveMinAvgs[fiveMinCyclesCnt];
       }
@@ -265,7 +266,7 @@ void loop()
       }
       
       gasC4H10.currentFiveMinAvg = gasC4H10.fiveMinAvgs[fiveMinCyclesCnt] = buildFiveMinuteData(gasC4H10.twentySecondObs );
-      if ( fiveMinCyclesCnt == 0 ) {
+      if ( fiveMinCyclesCnt == 1 ) {
         gasC4H10.hourlyMin = gasC4H10.fiveMinAvgs[fiveMinCyclesCnt];
         gasC4H10.hourlyMax = gasC4H10.fiveMinAvgs[fiveMinCyclesCnt];
       }
@@ -275,7 +276,7 @@ void loop()
       }
       
       gasCH4.currentFiveMinAvg = gasCH4.fiveMinAvgs[fiveMinCyclesCnt] = buildFiveMinuteData(gasCH4.twentySecondObs );
-      if ( fiveMinCyclesCnt == 0 ) {
+      if ( fiveMinCyclesCnt == 1 ) {
         gasCH4.hourlyMin = gasCH4.fiveMinAvgs[fiveMinCyclesCnt];
         gasCH4.hourlyMax = gasCH4.fiveMinAvgs[fiveMinCyclesCnt];
       }
@@ -285,7 +286,7 @@ void loop()
       }
       
       gasH2.currentFiveMinAvg = gasH2.fiveMinAvgs[fiveMinCyclesCnt] = buildFiveMinuteData(gasH2.twentySecondObs );
-      if ( fiveMinCyclesCnt == 0 ) {
+      if ( fiveMinCyclesCnt == 1 ) {
         gasH2.hourlyMin = gasH2.fiveMinAvgs[fiveMinCyclesCnt];
         gasH2.hourlyMax = gasH2.fiveMinAvgs[fiveMinCyclesCnt];
       }
@@ -295,7 +296,7 @@ void loop()
       }
      
       gasC2H5OH.currentFiveMinAvg = gasC2H5OH.fiveMinAvgs[fiveMinCyclesCnt] = buildFiveMinuteData(gasC2H5OH.twentySecondObs );
-      if ( fiveMinCyclesCnt == 0 ) {
+      if ( fiveMinCyclesCnt == 1 ) {
         gasC2H5OH.hourlyMin = gasC2H5OH.fiveMinAvgs[fiveMinCyclesCnt];
         gasC2H5OH.hourlyMax = gasC2H5OH.fiveMinAvgs[fiveMinCyclesCnt];
       }
@@ -303,6 +304,7 @@ void loop()
         if ( gasC2H5OH.fiveMinAvgs[fiveMinCyclesCnt] < gasC2H5OH.hourlyMin ) gasC2H5OH.hourlyMin = gasC2H5OH.fiveMinAvgs[fiveMinCyclesCnt];
         if ( gasC2H5OH.fiveMinAvgs[fiveMinCyclesCnt] > gasC2H5OH.hourlyMax ) gasC2H5OH.hourlyMax = gasC2H5OH.fiveMinAvgs[fiveMinCyclesCnt];
       }
+      fiveMinCyclesCnt++;
       if ( gasI2Cerror == 0 ) 
       {
         encodeData();
@@ -325,6 +327,7 @@ void loop()
         processHourlyData();
         fiveMinCyclesCnt = 0;
       }
+      
       resetTwentySecondObsArray();
       TwentySecondCyclesCnt = 0;
     }

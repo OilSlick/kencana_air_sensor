@@ -9,12 +9,10 @@ void getData() {
     gasC4H10.value = gas.measure_C4H10() * 1000;
     gasCH4.value = gas.measure_CH4() * 1000;
     gasH2.value = gas.measure_H2() * 1000;
-    gasC2H5OH.value = gas.measure_C2H5OH() * 1000;
-    TwentySecondCyclesCnt++; 
+    gasC2H5OH.value = gas.measure_C2H5OH() * 1000; 
   }
 }
 float buildFiveMinuteData(float (&twentySecondgas)[15]) {
-  fiveMinCyclesCnt++;
   float currentFiveMinAvg{0};
   float FiveMinSum{0};
   for (int i = 0; i < TwentySecondCyclesCnt; i++) {
@@ -91,6 +89,7 @@ void processHourlyData() {
   float gasC2H5OHhourlySum{0.0};
   for ( int i = 0; i < fiveMinCyclesCnt; i++ ) {
     gasNH3hourlySum += gasNH3.fiveMinAvgs[i];
+    Serial.print("gasNH3.fiveMinAvgs["); Serial.print(i); Serial.print("]: "); Serial.println(gasNH3.fiveMinAvgs[i]); //#DEBUG
     gasCOhourlySum += gasCO.fiveMinAvgs[i];
     gasNO2hourlySum += gasNO2.fiveMinAvgs[i];
     gasC3H8hourlySum += gasC3H8.fiveMinAvgs[i];
@@ -99,7 +98,9 @@ void processHourlyData() {
     gasH2hourlySum += gasH2.fiveMinAvgs[i];
     gasC2H5OHhourlySum += gasC2H5OH.fiveMinAvgs[i];
   }
+  Serial.print("gasNH3hourlySum: "); Serial.println(gasNH3hourlySum); //#DEBUG
   gasNH3.hourlyAvg = gasNH3hourlySum / (fiveMinCyclesCnt +1);
+  Serial.print("fiveMinCyclesCnt +1: "); Serial.println(fiveMinCyclesCnt +1); //#DEBUG
   gasCO.hourlyAvg = gasCOhourlySum / (fiveMinCyclesCnt +1);
   gasNO2.hourlyAvg = gasNO2hourlySum / (fiveMinCyclesCnt +1);
   gasC3H8.hourlyAvg = gasC3H8hourlySum / (fiveMinCyclesCnt +1);
