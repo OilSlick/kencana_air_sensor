@@ -19,7 +19,7 @@ float buildFiveMinuteData(float (&twentySecondgas)[15]) {
     FiveMinSum = FiveMinSum + twentySecondgas[i];
     if ( i == TwentySecondCyclesCnt ) break;
   }
-  currentFiveMinAvg = FiveMinSum / ( TwentySecondCyclesCnt + 1 );  //have to add 1 because the first obs in array is "0", second is "1", etc...
+  currentFiveMinAvg = FiveMinSum / ( TwentySecondCyclesCnt );
   return currentFiveMinAvg;
 }
 void encodeData() {
@@ -99,15 +99,15 @@ void processHourlyData() {
     gasC2H5OHhourlySum += gasC2H5OH.fiveMinAvgs[i];
   }
   Serial.print("gasNH3hourlySum: "); Serial.println(gasNH3hourlySum); //#DEBUG
-  gasNH3.hourlyAvg = gasNH3hourlySum / (fiveMinCyclesCnt +1);
-  Serial.print("fiveMinCyclesCnt +1: "); Serial.println(fiveMinCyclesCnt +1); //#DEBUG
-  gasCO.hourlyAvg = gasCOhourlySum / (fiveMinCyclesCnt +1);
-  gasNO2.hourlyAvg = gasNO2hourlySum / (fiveMinCyclesCnt +1);
-  gasC3H8.hourlyAvg = gasC3H8hourlySum / (fiveMinCyclesCnt +1);
-  gasC4H10.hourlyAvg = gasC4H10hourlySum / (fiveMinCyclesCnt +1);
-  gasCH4.hourlyAvg = gasCH4hourlySum / (fiveMinCyclesCnt +1);
-  gasH2.hourlyAvg = gasH2hourlySum / (fiveMinCyclesCnt +1);
-  gasC2H5OH.hourlyAvg = gasC2H5OHhourlySum / (fiveMinCyclesCnt +1);
+  gasNH3.hourlyAvg = gasNH3hourlySum / (fiveMinCyclesCnt );
+  Serial.print("fiveMinCyclesCnt +1: "); Serial.println(fiveMinCyclesCnt ); //#DEBUG
+  gasCO.hourlyAvg = gasCOhourlySum / (fiveMinCyclesCnt );
+  gasNO2.hourlyAvg = gasNO2hourlySum / (fiveMinCyclesCnt );
+  gasC3H8.hourlyAvg = gasC3H8hourlySum / (fiveMinCyclesCnt );
+  gasC4H10.hourlyAvg = gasC4H10hourlySum / (fiveMinCyclesCnt );
+  gasCH4.hourlyAvg = gasCH4hourlySum / (fiveMinCyclesCnt );
+  gasH2.hourlyAvg = gasH2hourlySum / (fiveMinCyclesCnt );
+  gasC2H5OH.hourlyAvg = gasC2H5OHhourlySum / (fiveMinCyclesCnt );
     
   hourlyDataProcessed = true;
   #ifdef DEBUG
